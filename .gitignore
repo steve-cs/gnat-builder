@@ -1,0 +1,2 @@
+# ignore cache directories, e.g. github-cache download-cache
+*-cache/
