@@ -232,6 +232,7 @@ github-src/%/master: github-cache/%
 
 # Clone github-cache/<account>/<repository> from github.com
 
+.PRECIOUS: github-cache/%
 github-cache/%:
 	rm -rf $@
 	mkdir -p $(@D)
