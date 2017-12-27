@@ -374,6 +374,7 @@ gnatcoll-bindings-install: gnatcoll-bindings-build
 	cd $</readline && ./setup.py install
 	cd $</syslog && ./setup.py install
 
+.PHONY:
 gnatcoll-%: gnatcoll-%-build
 	# % = $(<:gnatcoll-%-build=%)
 	make -C $</$(<:gnatcoll-%-build=%) setup
@@ -387,7 +388,7 @@ gnatcoll-%-install: gnatcoll-%-build
 ##############################################################
 
 .PHONY: libadalang
-libadalang: libadalang-build langkit-src quex-src
+libadalang: libadalang-build langkit-src quex-src langkit-src-patch
 	cd $< && virtualenv lal-venv
 	cd $< && . lal-venv/bin/activate \
 	&& pip install -r REQUIREMENTS.dev \
