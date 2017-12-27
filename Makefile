@@ -59,12 +59,16 @@ install-prerequisites:
 bootstrap-clean: clean prefix-clean
 
 .PHONY: dist-clean
-dist-clean : clean
+dist-clean :
 	rm -rf *-src *-build *-cache
+
+.PHONY: src-clean
+src-clean:
+	rm -rf *-src
 
 .PHONY: clean
 clean: 
-	rm -rf *-src *-build
+	rm -rf *-build
 
 .PHONY: prefix-clean
 prefix-clean:
