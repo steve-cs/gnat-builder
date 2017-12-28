@@ -22,10 +22,6 @@ default: no-default
 # P A T C H E S
 #
 
-.PHONY: langkit-src-patch
-langkit-src-patch: langkit-src
-	sed -i 's/gnatcoll_iconv/gnatcoll-iconv/' $</langkit/templates/project_file.mako
-
 .PHONY: gnatcoll-fix-gpr-links
 gnatcoll-fix-gpr-links:
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-gmp.gpr gnatcoll_gmp.gpr
@@ -186,11 +182,9 @@ libadalang-src: github-src/$(github-org)/libadalang/$(branch)
 libadalang-tools-src: github-src/$(github-org)/libadalang-tools/$(branch)
 gps-src: github-src/$(github-org)/gps/$(branch)
 
-# from download
-
-gnat_util-gpl-2017-src: download-cache/gnat_util-gpl-2017-src
-gnatcoll-old-src: download-cache/gnatcoll-$(branch)-src
-quex-src: download-cache/quex-0.65.4-src
+gnat_util-gpl-2017-src: github-src/steve-cs/gnat_util/gpl-2017
+gnatcoll-old-src: github-src/steve-cs/gnatcoll/gpl-2017
+quex-src: github-src/steve-cs/quex/0.65.4
 
 # aliases to other %-src
 
@@ -224,6 +218,7 @@ gnat_util-src: gnat_util-gpl-2017-src gcc-src
 # linking github-src/<account>/<repository>/<branch> from github
 # get the repository, update it, and checkout the requested branch
 
+github-src/%/0.65.4            \
 github-src/%/gpl-2017          \
 github-src/%/gcc-7_2_0-release \
 github-src/%/gcc-7-branch      \
@@ -242,34 +237,6 @@ github-cache/%:
 	rm -rf $@
 	mkdir -p $(@D)
 	cd $(@D) && git clone https://github.com/$(@:github-cache/%=%).git
-	touch $@
-
-# Download gnat_util and gnatcoll from Adacore,
-# because they were deleted from github
-
-download-cache/gnat_util-gpl-2017-src \
-download-cache/gnatcoll-gpl-2017-src  :
-	rm -rf $@ $(@F) $(@F).tar.gz
-	wget --show-progress -O $(@F).tar.gz \
-	http://mirrors.cdn.adacore.com/art/$($(@F)-id)
-	tar xf $(@F).tar.gz
-	rm $(@F).tar.gz
-	mkdir -p $(@D)
-	mv $(@F) $@
-	touch $@
-
-gnat_util-gpl-2017-src-id = 591c45e2c7a447af2deed037
-gnatcoll-gpl-2017-src-id = 5a15c79cc7a4479a23674c66
-
-# Download quex from sourceforge.
-
-download-cache/quex-0.65.4-src:
-	rm -rf $@ quex-0.65.4.zip quex-0.65.4
-	wget -O quex-0.65.4.zip "https://downloads.sourceforge.net/project/quex/HISTORY/0.65/quex-0.65.4.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fquex%2Ffiles%2FHISTORY%2F0.65%2F&ts=1484909333&use_mirror=heanet"
-	unzip quex-0.65.4.zip
-	rm quex-0.65.4.zip
-	mkdir -p $(@D)
-	mv quex-0.65.4 $@
 	touch $@
 
 #
@@ -393,7 +360,7 @@ gnatcoll-%-install: gnatcoll-%-build
 ##############################################################
 
 .PHONY: libadalang
-libadalang: libadalang-build langkit-src quex-src langkit-src-patch
+libadalang: libadalang-build langkit-src quex-src
 	cd $< && virtualenv lal-venv
 	cd $< && . lal-venv/bin/activate \
 	&& pip install -r REQUIREMENTS.dev \
