@@ -58,13 +58,9 @@ bootstrap-clean: clean prefix-clean
 dist-clean :
 	rm -rf *-src *-build *-cache
 
-.PHONY: src-clean
-src-clean:
-	rm -rf *-src
-
 .PHONY: clean
 clean: 
-	rm -rf *-build
+	rm -rf *-src *-build
 
 .PHONY: prefix-clean
 prefix-clean:
