@@ -223,6 +223,10 @@ gnatcoll-core: gnatcoll-core-build
 	make -C $< setup
 	make -C $<
 
+.PHONY: gnatcoll-core-install
+gnatcoll-core-install: gnatcoll-core-build
+	make -C $< prefix=$(prefix) install
+
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</gmp && ./setup.py build
