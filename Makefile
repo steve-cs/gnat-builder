@@ -1,5 +1,5 @@
-# branch = master, gpl-2017
-# gcc-branch = master, gcc-7-branch, gcc-7_2_0-release (gpl-2017)
+# branch = master
+# gcc-branch = master, gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 #
 
@@ -56,7 +56,7 @@ bootstrap-clean: clean prefix-clean
 
 .PHONY: dist-clean
 dist-clean :
-	rm -rf *-src *-build *-cache
+	rm -rf *-src *-build *-cache *-save
 
 .PHONY: clean
 clean: 
@@ -82,70 +82,13 @@ bootstrap-gnatcoll            \
 libadalang libadalang-install 
 
 .PHONY: bootstrap-gnatcoll
-bootstrap-gnatcoll: bootstrap-$(branch)-gnatcoll
-
-.PHONY: bootstrap-gpl-2017-gnatcoll
-bootstrap-gpl-2017-gnatcoll: | \
-gnat_util gnat_util-install \
-gnatcoll-old gnatcoll-old-install
-
-.PHONY: bootstrap-master-gnatcoll
-bootstrap-master-gnatcoll: | \
+bootstrap-gnatcoll: | \
 gnatcoll-core gnatcoll-core-install \
 gnatcoll-bindings gnatcoll-bindings-install \
 gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install \
 gnatcoll-xref gnatcoll-xref-install \
 gnatcoll-fix-gpr-links
-
-.PHONY: gnatcoll
-gnatcoll: gnatcoll-$(branch)
-
-.PHONY: gnatcoll-gpl-2017
-gnatcoll-gpl-2017: \
-gnat_util \
-gnatcoll-old
-
-.PHONY: gnatcoll-master
-gnatcoll-master: \
-gnatcoll-core \
-gnatcoll-bindings \
-gnatcoll-gnatcoll_db2ada \
-gnatcoll-sqlite \
-gnatcoll-xref
- 
-.PHONY: gnatcoll-install
-gnatcoll-install: gnatcoll-$(branch)-install
-
-.PHONY: gnatcoll-gpl-2017-install
-gnatcoll-gpl-2017-install: \
-gnat_util-install \
-gnatcoll-old-install
-
-.PHONY: gnatcoll-master-install
-gnatcoll-master-install: \
-gnatcoll-core-install \
-gnatcoll-bindings-install \
-gnatcoll-gnatcoll_db2ada-install \
-gnatcoll-sqlite-install \
-gnatcoll-xref-install \
-gnatcoll-fix-gpr-links
-
-.PHONY: install install-gcc install-adacore
-install: install-gcc install-adacore
-
-install-gcc: gcc-install
-
-install-adacore:   \
-xmlada-install     \
-gprbuild-install   \
-gtkada-install     \
-gnatcoll-install   \
-libadalang-install \
-gps-install
-
-.PHONY: all gcc xmlada gprbuild gtkada gnatcoll libadalang gps
-all: gcc xmlada gprbuild gtkada gnatcoll libadalang gps
 
 ##############################################################
 #
@@ -160,12 +103,7 @@ all: gcc xmlada gprbuild gtkada gnatcoll libadalang gps
 
 # from github
 
-gcc-src: gcc-$(gcc-branch)-src
-gcc-master-src: github-src/gcc-mirror/gcc/master
-gcc-gcc-7-branch-src: github-src/gcc-mirror/gcc/gcc-7-branch
-gcc-gcc-7_2_0-release-src: github-src/gcc-mirror/gcc/gcc-7_2_0-release
-gcc-gpl-2017-src: github-src/gcc-mirror/gcc/gcc-7-branch
-
+gcc-src: github-src/gcc-mirror/gcc/$(gcc-branch)
 
 xmlada-src: github-src/$(github-org)/xmlada/$(branch)
 gprbuild-src: github-src/$(github-org)/gprbuild/$(branch)
@@ -178,8 +116,6 @@ libadalang-src: github-src/$(github-org)/libadalang/$(branch)
 libadalang-tools-src: github-src/$(github-org)/libadalang-tools/$(branch)
 gps-src: github-src/$(github-org)/gps/$(branch)
 
-gnat_util-gpl-2017-src: github-src/steve-cs/gnat_util/gpl-2017
-gnatcoll-old-src: github-src/steve-cs/gnatcoll/gpl-2017
 quex-src: github-src/steve-cs/quex/0.65.4
 
 # aliases to other %-src
@@ -187,41 +123,16 @@ quex-src: github-src/steve-cs/quex/0.65.4
 xmlada-bootstrap-src: xmlada-src
 gprbuild-bootstrap-src: gprbuild-src
 
-# Patch together a gnat_util that works with a gcc-7
-# working with both gcc-7_2_0-release and gcc-7-branch
-
-gnat_util-src: gnat_util-gpl-2017-src gcc-src
-	rm -rf $@ gnat_util-temp
-	mkdir gnat_util-temp
-	cp $</Makefile $</Makefile.gnat_util
-	cd $< && cp $(shell cat $</MANIFEST.gnat_util) $(PWD)/gnat_util-temp
-	cp gcc-src/gcc/ada/*.* gnat_util-temp
-	mkdir -p $@
-	cd gnat_util-temp && cp $(shell cat $</MANIFEST.gnat_util) $(PWD)/$@
-	rm -rf gnat_util-temp
-	cp gcc-src/gcc/ada/makeutl.* $@
-	cp gcc-src/gcc/ada/prj.* $@
-	cp gcc-src/gcc/ada/prj-env.* $@
-	cp gcc-src/gcc/ada/prj-tree.* $@
-	cp gcc-src/gcc/ada/prj-com.* $@
-	cp gcc-src/gcc/ada/prj-err.* $@
-	cp gcc-src/gcc/ada/prj-ext.* $@
-	cp gcc-src/gcc/ada/prj-util.* $@
-	cp gcc-src/gcc/ada/prj-tree.* $@
-	cp gcc-src/gcc/ada/prj-attr.* $@
-	cp gcc-src/gcc/ada/sinput-p.* $@
-
 # linking github-src/<account>/<repository>/<branch> from github
 # get the repository, update it, and checkout the requested branch
 
 github-src/%/0.65.4            \
-github-src/%/gpl-2017          \
 github-src/%/gcc-7_2_0-release \
 github-src/%/gcc-7-branch      \
 github-src/%/master: github-cache/%
-	rm -rf @D/*
 	cd github-cache/$(@D:github-src/%=%) && git fetch --all
 	cd github-cache/$(@D:github-src/%=%) && git checkout -f $(@F)
+	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-cache/$(@D:github-src/%=%) $@
 
@@ -263,6 +174,7 @@ gnatcoll-xref-build \
 #
 #
 
+.PHONY: %-install
 %-install: %-build
 	make -C $< prefix=$(prefix) install
 
@@ -270,10 +182,15 @@ gnatcoll-xref-build \
 gcc: gcc-build gcc-src
 	cd $< && ../gcc-src/configure \
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
-	--disable-bootstrap --disable-multilib \
+	--disable-multilib \
 	--enable-shared --enable-shared-host
 	cd $<  && make -j8
 
+.PHONY: gcc-install
+gcc-install: gcc-build
+	make -C $< prefix=$(prefix) install
+	rm -rf $<-save
+	mv $< $<-save
 
 .PHONY: gprbuild-bootstrap
 gprbuild-bootstrap: gprbuild-bootstrap-build xmlada-bootstrap-build
@@ -301,30 +218,10 @@ gtkada: gtkada-build
 	cd $< && ./configure --prefix=$(prefix)
 	make -C $< PROCESSORS=0
 
-.PHONY: gnat_util
-gnat_util: gnat_util-build
-	rm -f $</Makefile
-	cp $</Makefile.gnat_util $</Makefile
-	make -C $<
-
-.PHONY: gnatcoll-old
-gnatcoll-old: gnatcoll-old-build
-	cd $< && ./configure \
-	--prefix=$(prefix) --enable-shared --enable-projects
-	make -C $< PROCESSORS=0
-
-.PHONY: gnatcoll-old
-gnatcoll-old-install: gnatcoll-old-build
-	make -C $< prefix=$(prefix) install
-
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build
 	make -C $< setup
 	make -C $<
-
-.PHONY: gnatcoll-core-install
-gnatcoll-core-install: gnatcoll-core-build
-	make -C $< install
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
@@ -350,10 +247,7 @@ gnatcoll-%: gnatcoll-%-build
 
 .PHONY: gnatcoll-%-install
 gnatcoll-%-install: gnatcoll-%-build
-	# % = $(<:gnatcoll-%-build=%)
 	make -C $</$(<:gnatcoll-%-build=%) install
-
-##############################################################
 
 .PHONY: libadalang
 libadalang: libadalang-build langkit-src quex-src
@@ -395,19 +289,8 @@ clean-libadalang-prefix:
 	rm -rf $(prefix)/bin/gnat_compare
 	rm -rf $(prefix)/bin/nameres
 
-##############################################################
-
 .PHONY: gps
-gps: gps-$(branch)
-
-.PHONY: gps-gpl-2017
-gps-gpl-2017: gps-build
-	cd $< && ./configure --prefix=$(prefix) \
-	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
-	make -C $< PROCESSORS=0
-
-.PHONY: gps-master
-gps-master: gps-build libadalang-tools-src
+gps: gps-build libadalang-tools-src
 	mkdir $</laltools
 	cp -r libadalang-tools-src/src $</laltools
 	cd $< && ./configure \
