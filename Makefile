@@ -1,10 +1,10 @@
 # branch = master
 # gcc-branch = master, gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
-#
+
 
 branch ?= master
-gcc-branch ?= $(branch)
+gcc-branch ?= gcc-7-branch
 prefix ?= /usr/local/gnat
 gnu-mirror ?= http://mirrors.kernel.org/gnu
 github-org ?= adacore
@@ -31,6 +31,15 @@ gnatcoll-fix-gpr-links:
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-syslog.gpr gnatcoll_syslog.gpr
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-sqlite.gpr gnatcoll_sqlite.gpr
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-xref.gpr gnatcoll_xref.gpr
+
+gps-build: gps-src
+	mkdir -p $@
+	cp -r $</* $@
+	sed -i '/..lal\/lal/d' $@/gps/gps.gpr
+	sed -i '/with LAL.Module/d' $@/gps/src/gps-main.adb
+	sed -i '/with Ada_Semantic_Tree.Lang/d' $@/gps/src/gps-main.adb
+	sed -i '/LAL.Module.Register/,+10d' $@/gps/src/gps-main.adb
+
 #
 # E N D   P A T C H E S
 #
@@ -79,7 +88,8 @@ xmlada xmlada-install         \
 gprbuild gprbuild-install     \
 gtkada gtkada-install         \
 bootstrap-gnatcoll            \
-libadalang libadalang-install 
+libadalang libadalang-install \
+gps gps-install
 
 .PHONY: bootstrap-gnatcoll
 bootstrap-gnatcoll: | \
@@ -130,8 +140,8 @@ github-src/%/0.65.4            \
 github-src/%/gcc-7_2_0-release \
 github-src/%/gcc-7-branch      \
 github-src/%/master: github-cache/%
-	cd github-cache/$(@D:github-src/%=%) && git fetch --all
 	cd github-cache/$(@D:github-src/%=%) && git checkout -f $(@F)
+	cd github-cache/$(@D:github-src/%=%) && git pull
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-cache/$(@D:github-src/%=%) $@
@@ -182,7 +192,7 @@ gnatcoll-xref-build \
 gcc: gcc-build gcc-src
 	cd $< && ../gcc-src/configure \
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
-	--disable-multilib \
+	--disable-bootstrap --disable-multilib \
 	--enable-shared --enable-shared-host
 	cd $<  && make -j8
 
@@ -294,9 +304,8 @@ clean-libadalang-prefix:
 	rm -rf $(prefix)/bin/nameres
 
 .PHONY: gps
-gps: gps-build libadalang-tools-src
-	mkdir $</laltools
-	cp -r libadalang-tools-src/src $</laltools
+gps: gps-build libadalang-tools-build
+	# ln -sf $(PWD)/libadalang-tools-build $</laltools
 	cd $< && ./configure \
 	--prefix=$(prefix) \
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
