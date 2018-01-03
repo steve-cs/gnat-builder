@@ -15,7 +15,10 @@ llvm-version ?= 3.8
 iconv-opt ?= "-lc"
 
 .PHONY: default
-default: no-default
+default: all
+
+.PHONY: install
+install: all-install
 
 ##############################################################
 #
@@ -57,48 +60,63 @@ install-prerequisites:
 	python-dev python-pip python-gobject-dev python-cairo-dev \
 	libclang-dev
 
-%-clean:
-	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
-
-.PHONY: bootstrap-clean
-bootstrap-clean: clean prefix-clean
-
-.PHONY: dist-clean
-dist-clean :
-	rm -rf *-src *-build *-cache *-save
-
 .PHONY: clean
 clean: 
 	rm -rf *-src *-build
 
-.PHONY: prefix-clean
-prefix-clean:
+.PHONY: dist-clean
+dist-clean : clean
+	rm -rf *-cache
+
+%-clean:
+	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
+
+.PHONY: bootstrap-clean
+bootstrap-clean: clean
 	rm -rf $(prefix)/*
 
-.PHONY: bootstrap
-bootstrap: | bootstrap-gcc bootstrap-adacore
-
-.PHONY: bootstrap-gcc
-bootstrap-gcc: | gcc gcc-install
-
-.PHONY: bootstrap-adacore
-bootstrap-adacore: |          \
-gprbuild-bootstrap            \
-xmlada xmlada-install         \
-gprbuild gprbuild-install     \
-gtkada gtkada-install         \
-bootstrap-gnatcoll            \
-libadalang libadalang-install \
+.PHONY: bootstrap-install
+bootstrap-install: |                                      \
+gcc-bootstrap gcc-install                                 \
+gprbuild-bootstrap-install                                \
+xmlada xmlada-install                                     \
+gprbuild gprbuild-install                                 \
+gnatcoll-core gnatcoll-core-install                       \
+gnatcoll-bindings gnatcoll-bindings-install               \
+gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
+gnatcoll-sqlite gnatcoll-sqlite-install                   \
+gnatcoll-xref gnatcoll-xref-install                       \
+gnatcoll-fix-gpr-links                                    \
+libadalang libadalang-install                             \
+gtkada gtkada-install                                     \
 gps gps-install
 
-.PHONY: bootstrap-gnatcoll
-bootstrap-gnatcoll: | \
-gnatcoll-core gnatcoll-core-install \
-gnatcoll-bindings gnatcoll-bindings-install \
-gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
-gnatcoll-sqlite gnatcoll-sqlite-install \
-gnatcoll-xref gnatcoll-xref-install \
-gnatcoll-fix-gpr-links
+.PHONY: all
+all: \
+xmlada                   \
+gprbuild                 \
+gnatcoll-core            \
+gnatcoll-bindings        \
+gnatcoll-gnatcoll_db2ada \
+gnatcoll-sqlite          \
+gnatcoll-xref            \
+libadalang               \
+gtkada                   \
+gps
+
+.PHONY: all-install
+all-install: \
+xmlada-install                   \
+gprbuild-install                 \
+gnatcoll-core-install            \
+gnatcoll-bindings-install        \
+gnatcoll-gnatcoll_db2ada-install \
+gnatcoll-sqlite-install          \
+gnatcoll-xref-install            \
+libadalang-install               \
+gtkada-install                   \
+gps-install
+
 
 ##############################################################
 #
@@ -188,6 +206,14 @@ gnatcoll-xref-build \
 %-install: %-build
 	make -C $< prefix=$(prefix) install
 
+.PHONY: gcc-bootstrap
+gcc-bootstrap: gcc-build gcc-src
+	cd $< && ../gcc-src/configure \
+	--prefix=$(prefix) --enable-languages=c,c++,ada \
+	--enable-bootstrap --disable-multilib \
+	--enable-shared --enable-shared-host
+	cd $<  && make -j8
+
 .PHONY: gcc
 gcc: gcc-build gcc-src
 	cd $< && ../gcc-src/configure \
@@ -196,14 +222,8 @@ gcc: gcc-build gcc-src
 	--enable-shared --enable-shared-host
 	cd $<  && make -j8
 
-.PHONY: gcc-install
-gcc-install: gcc-build
-	make -C $< prefix=$(prefix) install
-	rm -rf $<-save
-	mv $< $<-save
-
-.PHONY: gprbuild-bootstrap
-gprbuild-bootstrap: gprbuild-bootstrap-build xmlada-bootstrap-build
+.PHONY: gprbuild-bootstrap-install        
+gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build
 	cd $<  && ./bootstrap.sh \
 	--with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
 
@@ -310,7 +330,11 @@ gps: gps-build libadalang-tools-build
 	--prefix=$(prefix) \
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
 	make -C $< PROCESSORS=0
-
+#
+# gps (master) currently doesn't run
+# it's missing a number of run time dependencies
+# below is the hack that allowed the gpl-2017 branch to run on Debian
+#
 .PHONY: gps-run
 gps-run:
 	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
