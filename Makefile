@@ -1,5 +1,5 @@
 # branch = master
-# gcc-branch = master, gcc-7-branch, gcc-7_2_0-release
+# gcc-branch = master, gcc-7-branch
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
 
@@ -155,7 +155,6 @@ gprbuild-bootstrap-src: gprbuild-src
 # get the repository, update it, and checkout the requested branch
 
 github-src/%/0.65.4            \
-github-src/%/gcc-7_2_0-release \
 github-src/%/gcc-7-branch      \
 github-src/%/master: github-cache/%
 	cd github-cache/$(@D:github-src/%=%) && git checkout -f $(@F)
