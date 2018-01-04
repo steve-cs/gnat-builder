@@ -35,14 +35,6 @@ gnatcoll-fix-gpr-links:
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-sqlite.gpr gnatcoll_sqlite.gpr
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-xref.gpr gnatcoll_xref.gpr
 
-gps-build: gps-src
-	mkdir -p $@
-	cp -r $</* $@
-	sed -i '/..lal\/lal/d' $@/gps/gps.gpr
-	sed -i '/with LAL.Module/d' $@/gps/src/gps-main.adb
-	sed -i '/with Ada_Semantic_Tree.Lang/d' $@/gps/src/gps-main.adb
-	sed -i '/LAL.Module.Register/,+10d' $@/gps/src/gps-main.adb
-
 #
 # E N D   P A T C H E S
 #
@@ -142,7 +134,7 @@ gnatcoll-db-src: github-src/$(github-org)/gnatcoll-db/$(branch)
 langkit-src: github-src/$(github-org)/langkit/$(branch)
 libadalang-src: github-src/$(github-org)/libadalang/$(branch)
 libadalang-tools-src: github-src/$(github-org)/libadalang-tools/$(branch)
-gps-src: github-src/$(github-org)/gps/$(branch)
+gps-src: github-src/steve-cs/gps/$(branch)
 
 quex-src: github-src/steve-cs/quex/0.65.4
 
