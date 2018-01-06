@@ -2,6 +2,8 @@
 # gcc-branch = master, gcc-7-branch
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
+release ?= 0.1.0-20180105
+release-loc ?= $(HOME)
 
 branch ?= master
 gcc-branch ?= gcc-7-branch
@@ -109,6 +111,15 @@ libadalang-install               \
 gtkada-install                   \
 gps-install
 
+.PHONY: release
+release: $(release-loc)/gnat-build_tools-$(release)
+
+.PHONY: $(release-loc)/gnat-build_tools-$(release)
+$(release-loc)/gnat-build_tools-$(release):
+	rm -rf $@ $@.tar.gz
+	mkdir -p $@
+	cp -r $(prefix)/* $@/
+	cd $(@D) && tar czf $(@F).tar.gz $(@F)
 
 ##############################################################
 #
@@ -203,7 +214,7 @@ gcc-bootstrap: gcc-build gcc-src
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
 	--enable-bootstrap --disable-multilib \
 	--enable-shared --enable-shared-host
-	cd $<  && make -j8
+	cd $<  && make -j4
 
 .PHONY: gcc
 gcc: gcc-build gcc-src
@@ -211,7 +222,7 @@ gcc: gcc-build gcc-src
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
 	--disable-bootstrap --disable-multilib \
 	--enable-shared --enable-shared-host
-	cd $<  && make -j8
+	cd $<  && make -j4
 
 .PHONY: gprbuild-bootstrap-install        
 gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build
