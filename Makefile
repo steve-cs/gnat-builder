@@ -1,14 +1,13 @@
 # branch = master
-# gcc-branch = master, gcc-7-branch
+# gcc-branch = master, gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
-release ?= 0.1.0-20180105
-release-loc ?= $(HOME)
+release ?= 0.1.0-20180107
+release-loc ?= release
 
 branch ?= master
 gcc-branch ?= gcc-7-branch
 prefix ?= /usr/local/gnat
-gnu-mirror ?= http://mirrors.kernel.org/gnu
 github-org ?= adacore
 
 # Debian stable configuration
@@ -80,6 +79,7 @@ gnatcoll-bindings gnatcoll-bindings-install               \
 gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
+gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
 gnatcoll-fix-gpr-links                                    \
 libadalang libadalang-install                             \
 gtkada gtkada-install                                     \
@@ -94,6 +94,7 @@ gnatcoll-bindings        \
 gnatcoll-gnatcoll_db2ada \
 gnatcoll-sqlite          \
 gnatcoll-xref            \
+gnatcoll-gnatinspect     \
 libadalang               \
 gtkada                   \
 gps
@@ -107,6 +108,7 @@ gnatcoll-bindings-install        \
 gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite-install          \
 gnatcoll-xref-install            \
+gnatcoll-gnatinspect             \
 libadalang-install               \
 gtkada-install                   \
 gps-install
@@ -141,7 +143,7 @@ gprbuild-src: github-src/$(github-org)/gprbuild/$(branch)
 gtkada-src: github-src/$(github-org)/gtkada/$(branch)
 gnatcoll-core-src: github-src/$(github-org)/gnatcoll-core/$(branch)
 gnatcoll-bindings-src: github-src/$(github-org)/gnatcoll-bindings/$(branch)
-gnatcoll-db-src: github-src/$(github-org)/gnatcoll-db/$(branch)
+gnatcoll-db-src: github-src/steve-cs/gnatcoll-db/$(branch)
 langkit-src: github-src/$(github-org)/langkit/$(branch)
 libadalang-src: github-src/$(github-org)/libadalang/$(branch)
 libadalang-tools-src: github-src/$(github-org)/libadalang-tools/$(branch)
@@ -157,11 +159,21 @@ gprbuild-bootstrap-src: gprbuild-src
 # linking github-src/<account>/<repository>/<branch> from github
 # get the repository, update it, and checkout the requested branch
 
+# github branches where we want to pull updates if available
+#
 github-src/%/0.65.4            \
 github-src/%/gcc-7-branch      \
 github-src/%/master: github-cache/%
 	cd github-cache/$(@D:github-src/%=%) && git checkout -f $(@F)
 	cd github-cache/$(@D:github-src/%=%) && git pull
+	rm -rf $(@D)/*
+	mkdir -p $(@D)
+	ln -sf $(PWD)/github-cache/$(@D:github-src/%=%) $@
+
+# github tags, e.g. releases, which don't have updates to pull
+#
+github-src/%/gcc-7_2_0-release: github-cache/%
+	cd github-cache/$(@D:github-src/%=%) && git checkout -f $(@F)
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-cache/$(@D:github-src/%=%) $@
@@ -194,6 +206,7 @@ gcc-build:
 gnatcoll-gnatcoll_db2ada-build \
 gnatcoll-sqlite-build \
 gnatcoll-xref-build \
+gnatcoll-gnatinspect-build \
 : gnatcoll-db-build
 	ln -sf $< $@
 
