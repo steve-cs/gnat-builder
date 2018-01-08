@@ -36,6 +36,16 @@ gnatcoll-fix-gpr-links:
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-sqlite.gpr gnatcoll_sqlite.gpr
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-xref.gpr gnatcoll_xref.gpr
 
+gps-build: gps-src
+	mkdir -p $@
+	cp -r $</* $@
+	cd $@ && patch -p1 < ../patches/$<-patch-1
+
+gnatcoll-db-build: gnatcoll-db-src
+	mkdir -p $@
+	cp -r $</* $@
+	cd $@ && patch -p1 < ../patches/$<-patch-1
+
 #
 # E N D   P A T C H E S
 #
@@ -143,11 +153,11 @@ gprbuild-src: github-src/$(github-org)/gprbuild/$(branch)
 gtkada-src: github-src/$(github-org)/gtkada/$(branch)
 gnatcoll-core-src: github-src/$(github-org)/gnatcoll-core/$(branch)
 gnatcoll-bindings-src: github-src/$(github-org)/gnatcoll-bindings/$(branch)
-gnatcoll-db-src: github-src/steve-cs/gnatcoll-db/$(branch)
+gnatcoll-db-src: github-src/$(github-org)/gnatcoll-db/$(branch)
 langkit-src: github-src/$(github-org)/langkit/$(branch)
 libadalang-src: github-src/$(github-org)/libadalang/$(branch)
 libadalang-tools-src: github-src/$(github-org)/libadalang-tools/$(branch)
-gps-src: github-src/steve-cs/gps/$(branch)
+gps-src: github-src/$(github-org)/gps/$(branch)
 
 quex-src: github-src/steve-cs/quex/0.65.4
 
