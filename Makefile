@@ -1,14 +1,13 @@
-# branch = master
-# gcc-branch = master, gcc-7-branch, gcc-7_2_0-release
+# version = master
+# gcc-version = master, gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
 release ?= 0.1.0-20180107
 release-loc ?= release
 
-branch ?= master
-gcc-branch ?= gcc-7-branch
+version ?= master
+gcc-version ?= gcc-7-branch
 prefix ?= /usr/local/gnat
-github-org ?= adacore
 
 # Debian stable configuration
 #
@@ -39,12 +38,21 @@ gnatcoll-fix-gpr-links:
 gps-build: gps-src
 	mkdir -p $@
 	cp -r $</* $@
+	# patch to disable libadalang
 	cd $@ && patch -p1 < ../patches/$<-patch-1
+
 
 gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
 	cp -r $</* $@
+	# patch to enable gnatcoll-gnatinspect build
 	cd $@ && patch -p1 < ../patches/$<-patch-1
+
+.PHONY: gps-install
+gps-install: gps-build
+	make -C $< prefix=$(prefix) install
+	# patch to remove clang support
+	rm $(prefix)/share/gps/support/languages/clang_support.py
 
 #
 # E N D   P A T C H E S
@@ -146,18 +154,18 @@ $(release-loc)/gnat-build_tools-$(release):
 
 # from github
 
-gcc-src: github-src/gcc-mirror/gcc/$(gcc-branch)
+gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
 
-xmlada-src: github-src/$(github-org)/xmlada/$(branch)
-gprbuild-src: github-src/$(github-org)/gprbuild/$(branch)
-gtkada-src: github-src/$(github-org)/gtkada/$(branch)
-gnatcoll-core-src: github-src/$(github-org)/gnatcoll-core/$(branch)
-gnatcoll-bindings-src: github-src/$(github-org)/gnatcoll-bindings/$(branch)
-gnatcoll-db-src: github-src/$(github-org)/gnatcoll-db/$(branch)
-langkit-src: github-src/$(github-org)/langkit/$(branch)
-libadalang-src: github-src/$(github-org)/libadalang/$(branch)
-libadalang-tools-src: github-src/$(github-org)/libadalang-tools/$(branch)
-gps-src: github-src/$(github-org)/gps/$(branch)
+xmlada-src: github-src/adacore/xmlada/$(version)
+gprbuild-src: github-src/adacore/gprbuild/$(version)
+gtkada-src: github-src/adacore/gtkada/$(version)
+gnatcoll-core-src: github-src/adacore/gnatcoll-core/$(version)
+gnatcoll-bindings-src: github-src/adacore/gnatcoll-bindings/$(version)
+gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(version)
+langkit-src: github-src/adacore/langkit/$(version)
+libadalang-src: github-src/adacore/libadalang/$(version)
+libadalang-tools-src: github-src/adacore/libadalang-tools/$(version)
+gps-src: github-src/adacore/gps/$(version)
 
 quex-src: github-src/steve-cs/quex/0.65.4
 
@@ -350,7 +358,7 @@ clean-libadalang-prefix:
 
 .PHONY: gps
 gps: gps-build libadalang-tools-build
-	# ln -sf $(PWD)/libadalang-tools-build $</laltools
+	ln -sf $(PWD)/libadalang-tools-build $</laltools
 	cd $< && ./configure \
 	--prefix=$(prefix) \
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
