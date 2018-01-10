@@ -35,24 +35,32 @@ gnatcoll-fix-gpr-links:
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-sqlite.gpr gnatcoll_sqlite.gpr
 	cd $(prefix)/share/gpr && ln -sf gnatcoll-xref.gpr gnatcoll_xref.gpr
 
-gps-build: gps-src
-	mkdir -p $@
-	cp -r $</* $@
-	# patch to disable libadalang
-	cd $@ && patch -p1 < ../patches/$<-patch-1
-
-
 gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
 	cp -r $</* $@
 	# patch to enable gnatcoll-gnatinspect build
-	cd $@ && patch -p1 < ../patches/$<-patch-1
+	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-1
+
+gps-build: gps-src libadalang-tools-build gcc-src
+	mkdir -p $@
+	cp -r $</* $@
+	ln -sf $(PWD)/libadalang-tools-build $</laltools
+	# patch so that gnat_switches.py
+	cp gcc-src/gcc/ada/doc/gnat_ugn/building_executable_programs_with_gnat.rst gps-build/gnat/
+	# patch to disable libadalang from the build
+	cd $@ && patch -p1 < ../patches/gps-src-patch-1
 
 .PHONY: gps-install
 gps-install: gps-build
 	make -C $< prefix=$(prefix) install
-	# patch to remove clang support
-	rm $(prefix)/share/gps/support/languages/clang_support.py
+	# patch to disable lal support at runtime
+	cd $(prefix)/share/gps/support/core/                \
+	&& rm -rf lal.py-disable                            \
+	&& mv lal.py lal.py-disable
+	# patch to disable clang support at runtime
+	cd $(prefix)/share/gps/support/languages/           \
+	&& rm -rf clang_support.py-disable                  \
+	&& mv clang_support.py clang_support.py-disable
 
 #
 # E N D   P A T C H E S
@@ -357,8 +365,7 @@ clean-libadalang-prefix:
 	rm -rf $(prefix)/bin/nameres
 
 .PHONY: gps
-gps: gps-build libadalang-tools-build
-	ln -sf $(PWD)/libadalang-tools-build $</laltools
+gps: gps-build
 	cd $< && ./configure \
 	--prefix=$(prefix) \
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
