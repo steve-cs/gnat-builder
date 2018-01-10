@@ -2,7 +2,7 @@
 # gcc-version = master, gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
-release ?= 0.1.0-20180107
+release ?= 0.1.0-20180109
 release-loc ?= release
 
 version ?= master
