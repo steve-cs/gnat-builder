@@ -70,7 +70,7 @@ gps-install: gps-build
 .PHONY: install-prerequisites
 install-prerequisites:
 	apt-get -y install \
-	build-essential gnat gawk git flex bison\
+	build-essential gnat gawk git flex bison \
 	libgmp-dev libmpfr-dev libmpc-dev libisl-dev zlib1g-dev \
 	libreadline-dev \
 	postgresql libpq-dev \
