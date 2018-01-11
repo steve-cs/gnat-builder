@@ -21,6 +21,11 @@ This is a Makefile and a set of patches to build a gcc/gnat tool chain including
 * make release-download
 * make release-install
 
+### Don't forget to add the \<prefix\>/bin to your PATH, check that it works...
+
+* export PATH=/usr/local/gnat/bin:$PATH
+* which gcc
+
 ### Bootstrap from source (not requiring a prexisting release or gpl-2017 binaries)
 
 This starts from linux distribution gcc/gnat compiler and bootstraps a new compiler, ada tool chain, and gps.  The first time you bootstrap the gcc compiler it may take some time as it downloads the entire github/gcc-mirror/gcc repository and then does an enable-bootstrap (build the compiler three times) build.
