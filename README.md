@@ -12,7 +12,7 @@ This is a Makefile and a set of patches to build a gcc/gnat tool chain including
 * \#(other debian based linux distributions may work also)
 * sudo mkdir -p /usr/local/gnat
 * \# change ownership so that we don't have to deal with sudo and secured path. Replace steve with a local user name.
-* sudo chown steve/steve /usr/local/gnat
+* sudo chown steve:steve /usr/local/gnat
 * sudo apt-get install build-essential git
 * git clone https://github.com/steve-cs/gnat-builder.git
 * cd gnat-builder
