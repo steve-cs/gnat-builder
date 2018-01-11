@@ -47,6 +47,12 @@ gnatcoll-db-build: gnatcoll-db-src
 	# patch to enable gnatcoll-gnatinspect build
 	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-1
 
+langkit-build: langkit-src
+	mkdir -p $@
+	cp -r $</* $@
+	# patch to move from old gnatcoll_* to new gnatcoll-*
+	cd $@ && patch -p1 < ../patches/langkit-src-patch-1
+
 gps-build: gps-src libadalang-tools-build
 	mkdir -p $@
 	cp -r $</* $@
@@ -348,13 +354,13 @@ gnatcoll-%-install: gnatcoll-%-build
 	make -C $</$(<:gnatcoll-%-build=%) install
 
 .PHONY: libadalang
-libadalang: libadalang-build langkit-src quex-src
+libadalang: libadalang-build langkit-build quex-src
 	cd $< && virtualenv lal-venv
 	cd $< && . lal-venv/bin/activate \
 	&& pip install -r REQUIREMENTS.dev \
 	&& mkdir -p lal-venv/src/langkit \
 	&& rm -rf lal-venv/src/langkit/* \
-	&& cp -r ../langkit-src/* lal-venv/src/langkit \
+	&& cp -r ../langkit-build/* lal-venv/src/langkit \
 	&& export QUEX_PATH=$(PWD)/quex-src \
 	&& ada/manage.py make \
 	&& deactivate

@@ -1,0 +1,13 @@
+diff --git a/langkit/templates/project_file.mako b/langkit/templates/project_file.mako
+index 55877f59..669df09b 100644
+--- a/langkit/templates/project_file.mako
++++ b/langkit/templates/project_file.mako
+@@ -3,7 +3,7 @@
+ <%namespace name="exts" file="extensions.mako" />
+ 
+ with "gnatcoll";
+-with "gnatcoll_iconv";
++with "gnatcoll-iconv";
+ with "langkit_support";
+ 
+ library project ${lib_name} is
