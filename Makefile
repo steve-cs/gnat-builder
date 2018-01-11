@@ -3,14 +3,17 @@
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
 release ?= 0.1.0-20180109
-release-loc ?= release
-release-url ?= https://github.com/steve-cs/gnat-builder/releases/download
-release-tag ?= v$(release)
-release-name ?= gnat-build_tools-$(release)
-
-version ?= master
 gcc-version ?= gcc-7-branch
+adacore-version ?= master
 prefix ?= /usr/local/gnat
+
+# release location and naming details
+#
+release-loc = release
+release-url = https://github.com/steve-cs/gnat-builder/releases/download
+release-tag = v$(release)
+release-name = gnat-build_tools-$(release)
+
 
 # Debian stable configuration
 #
@@ -80,6 +83,30 @@ prerequisites-install:
 	python-dev python-pip python-gobject-dev python-cairo-dev \
 	libclang-dev
 
+.PHONY: release
+release: $(release-name)
+
+.PHONY: $(release-name)
+$(release-name):
+	mkdir -p $(release-loc)
+	cd $(release-loc) && rm -rf $@ $@.tar.gz
+	mkdir -p $(release-loc)/$@
+	cp -r $(prefix)/* $(release-loc)/$@/
+	cd $(release-loc) && tar czf $@.tar.gz $@
+
+.PHONY: release-install
+release-install: prefix-clean
+	cp -r $(release-loc)/$(release-name)/* $(prefix)/
+
+.PHONY: release-download
+release-download: $(release-loc)/$(release-name)
+
+$(release-loc)/$(release-name):
+	rm -rf $@ $@.tar.gz
+	mkdir -p $(@D)
+	cd $(@D) && wget $(release-url)/$(release-tag)/$(@F).tar.gz
+	cd $(@D) && tar xf $(@F).tar.gz
+
 .PHONY: clean
 clean: 
 	rm -rf *-src *-build
@@ -144,30 +171,6 @@ libadalang-install               \
 gtkada-install                   \
 gps-install
 
-.PHONY: release
-release: $(release-name)
-
-.PHONY: $(release-name)
-$(release-name):
-	mkdir -p $(release-loc)
-	cd $(release-loc) && rm -rf $@ $@.tar.gz
-	mkdir -p $(release-loc)/$@
-	cp -r $(prefix)/* $(release-loc)/$@/
-	cd $(release-loc) && tar czf $@.tar.gz $@
-
-.PHONY: release-install
-release-install: prefix-clean
-	cp -r $(release-loc)/$(release-name)/* $(prefix)/
-
-.PHONY: release-download
-release-download: $(release-loc)/$(release-name)
-
-$(release-loc)/$(release-name):
-	rm -rf $@ $@.tar.gz
-	mkdir -p $(@D)
-	cd $(@D) && wget $(release-url)/$(release-tag)/$(@F).tar.gz
-	cd $(@D) && tar xf $(@F).tar.gz
-
 ##############################################################
 #
 # * - S R C
@@ -183,16 +186,16 @@ $(release-loc)/$(release-name):
 
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
 
-xmlada-src: github-src/adacore/xmlada/$(version)
-gprbuild-src: github-src/adacore/gprbuild/$(version)
-gtkada-src: github-src/adacore/gtkada/$(version)
-gnatcoll-core-src: github-src/adacore/gnatcoll-core/$(version)
-gnatcoll-bindings-src: github-src/adacore/gnatcoll-bindings/$(version)
-gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(version)
-langkit-src: github-src/adacore/langkit/$(version)
-libadalang-src: github-src/adacore/libadalang/$(version)
-libadalang-tools-src: github-src/adacore/libadalang-tools/$(version)
-gps-src: github-src/adacore/gps/$(version)
+xmlada-src: github-src/adacore/xmlada/$(adacore-version)
+gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
+gtkada-src: github-src/adacore/gtkada/$(adacore-version)
+gnatcoll-core-src: github-src/adacore/gnatcoll-core/$(adacore-version)
+gnatcoll-bindings-src: github-src/adacore/gnatcoll-bindings/$(adacore-version)
+gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(adacore-version)
+langkit-src: github-src/adacore/langkit/$(adacore-version)
+libadalang-src: github-src/adacore/libadalang/$(adacore-version)
+libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
+gps-src: github-src/adacore/gps/$(adacore-version)
 
 quex-src: github-src/steve-cs/quex/0.65.4
 
