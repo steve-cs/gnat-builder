@@ -17,7 +17,7 @@ This is a Makefile and a set of patches to build a gcc/gnat tool chain including
 * git clone https://github.com/steve-cs/gnat-builder.git
 * cd gnat-builder
 * sudo make prerequisites-install
-* \# prequisites done, let's do the actual work.
+* \# prerequisites done, let's do the actual work.
 * make release-download
 * make release-install
 
