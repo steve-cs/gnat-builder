@@ -51,17 +51,17 @@ After installing a release or bootstrap:
 
 ### Saving and installing a local release/snapshot
 
-Save a snapshot of the contents of the prefix as a locally defined release.  Change <my-release-id>.  It ends up being both part of a directory name and part of a filename, so no spaces, "/", or other special characters. If release= isn't specified it will repace the default release in the local cache.
+Save a snapshot of the contents of the prefix as a locally defined release.  Change \<my-release-id\>.  It ends up being both part of a directory name and part of a filename, so no spaces, "/", or other special characters. If release= isn't specified it will repace the default release in the local cache.
 
 * \# save a release
-* make release=<my-release-id> release
+* make release=\<my-release-id\> release
 
 * \# re-install a release
-* make release=<my-release-id> release-install
+* make release=\<my-release-id\> release-install
 
 ## Variables and their current defaults
 
-### release ?= <latest-release>, e.g. 0.1.0-20180109
+### release ?= \<latest-release\>, e.g. 0.1.0-20180109
 
 This is used by the release, release-download, and release-install targets.
 
