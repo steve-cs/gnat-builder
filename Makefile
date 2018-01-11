@@ -44,12 +44,10 @@ gnatcoll-db-build: gnatcoll-db-src
 	# patch to enable gnatcoll-gnatinspect build
 	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-1
 
-gps-build: gps-src libadalang-tools-build gcc-src
+gps-build: gps-src libadalang-tools-build
 	mkdir -p $@
 	cp -r $</* $@
 	ln -sf $(PWD)/libadalang-tools-build $</laltools
-	# patch so that gnat_switches.py
-	cp gcc-src/gcc/ada/doc/gnat_ugn/building_executable_programs_with_gnat.rst gps-build/gnat/
 	# patch to disable libadalang from the build
 	cd $@ && patch -p1 < ../patches/gps-src-patch-1
 
@@ -70,8 +68,8 @@ gps-install: gps-build
 #
 ##############################################################
 
-.PHONY: install-prerequisites
-install-prerequisites:
+.PHONY: prerequisites-install
+prerequisites-install:
 	apt-get -y install \
 	build-essential gnat gawk git flex bison \
 	libgmp-dev libmpfr-dev libmpc-dev libisl-dev zlib1g-dev \
@@ -119,7 +117,7 @@ gtkada gtkada-install                                     \
 gps gps-install
 
 .PHONY: all
-all: \
+all: |                   \
 xmlada                   \
 gprbuild                 \
 gnatcoll-core            \
@@ -133,7 +131,7 @@ gtkada                   \
 gps
 
 .PHONY: all-install
-all-install: \
+all-install: |                   \
 xmlada-install                   \
 gprbuild-install                 \
 gnatcoll-core-install            \
@@ -158,8 +156,11 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: $(release-loc)/$(release-name) prefix-clean
-	cp -r $</* $(prefix)/
+release-install: prefix-clean
+	cp -r $(release-loc)/$(release-name)/* $(prefix)/
+
+.PHONY: release-download
+release-download: $(release-loc)/$(release-name)
 
 $(release-loc)/$(release-name):
 	rm -rf $@ $@.tar.gz
