@@ -31,16 +31,6 @@ install: all-install
 # P A T C H E S
 #
 
-.PHONY: gnatcoll-fix-gpr-links
-gnatcoll-fix-gpr-links:
-	cd $(prefix)/share/gpr && ln -sf gnatcoll-gmp.gpr gnatcoll_gmp.gpr
-	cd $(prefix)/share/gpr && ln -sf gnatcoll-iconv.gpr gnatcoll_iconv.gpr
-	cd $(prefix)/share/gpr && ln -sf gnatcoll-python.gpr gnatcoll_python.gpr
-	cd $(prefix)/share/gpr && ln -sf gnatcoll-readline.gpr gnatcoll_readline.gpr
-	cd $(prefix)/share/gpr && ln -sf gnatcoll-syslog.gpr gnatcoll_syslog.gpr
-	cd $(prefix)/share/gpr && ln -sf gnatcoll-sqlite.gpr gnatcoll_sqlite.gpr
-	cd $(prefix)/share/gpr && ln -sf gnatcoll-xref.gpr gnatcoll_xref.gpr
-
 gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
 	cp -r $</* $@
@@ -59,6 +49,8 @@ gps-build: gps-src libadalang-tools-build
 	ln -sf $(PWD)/libadalang-tools-build $</laltools
 	# patch to disable libadalang from the build
 	cd $@ && patch -p1 < ../patches/gps-src-patch-1
+	# patch to move from old gnatcoll_* to new gnatcoll-*
+	cd $@ && patch -p1 < ../patches/gps-src-patch-2
 
 .PHONY: gps-install
 gps-install: gps-build
@@ -144,7 +136,6 @@ gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
 gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
-gnatcoll-fix-gpr-links                                    \
 libadalang libadalang-install                             \
 gtkada gtkada-install                                     \
 gps gps-install
