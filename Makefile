@@ -1,9 +1,12 @@
 # version = master
-# gcc-version = master, gcc-7-branch, gcc-7_2_0-release
+# gcc-version = master, trunk, gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
 release ?= 0.1.0-20180109
 release-loc ?= release
+release-url ?= https://github.com/steve-cs/gnat-builder/releases/download
+release-tag ?= v$(release)
+release-name ?= gnat-build_tools-$(release)
 
 version ?= master
 gcc-version ?= gcc-7-branch
@@ -85,14 +88,18 @@ clean:
 
 .PHONY: dist-clean
 dist-clean : clean
-	rm -rf *-cache
+	rm -rf github-repo release
 
 %-clean:
 	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
 
 .PHONY: bootstrap-clean
-bootstrap-clean: clean
+bootstrap-clean: clean prefix-clean
+
+.PHONY: prefix-clean
+prefix-clean:
 	rm -rf $(prefix)/*
+	mkdir -p $(prefix)
 
 .PHONY: bootstrap-install
 bootstrap-install: |                                      \
@@ -140,14 +147,25 @@ gtkada-install                   \
 gps-install
 
 .PHONY: release
-release: $(release-loc)/gnat-build_tools-$(release)
+release: $(release-name)
 
-.PHONY: $(release-loc)/gnat-build_tools-$(release)
-$(release-loc)/gnat-build_tools-$(release):
+.PHONY: $(release-name)
+$(release-name):
+	mkdir -p $(release-loc)
+	cd $(release-loc) && rm -rf $@ $@.tar.gz
+	mkdir -p $(release-loc)/$@
+	cp -r $(prefix)/* $(release-loc)/$@/
+	cd $(release-loc) && tar czf $@.tar.gz $@
+
+.PHONY: release-install
+release-install: $(release-loc)/$(release-name) prefix-clean
+	cp -r $</* $(prefix)/
+
+$(release-loc)/$(release-name):
 	rm -rf $@ $@.tar.gz
-	mkdir -p $@
-	cp -r $(prefix)/* $@/
-	cd $(@D) && tar czf $(@F).tar.gz $(@F)
+	mkdir -p $(@D)
+	cd $(@D) && wget $(release-url)/$(release-tag)/$(@F).tar.gz
+	cd $(@D) && tar xf $(@F).tar.gz
 
 ##############################################################
 #
@@ -189,29 +207,30 @@ gprbuild-bootstrap-src: gprbuild-src
 #
 github-src/%/0.65.4            \
 github-src/%/gcc-7-branch      \
-github-src/%/master: github-cache/%
-	cd github-cache/$(@D:github-src/%=%) && git checkout -f $(@F)
-	cd github-cache/$(@D:github-src/%=%) && git pull
+github-src/%/trunk             \
+github-src/%/master: github-repo/%
+	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
+	cd github-repo/$(@D:github-src/%=%) && git pull
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
-	ln -sf $(PWD)/github-cache/$(@D:github-src/%=%) $@
+	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
 
 # github tags, e.g. releases, which don't have updates to pull
 #
-github-src/%/gcc-7_2_0-release: github-cache/%
-	cd github-cache/$(@D:github-src/%=%) && git checkout -f $(@F)
+github-src/%/gcc-7_2_0-release: github-repo/%
+	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
-	ln -sf $(PWD)/github-cache/$(@D:github-src/%=%) $@
+	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
 
 
-# Clone github-cache/<account>/<repository> from github.com
+# Clone github-repo/<account>/<repository> from github.com
 
-.PRECIOUS: github-cache/%
-github-cache/%:
+.PRECIOUS: github-repo/%
+github-repo/%:
 	rm -rf $@
 	mkdir -p $(@D)
-	cd $(@D) && git clone https://github.com/$(@:github-cache/%=%).git
+	cd $(@D) && git clone https://github.com/$(@:github-repo/%=%).git
 	touch $@
 
 #
