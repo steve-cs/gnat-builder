@@ -12,14 +12,19 @@ This is a Makefile and a set of patches to build a gcc/gnat tool chain including
 * \#(other debian based linux distributions may work also)
 * sudo mkdir -p /usr/local/gnat
 * \# change ownership so that we don't have to deal with sudo and secured path. Replace steve with a local user name.
-* sudo chown steve/steve /usr/local/gnat
+* sudo chown steve:steve /usr/local/gnat
 * sudo apt-get install build-essential git
 * git clone https://github.com/steve-cs/gnat-builder.git
 * cd gnat-builder
 * sudo make prerequisites-install
-* \# prequisites done, let's do the actual work.
+* \# prerequisites done, let's do the actual work.
 * make release-download
 * make release-install
+
+### Don't forget to add the \<prefix\>/bin to your PATH, check that it works...
+
+* export PATH=/usr/local/gnat/bin:$PATH
+* which gcc
 
 ### Bootstrap from source (not requiring a prexisting release or gpl-2017 binaries)
 
@@ -51,17 +56,17 @@ After installing a release or bootstrap:
 
 ### Saving and installing a local release/snapshot
 
-Save a snapshot of the contents of the prefix as a locally defined release.  Change <my-release-id>.  It ends up being both part of a directory name and part of a filename, so no spaces, "/", or other special characters. If release= isn't specified it will repace the default release in the local cache.
+Save a snapshot of the contents of the prefix as a locally defined release.  Change \<my-release-id\>.  It ends up being both part of a directory name and part of a filename, so no spaces, "/", or other special characters. If release= isn't specified it will repace the default release in the local cache.
 
 * \# save a release
-* make release=<my-release-id> release
+* make release=\<my-release-id\> release
 
 * \# re-install a release
-* make release=<my-release-id> release-install
+* make release=\<my-release-id\> release-install
 
 ## Variables and their current defaults
 
-### release ?= <latest-release>, e.g. 0.1.0-20180109
+### release ?= \<latest-release\>, e.g. 0.1.0-20180109
 
 This is used by the release, release-download, and release-install targets.
 
