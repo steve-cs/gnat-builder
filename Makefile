@@ -73,9 +73,7 @@ gps-install: gps-build
 prerequisites-install:
 	apt-get -y install \
 	build-essential gnat gawk git flex bison \
-	libgmp-dev libmpfr-dev libmpc-dev libisl-dev zlib1g-dev \
-	libreadline-dev \
-	postgresql libpq-dev \
+	libgmp-dev lib1g-dev libreadline-dev postgresql libpq-dev \
 	virtualenv \
 	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
 	python-dev python-pip python-gobject-dev python-cairo-dev \
@@ -182,6 +180,8 @@ gps-install
 # from github
 
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
+	ln -s $< $@
+	cd $@ && ./contrib/download_prerequisites
 
 xmlada-src: github-src/adacore/xmlada/$(adacore-version)
 gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
@@ -263,6 +263,17 @@ gnatcoll-gnatinspect-build \
 #
 #
 
+.PHONY: gnatcoll-%-install
+gnatcoll-%-install: gnatcoll-%-build
+	# % = $(<:gnatcoll-%-build=%)
+	make -C $</$(<:gnatcoll-%-build=%) install
+
+.PHONY: gnatcoll-%
+gnatcoll-%: gnatcoll-%-build
+	# % = $(<:gnatcoll-%-build=%)
+	make -C $</$(<:gnatcoll-%-build=%) setup
+	make -C $</$(<:gnatcoll-%-build=%)
+
 .PHONY: %-install
 %-install: %-build
 	make -C $< prefix=$(prefix) install
@@ -304,11 +315,6 @@ gprbuild-install: gprbuild-build
 	make -C $< install
 	make -C $< libgpr.install
 
-.PHONY: gtkada
-gtkada: gtkada-build
-	cd $< && ./configure --prefix=$(prefix)
-	make -C $< PROCESSORS=0
-
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build
 	make -C $< setup
@@ -333,16 +339,6 @@ gnatcoll-bindings-install: gnatcoll-bindings-build
 	cd $</python && ./setup.py install
 	cd $</readline && ./setup.py install
 	cd $</syslog && ./setup.py install
-
-.PHONY:
-gnatcoll-%: gnatcoll-%-build
-	# % = $(<:gnatcoll-%-build=%)
-	make -C $</$(<:gnatcoll-%-build=%) setup
-	make -C $</$(<:gnatcoll-%-build=%)
-
-.PHONY: gnatcoll-%-install
-gnatcoll-%-install: gnatcoll-%-build
-	make -C $</$(<:gnatcoll-%-build=%) install
 
 .PHONY: libadalang
 libadalang: libadalang-build langkit-build quex-src
@@ -384,6 +380,11 @@ clean-libadalang-prefix:
 	rm -rf $(prefix)/bin/gnat_compare
 	rm -rf $(prefix)/bin/nameres
 
+.PHONY: gtkada
+gtkada: gtkada-build
+	cd $< && ./configure --prefix=$(prefix)
+	make -C $< PROCESSORS=0
+
 .PHONY: gps
 gps: gps-build
 	cd $< && ./configure \
@@ -391,8 +392,6 @@ gps: gps-build
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
 	make -C $< PROCESSORS=0
 #
-# gps (master) currently doesn't run
-# it's missing a number of run time dependencies
 # below is the hack that allowed the gpl-2017 branch to run on Debian
 #
 .PHONY: gps-run
