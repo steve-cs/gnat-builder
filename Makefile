@@ -17,7 +17,12 @@ release-name = gnat-build_tools-$(release)
 
 # Debian stable configuration
 #
-llvm-version ?= 3.8
+#llvm-version ?= 3.8
+#iconv-opt ?= "-lc"
+
+# Ubuntu artic configuration
+#
+llvm-version ?= 4.0
 iconv-opt ?= "-lc"
 
 .PHONY: default
@@ -51,6 +56,8 @@ gps-build: gps-src libadalang-tools-build
 	cd $@ && patch -p1 < ../patches/gps-src-patch-1
 	# patch to move from old gnatcoll_* to new gnatcoll-*
 	cd $@ && patch -p1 < ../patches/gps-src-patch-2
+	# patch to re-enable RPATH for development/DEBUG builds
+	cd $@ && patch -p1 < ../patches/gps-src-patch-3
 
 .PHONY: gps-install
 gps-install: gps-build
