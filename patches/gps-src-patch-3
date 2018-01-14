@@ -1,0 +1,18 @@
+diff --git a/gps/gps.gpr b/gps/gps.gpr
+index 009561a94d..d8ee084deb 100644
+--- a/gps/gps.gpr
++++ b/gps/gps.gpr
+@@ -50,11 +50,12 @@ project GPS is
+ 
+    case Shared.Build is
+       --  In the development environment, on UNIX, do not rely on RPATH
++      --  PATCH: allow RPATH in development for Cunning Systems.
+       --  to find the libraries.
+       when "Debug" =>
+          case Shared.OS is
+             when "unix" =>
+-               for Run_Path_Origin  use "NO";
++               null;
+             when "Windows_NT" | "osx" =>
+                 null;
+          end case;

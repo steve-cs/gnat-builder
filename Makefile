@@ -5,7 +5,7 @@
 release ?= 0.1.0-20180109
 gcc-version ?= gcc-7-branch
 adacore-version ?= master
-prefix ?= /usr/local/gnat
+prefix ?= $(PWD)/gnat
 
 # release location and naming details
 #
@@ -63,6 +63,9 @@ gps-install: gps-build
 	cd $(prefix)/share/gps/support/languages/           \
 	&& rm -rf clang_support.py-disable                  \
 	&& mv clang_support.py clang_support.py-disable
+	# patch to run time environment that fixes bad RPATH in gps
+	rm  -f ../gnat
+	ln -s $(PWD)/gnat ../gnat
 
 #
 # E N D   P A T C H E S
@@ -109,7 +112,7 @@ clean:
 
 .PHONY: dist-clean
 dist-clean : clean
-	rm -rf github-repo release
+	rm -rf github-repo gnat release
 
 %-clean:
 	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
