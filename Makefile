@@ -155,6 +155,20 @@ libadalang               \
 gtkada                   \
 gps
 
+.PHONY: all-src
+all-src: |               \
+gcc-src                  \
+xmlada-src               \
+gprbuild-src             \
+gnatcoll-core-src        \
+gnatcoll-bindings-src    \
+gnatcoll-db-src          \
+langkit-src              \
+quex-src                 \
+libadalang-src           \
+gtkada-src               \
+gps-src
+
 .PHONY: all-install
 all-install: |                   \
 xmlada-install                   \
