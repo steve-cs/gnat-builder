@@ -76,7 +76,7 @@ gps-install: gps-build
 prerequisites-install:
 	apt-get -y install \
 	build-essential gnat gawk git flex bison \
-	libgmp-dev lib1g-dev libreadline-dev postgresql libpq-dev \
+	libgmp-dev zlib1g-dev libreadline-dev postgresql libpq-dev \
 	virtualenv \
 	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
 	python-dev python-pip python-gobject-dev python-cairo-dev \
