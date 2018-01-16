@@ -78,7 +78,7 @@ gps-install: gps-build
 
 .PHONY: prerequisites-install
 prerequisites-install:
-	apt-get -y install \
+	apt-get -qq -y install \
 	ubuntu-standard build-essential gnat gawk git flex bison \
 	libgmp-dev zlib1g-dev libreadline-dev postgresql libpq-dev \
 	virtualenv \
@@ -107,7 +107,7 @@ release-download: $(release-loc)/$(release-name)
 $(release-loc)/$(release-name):
 	rm -rf $@ $@.tar.gz
 	mkdir -p $(@D)
-	cd $(@D) && wget $(release-url)/$(release-tag)/$(@F).tar.gz
+	cd $(@D) && wget -q $(release-url)/$(release-tag)/$(@F).tar.gz
 	cd $(@D) && tar xf $(@F).tar.gz
 
 .PHONY: clean
