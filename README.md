@@ -1,6 +1,19 @@
 # gnat-builder
 Makefile for downloading and building gnat from github source.
 
+|Repository|Build Status|
+|:-----|:-----:|
+gnat-builder | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=master)](https://travis-ci.org/steve-cs/travis-test) 
+xmlada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=xmlada)](https://travis-ci.org/steve-cs/travis-test) 
+gprbuild | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gprbuild)](https://travis-ci.org/steve-cs/travis-test) 
+gnatcoll-core | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gprbuild)](https://travis-ci.org/steve-cs/travis-test) 
+gnatcoll-bindings | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-bindings)](https://travis-ci.org/steve-cs/travis-test) 
+gnatcoll-db | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-db)](https://travis-ci.org/steve-cs/travis-test) 
+libadalang | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=libadalang)](https://travis-ci.org/steve-cs/travis-test) 
+gtkada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gtkada)](https://travis-ci.org/steve-cs/travis-test) 
+gps | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gps)](https://travis-ci.org/steve-cs/travis-test) 
+
+
 ## Overview
 
 This is a Makefile and a set of patches to build a gcc/gnat tool chain including gcc compiler, libraries, and GPS IDE.
