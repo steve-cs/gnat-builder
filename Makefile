@@ -151,10 +151,7 @@ xmlada                   \
 gprbuild                 \
 gnatcoll-core            \
 gnatcoll-bindings        \
-gnatcoll-gnatcoll_db2ada \
-gnatcoll-sqlite          \
-gnatcoll-xref            \
-gnatcoll-gnatinspect     \
+gnatcoll-db              \
 libadalang               \
 gtkada                   \
 gps
@@ -179,10 +176,7 @@ xmlada-install                   \
 gprbuild-install                 \
 gnatcoll-core-install            \
 gnatcoll-bindings-install        \
-gnatcoll-gnatcoll_db2ada-install \
-gnatcoll-sqlite-install          \
-gnatcoll-xref-install            \
-gnatcoll-gnatinspect             \
+gnatcoll-db-install              \
 libadalang-install               \
 gtkada-install                   \
 gps-install
@@ -270,30 +264,12 @@ github-repo/%:
 gcc-build:
 	mkdir -p $@
 
-gnatcoll-gnatcoll_db2ada-build \
-gnatcoll-sqlite-build \
-gnatcoll-xref-build \
-gnatcoll-gnatinspect-build \
-: gnatcoll-db-build
-	ln -sf $< $@
-
 #
 # * - B U I L D
 #
 ##############################################################
 #
 #
-
-.PHONY: gnatcoll-%-install
-gnatcoll-%-install: gnatcoll-%-build
-	# % = $(<:gnatcoll-%-build=%)
-	make -C $</$(<:gnatcoll-%-build=%) install
-
-.PHONY: gnatcoll-%
-gnatcoll-%: gnatcoll-%-build
-	# % = $(<:gnatcoll-%-build=%)
-	make -C $</$(<:gnatcoll-%-build=%) setup
-	make -C $</$(<:gnatcoll-%-build=%)
 
 .PHONY: %-install
 %-install: %-build
@@ -360,6 +336,39 @@ gnatcoll-bindings-install: gnatcoll-bindings-build
 	cd $</python && ./setup.py install
 	cd $</readline && ./setup.py install
 	cd $</syslog && ./setup.py install
+
+.PHONY: gnatcoll-db
+gnatcoll-db: |                \
+gnatcoll-gnatcoll_db2ada      \
+gnatcoll-sqlite               \
+gnatcoll-xref                 \
+gnatcoll-gnatinspect
+
+.PHONY: gnatcoll-db-install
+gnatcoll-db-install: |          \
+gnatcoll-gnatcoll_db2ada-install \
+gnatcoll-sqlite-install          \
+gnatcoll-xref-install            \
+gnatcoll-gnatinspect-install
+
+.PHONY: \
+gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
+gnatcoll-sqlite gnatcoll-sqlite-install                   \
+gnatcoll-xref gnatcoll-xref-install                       \
+gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+
+gnatcoll-gnatcoll_db2ada \
+gnatcoll-sqlite          \
+gnatcoll-xref            \
+gnatcoll-gnatinspect: gnatcoll-db-build
+	make -C $</$(@:gnatcoll-%=%) setup
+	make -C $</$(@:gnatcoll-%=%)
+
+gnatcoll-gnatcoll_db2ada-install \
+gnatcoll-sqlite-install          \
+gnatcoll-xref-install            \
+gnatcoll-gnatinspect-install: gnatcoll-db-build
+	make -C $</$(@:gnatcoll-%-install=%) install
 
 .PHONY: libadalang
 libadalang: libadalang-build langkit-build quex-src

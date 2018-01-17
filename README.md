@@ -120,13 +120,7 @@ This specifies where the build tools directory is or will be located.  Its conte
 
 ### gnatcoll-bindings, gnatcoll-bindings-install, gnatcoll-bindings-clean
 
-### gnatcoll-gnatcoll_db2ada, gnatcoll-gnatcoll_db2ada-install, gnatcoll-gnatcoll_db2ada-clean
-
-### gnatcoll-sqlite, gnatcoll-sqlite-install, gnatcoll-sqlite-clean
-
-### gnatcoll-xref, gnatcoll-xref-install, gnatcoll-xref-clean
-
-### gnatcoll-gnatinspect, gnatcoll-gnatinspect-install, gnatcoll-gnatinspect-clean
+### gnatcoll-db, gnatcoll-db-install, gnatcoll-db-clean
 
 ### libadalang, libadalang-install, libadalang-clean
 
