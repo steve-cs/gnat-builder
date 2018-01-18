@@ -21,16 +21,13 @@ This is a Makefile and a set of patches to build a gcc/gnat tool chain including
 ## Typical usage
 
 ### Starting from scratch, download and install a recent release
-* \# install debian stretch with desktop and standard package options
-* \#(other debian based linux distributions may work also)
+* \# install ubuntu artful
 * sudo mkdir -p /usr/local/gnat
-* \# change ownership so that we don't have to deal with sudo and secured path. Replace steve with a local user name.
-* sudo chown steve:steve /usr/local/gnat
+* sudo chown $USER /usr/local/gnat
 * sudo apt-get install build-essential git
-* git clone https://github.com/steve-cs/gnat-builder.git
+* git clone https://github.com/steve-cs/gnat-builder
 * cd gnat-builder
 * sudo make prerequisites-install
-* \# prerequisites done, let's do the actual work.
 * make release-download
 * make release-install
 
