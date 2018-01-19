@@ -36,26 +36,12 @@ install: all-install
 # P A T C H E S
 #
 
-gnatcoll-db-build: gnatcoll-db-src
-	mkdir -p $@
-	cp -r $</* $@
-	# patch to enable gnatcoll-gnatinspect build
-	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-1
-
-langkit-build: langkit-src
-	mkdir -p $@
-	cp -r $</* $@
-	# patch to move from old gnatcoll_* to new gnatcoll-*
-	cd $@ && patch -p1 < ../patches/langkit-src-patch-1
-
 gps-build: gps-src libadalang-tools-build
 	mkdir -p $@
 	cp -r $</* $@
 	ln -sf $(PWD)/libadalang-tools-build $</laltools
 	# patch to disable libadalang from the build
 	cd $@ && patch -p1 < ../patches/gps-src-patch-1
-	# patch to move from old gnatcoll_* to new gnatcoll-*
-	cd $@ && patch -p1 < ../patches/gps-src-patch-2
 	# patch to re-enable RPATH for development/DEBUG builds
 	cd $@ && patch -p1 < ../patches/gps-src-patch-3
 
