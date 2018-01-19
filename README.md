@@ -3,15 +3,15 @@ Makefile for downloading and building gnat from github source.
 
 |Repository|Build Status|
 |:-----|:-----:|
-gnat-builder | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=master)](https://travis-ci.org/steve-cs/travis-test) 
-xmlada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=xmlada)](https://travis-ci.org/steve-cs/travis-test) 
-gprbuild | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gprbuild)](https://travis-ci.org/steve-cs/travis-test) 
-gnatcoll-core | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-core)](https://travis-ci.org/steve-cs/travis-test) 
-gnatcoll-bindings | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-bindings)](https://travis-ci.org/steve-cs/travis-test) 
-gnatcoll-db | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-db)](https://travis-ci.org/steve-cs/travis-test) 
-libadalang | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=libadalang)](https://travis-ci.org/steve-cs/travis-test) 
-gtkada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gtkada)](https://travis-ci.org/steve-cs/travis-test) 
-gps | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gps)](https://travis-ci.org/steve-cs/travis-test) 
+gnat-builder | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=master)](https://travis-ci.org/steve-cs/travis-test/branches) 
+xmlada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=xmlada)](https://travis-ci.org/steve-cs/travis-test/branches) 
+gprbuild | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gprbuild)](https://travis-ci.org/steve-cs/travis-test/branches) 
+gnatcoll-core | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-core)](https://travis-ci.org/steve-cs/travis-test/branches) 
+gnatcoll-bindings | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-bindings)](https://travis-ci.org/steve-cs/travis-test/branches) 
+gnatcoll-db | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-db)](https://travis-ci.org/steve-cs/travis-test/branches) 
+libadalang | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=libadalang)](https://travis-ci.org/steve-cs/travis-test/branches) 
+gtkada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gtkada)](https://travis-ci.org/steve-cs/travis-test/branches) 
+gps | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gps)](https://travis-ci.org/steve-cs/travis-test/branches) 
 
 
 ## Overview
@@ -21,16 +21,13 @@ This is a Makefile and a set of patches to build a gcc/gnat tool chain including
 ## Typical usage
 
 ### Starting from scratch, download and install a recent release
-* \# install debian stretch with desktop and standard package options
-* \#(other debian based linux distributions may work also)
+* \# install ubuntu artful
 * sudo mkdir -p /usr/local/gnat
-* \# change ownership so that we don't have to deal with sudo and secured path. Replace steve with a local user name.
-* sudo chown steve:steve /usr/local/gnat
+* sudo chown $USER /usr/local/gnat
 * sudo apt-get install build-essential git
-* git clone https://github.com/steve-cs/gnat-builder.git
+* git clone https://github.com/steve-cs/gnat-builder
 * cd gnat-builder
 * sudo make prerequisites-install
-* \# prerequisites done, let's do the actual work.
 * make release-download
 * make release-install
 
