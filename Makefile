@@ -36,6 +36,12 @@ install: all-install
 # P A T C H E S
 #
 
+libadalang-tools-build: libadalang-tools-src
+	mkdir -p $@
+	cp -r $</* $@
+	# patch to fix ambiguous Is_Null
+	cd $@ && patch -p1 < ../patches/libadalang-tools-src-patch-1
+
 gps-build: gps-src libadalang-tools-build
 	mkdir -p $@
 	cp -r $</* $@

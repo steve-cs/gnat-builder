@@ -1,0 +1,26 @@
+diff --git a/src/pp-formatting.adb b/src/pp-formatting.adb
+index ea313e0a..8f3faea2 100644
+--- a/src/pp-formatting.adb
++++ b/src/pp-formatting.adb
+@@ -60,7 +60,7 @@ package body Pp.Formatting is
+ 
+    subtype Ada_Node is Libadalang.Analysis.Ada_Node;
+    use type Ada_Node;
+-   function Is_Null (Tree : Ada_Node) return Boolean is (Tree.Is_Null);
++   function Is_Null_Local (Tree : Ada_Node) return Boolean is (Tree.Is_Null);
+    function T_Img (Tree : Ada_Node) return String is
+      (Libadalang.Analysis.Short_Image (Tree));
+ 
+@@ -3500,10 +3500,10 @@ package body Pp.Formatting is
+         (if Tab.Num_Blanks = 0 then ""
+          else " Blanks = " & Image (Tab.Num_Blanks)) &
+         (if Tab.Is_Fake then " FAKE" else "") &
+-        (if Is_Null (Tab.Tree)
++        (if Is_Null_Local (Tab.Tree)
+            then ""
+            else "(Tr = " & T_Img (Tab.Tree) & ")") &
+-        (if Is_Null (Tab.Parent) then ""
++        (if Is_Null_Local (Tab.Parent) then ""
+          else "(Pa = " & T_Img (Tab.Parent) & ")");
+    end Tab_Image;
+ 
