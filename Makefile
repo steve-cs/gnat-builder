@@ -213,6 +213,7 @@ gprbuild-bootstrap-src: gprbuild-src
 
 # github branches where we want to pull updates if available
 #
+github-src/%/stable-gps        \
 github-src/%/0.65.4            \
 github-src/%/gcc-7-branch      \
 github-src/%/trunk             \
