@@ -63,6 +63,11 @@ gps-install: gps-build
 	&& rm -rf clang_support.py-disable                  \
 	&& mv clang_support.py clang_support.py-disable
 
+.PHONY: gps-run
+gps-run:
+	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
+	&& gps
+
 #
 # E N D   P A T C H E S
 #
@@ -414,13 +419,6 @@ gps: gps-build
 	--prefix=$(prefix) \
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
 	make -C $< PROCESSORS=0
-#
-# below is the hack that allowed the gpl-2017 branch to run on Debian
-#
-.PHONY: gps-run
-gps-run:
-	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
-	&& gps
 
 #
 # * - C L E A N ,  * ,  * - I N S T A L L
