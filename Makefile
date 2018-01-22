@@ -6,6 +6,16 @@ release ?= 0.1.0-20180118
 gcc-version ?= gcc-7-branch
 adacore-version ?= master
 prefix ?= /usr/local/gnat
+binutils-version ?= 2.29.1
+glibc-version ?= 2.26
+newlib-version ?= 2.4.0.20161025
+
+# gcc configuration
+#
+host  ?= x86_64-linux-gnu
+build ?= $(host)
+target ?= $(build)
+
 
 # release location and naming details
 #
@@ -113,7 +123,7 @@ clean:
 
 .PHONY: dist-clean
 dist-clean : clean
-	rm -rf github-repo gnat release
+	rm -rf downloads github-repo release
 
 %-clean:
 	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
@@ -189,6 +199,36 @@ gps-install
 	if [ "x$<" = "x" ]; then false; fi
 	ln -s $< $@
 
+# downloads
+
+binutils-src: downloads/binutils-$(binutils-version)
+glibc-src: downloads/glibc-$(glibc-version)
+newlib-src: downloads/newlib-$(newlib-version)
+
+downloads/binutils-%:
+	mkdir -p $(@D)
+	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
+	cd $(@D) && wget https://ftp.gnu.org/gnu/binutils/$(@F).tar.gz
+	cd $(@D) && tar xf $(@F).tar.gz
+
+downloads/glibc-%:
+	mkdir -p $(@D)
+	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
+	cd $(@D) && wget https://ftp.gnu.org/gnu/glibc/$(@F).tar.gz
+	cd $(@D) && tar xf $(@F).tar.gz
+
+downloads/newlib-%:
+	mkdir -p $(@D)
+	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
+	cd $(@D) && wget https://sourceware.org/pub/newlib/$(@F).tar.gz
+	cd $(@D) && tar xf $(@F).tar.gz
+
+downloads/quex-0.65.4:
+	mkdir -p $(@D)
+	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
+	cd $(@D) && wget https://phoenixnap.dl.sourceforge.net/project/quex/HISTORY/0.65/$(@F).tar.gz
+	cd $(@D) && tar xf $(@F).tar.gz
+
 # from github
 
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
@@ -206,7 +246,7 @@ libadalang-src: github-src/adacore/libadalang/$(adacore-version)
 libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 
-quex-src: github-src/steve-cs/quex/0.65.4
+quex-src: downloads/quex-0.65.4
 
 # aliases to other %-src
 
@@ -259,6 +299,9 @@ github-repo/%:
 	mkdir -p $@
 	cp -r $</* $@
 
+binutils-build \
+glibc-build    \
+newlib-build   \
 gcc-build:
 	mkdir -p $@
 
@@ -273,17 +316,51 @@ gcc-build:
 %-install: %-build
 	make -C $< prefix=$(prefix) install
 
+.PHONY: binutils
+binutils: binutils-build binutils-src
+	rm -rf $</*
+	cd $< && ../binutils-src/configure \
+	--prefix=$(prefix)
+	cd $< && make -j4
+
 .PHONY: gcc-bootstrap
 gcc-bootstrap: gcc-build gcc-src
+	rm -rf $</*
 	cd $< && ../gcc-src/configure \
+	--host=$(host) --build=$(build) --target=$(target) \
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
 	--enable-bootstrap --disable-multilib \
 	--enable-shared --enable-shared-host
 	cd $<  && make -j4
 
+.PHONY: glibc
+glibc: glibc-build glibc-src
+	rm -rf $</*
+	cd $< && ../glibc-src/configure \
+	--prefix=$(prefix)
+	cd $< && make -j4
+
+.PHONY: glibc-install
+glibc-install: glibc-build
+	make -C $< install
+
+.PHONY: newlib
+newlib: newlib-build newlib-src
+	rm -rf $</*
+	cd $< && ../newlib-src/configure \
+	--prefix=$(prefix) \
+	--target=$(target) --srcdir=$(PWD)/newlib-src
+	cd $< && make -j4
+
+.PHONY: newlib-install
+newlib-install: newlib-build
+	make -C $< install
+
 .PHONY: gcc
 gcc: gcc-build gcc-src
+	rm -rf $</*
 	cd $< && ../gcc-src/configure \
+	--host=$(host) --build=$(build) --target=$(target) \
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
 	--disable-bootstrap --disable-multilib \
 	--enable-shared --enable-shared-host
