@@ -11,7 +11,7 @@ gnatcoll-bindings | [![Build Status](https://travis-ci.org/steve-cs/travis-test.
 gnatcoll-db | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-db)](https://travis-ci.org/steve-cs/travis-test/branches) 
 libadalang | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=libadalang)](https://travis-ci.org/steve-cs/travis-test/branches) 
 gtkada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gtkada)](https://travis-ci.org/steve-cs/travis-test/branches) 
-gps | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gps)](https://travis-ci.org/steve-cs/travis-test/branches) - timeout 
+gps | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gps)](https://travis-ci.org/steve-cs/travis-test/branches)
 
 
 ## Overview
