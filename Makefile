@@ -2,7 +2,7 @@
 # gcc-version = master, trunk, gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
-release ?= 0.1.0-20180118
+release ?= 0.1.0-20180122
 gcc-version ?= gcc-7-branch
 adacore-version ?= master
 prefix ?= /usr/local/gnat
@@ -16,14 +16,12 @@ host  ?= x86_64-linux-gnu
 build ?= $(host)
 target ?= $(build)
 
-
 # release location and naming details
 #
 release-loc = release
 release-url = https://github.com/steve-cs/gnat-builder/releases/download
 release-tag = v$(release)
 release-name = gnat-build_tools-$(release)
-
 
 # Debian stable configuration
 #
