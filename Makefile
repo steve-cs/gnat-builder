@@ -46,18 +46,38 @@ install: all-install
 
 libadalang-tools-build: libadalang-tools-src
 	mkdir -p $@
-	cp -r $</* $@
+	cp -a $</* $@
 	# patch to fix ambiguous Is_Null
 	cd $@ && patch -p1 < ../patches/libadalang-tools-src-patch-1
 
-gps-build: gps-src libadalang-tools-build
+.PHONY: build-cache-clean
+build-cache-clean:
+	rm -rf build-cache
+
+build-cache/gps: 
 	mkdir -p $@
-	cp -r $</* $@
-	ln -sf $(PWD)/libadalang-tools-build $</laltools
+	touch $@/not-empty
+
+gps-build: build-cache/gps gps-src libadalang-tools-build
+	mkdir -p $@ 
+	cp -a $</* $@
+	cp -a gps-src/* $@
+	mkdir -p $@/laltools
+	cp -a libadalang-tools-build/* $@/laltools
 	# patch to disable libadalang from the build
 	cd $@ && patch -p1 < ../patches/gps-src-patch-1
 	# patch to re-enable RPATH for development/DEBUG builds
 	cd $@ && patch -p1 < ../patches/gps-src-patch-3
+
+.PHONY: gps
+gps: gps-build
+	cd $< && ./configure \
+	--prefix=$(prefix) \
+	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
+	make -C $< PROCESSORS=0
+	rm -rf build-cache/$@
+	mkdir -p build-cache/$@
+	cp -a $</* build-cache/$@
 
 .PHONY: gps-install
 gps-install: gps-build
@@ -104,7 +124,7 @@ $(release-name):
 
 .PHONY: release-install
 release-install: prefix-clean
-	cp -r $(release-loc)/$(release-name)/* $(prefix)/
+	cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 .PHONY: release-download
 release-download: $(release-loc)/$(release-name)
@@ -121,13 +141,13 @@ clean:
 
 .PHONY: dist-clean
 dist-clean : clean
-	rm -rf downloads github-repo release
+	rm -rf downloads github-repo build-cache release
 
 %-clean:
 	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
 
 .PHONY: bootstrap-clean
-bootstrap-clean: clean prefix-clean
+bootstrap-clean: clean prefix-clean build-cache-clean
 
 .PHONY: prefix-clean
 prefix-clean:
@@ -295,7 +315,7 @@ github-repo/%:
 
 %-build: %-src
 	mkdir -p $@
-	cp -r $</* $@
+	cp -a $</* $@
 
 binutils-build \
 glibc-build    \
@@ -450,7 +470,7 @@ libadalang: libadalang-build langkit-build quex-src
 	&& pip install -r REQUIREMENTS.dev \
 	&& mkdir -p lal-venv/src/langkit \
 	&& rm -rf lal-venv/src/langkit/* \
-	&& cp -r ../langkit-build/* lal-venv/src/langkit \
+	&& cp -a ../langkit-build/* lal-venv/src/langkit \
 	&& export QUEX_PATH=$(PWD)/quex-src \
 	&& ada/manage.py make \
 	&& deactivate
@@ -486,13 +506,6 @@ clean-libadalang-prefix:
 .PHONY: gtkada
 gtkada: gtkada-build
 	cd $< && ./configure --prefix=$(prefix)
-	make -C $< PROCESSORS=0
-
-.PHONY: gps
-gps: gps-build
-	cd $< && ./configure \
-	--prefix=$(prefix) \
-	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
 	make -C $< PROCESSORS=0
 
 #
