@@ -44,26 +44,18 @@ install: all-install
 # P A T C H E S
 #
 
-libadalang-tools-build: libadalang-tools-src
+libadalang-tools-build: build-cache/libadalang-tools libadalang-tools-src
 	mkdir -p $@
-	cp -a $</* $@
+	rsync -a --delete $</ $@
+	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
 	# patch to fix ambiguous Is_Null
 	cd $@ && patch -p1 < ../patches/libadalang-tools-src-patch-1
 
-.PHONY: build-cache-clean
-build-cache-clean:
-	rm -rf build-cache
-
-build-cache/gps: 
-	mkdir -p $@
-	touch $@/not-empty
-
 gps-build: build-cache/gps gps-src libadalang-tools-build
-	mkdir -p $@ 
-	cp -a $</* $@
-	cp -a gps-src/* $@
-	mkdir -p $@/laltools
-	cp -a libadalang-tools-build/* $@/laltools
+	mkdir -p $@  $@/laltools
+	rsync -a --delete $</ $@
+	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
+	rsync -aL libadalang-tools-build/ $@/laltools
 	# patch to disable libadalang from the build
 	cd $@ && patch -p1 < ../patches/gps-src-patch-1
 	# patch to re-enable RPATH for development/DEBUG builds
@@ -75,9 +67,8 @@ gps: gps-build
 	--prefix=$(prefix) \
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
 	make -C $< PROCESSORS=0
-	rm -rf build-cache/$@
 	mkdir -p build-cache/$@
-	cp -a $</* build-cache/$@
+	rsync -a --delete $</ build-cache/$@
 
 .PHONY: gps-install
 gps-install: gps-build
@@ -313,9 +304,18 @@ github-repo/%:
 # * - B U I L D
 #
 
-%-build: %-src
+.PHONY: build-cache-clean
+build-cache-clean:
+	rm -rf build-cache
+
+.PRECIOUS: build-cache/%
+build-cache/%: 
 	mkdir -p $@
-	cp -a $</* $@
+
+%-build: build-cache/% %-src
+	mkdir -p $@
+	rsync -a --delete $</ $@
+	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
 
 binutils-build \
 glibc-build    \
@@ -393,12 +393,14 @@ gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build
 xmlada: xmlada-build
 	cd $< && ./configure --prefix=$(prefix)
 	make -C $< all
+	rsync -a --delete $</ build-cache/$@
 
 .PHONY: gprbuild
 gprbuild: gprbuild-build
 	make -C $< prefix=$(prefix) setup
 	make -C $< all
 	make -C $< libgpr.build
+	rsync -a --delete $</ build-cache/$@
 
 .PHONY: gprbuild-install
 gprbuild-install: gprbuild-build
@@ -409,6 +411,7 @@ gprbuild-install: gprbuild-build
 gnatcoll-core: gnatcoll-core-build
 	make -C $< setup
 	make -C $<
+	rsync -a --delete $</ build-cache/$@
 
 .PHONY: gnatcoll-core-install
 gnatcoll-core-install: gnatcoll-core-build
@@ -421,6 +424,7 @@ gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</python && ./setup.py build
 	cd $</readline && ./setup.py build --accept-gpl
 	cd $</syslog && ./setup.py build
+	rsync -a --delete $</ build-cache/$@
 
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install: gnatcoll-bindings-build
@@ -436,6 +440,7 @@ gnatcoll-gnatcoll_db2ada      \
 gnatcoll-sqlite               \
 gnatcoll-xref                 \
 gnatcoll-gnatinspect
+	rsync -a --delete $@-build/ build-cache/$@
 
 .PHONY: gnatcoll-db-install
 gnatcoll-db-install: |          \
@@ -474,6 +479,7 @@ libadalang: libadalang-build langkit-build quex-src
 	&& export QUEX_PATH=$(PWD)/quex-src \
 	&& ada/manage.py make \
 	&& deactivate
+	rsync -a --delete $@-build/ build-cache/$@
 
 .PHONY: libadalang-install
 libadalang-install: libadalang-build clean-libadalang-prefix
@@ -507,6 +513,7 @@ clean-libadalang-prefix:
 gtkada: gtkada-build
 	cd $< && ./configure --prefix=$(prefix)
 	make -C $< PROCESSORS=0
+	rsync -a --delete $</ build-cache/$@
 
 #
 # * - C L E A N ,  * ,  * - I N S T A L L
