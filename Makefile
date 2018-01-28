@@ -157,6 +157,7 @@ gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
 gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
+gnatcoll-db                                               \
 libadalang libadalang-install                             \
 gtkada gtkada-install                                     \
 gps gps-install
