@@ -1,0 +1,15 @@
+diff --git a/gnatinspect/gnatinspect.gpr b/gnatinspect/gnatinspect.gpr
+index aa5ff999..2533d30a 100644
+--- a/gnatinspect/gnatinspect.gpr
++++ b/gnatinspect/gnatinspect.gpr
+@@ -63,6 +63,10 @@ project Gnatinspect is
+       end case;
+    end Builder;
+ 
++   package Linker is
++      for Switches ("Ada") use ("-ldl");
++   end Linker;
++
+    package Ide is
+       for VCS_Kind use "Git";
+    end Ide;

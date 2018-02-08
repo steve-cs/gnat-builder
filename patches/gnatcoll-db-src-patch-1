@@ -1,0 +1,14 @@
+diff --git a/sqlite/gnatcoll_sqlite.gpr b/sqlite/gnatcoll_sqlite.gpr
+index 5bb6cee3..7b09873c 100644
+--- a/sqlite/gnatcoll_sqlite.gpr
++++ b/sqlite/gnatcoll_sqlite.gpr
+@@ -42,7 +42,8 @@ project GnatColl_Sqlite is
+ 
+    for Languages use ("Ada", "C");
+ 
+-   OS : gnatcoll.OS_Kind := gnatcoll.OS;
++   type OS_Kind is ("windows", "unix", "osx");
++   OS : OS_Kind := External ("GNATCOLL_OS", "unix");
+ 
+    Thread_Lib := ();
+ 

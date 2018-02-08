@@ -5,6 +5,7 @@
 release ?= 0.1.0-20180124
 gcc-version ?= gcc-7-branch
 adacore-version ?= master
+libadalang-version ?= master
 prefix ?= /usr/local/gnat
 binutils-version ?= 2.29.1
 glibc-version ?= 2.26
@@ -43,6 +44,17 @@ install: all-install
 #
 # P A T C H E S
 #
+
+gnatcoll-db-build: build-cache/gnatcoll-db gnatcoll-db-src
+	mkdir -p $@
+	rsync -a --delete $</ $@
+	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
+	# patch to fix : variable"os" is not a single string variable
+	# this reverts a piece of commit 6b6f9b4
+	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-1
+	# patch to fix dl linking problem
+	# this also reverts a piece of commit 6b6f9b4
+	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-2
 
 libadalang-tools-build: build-cache/libadalang-tools libadalang-tools-src
 	mkdir -p $@
@@ -251,9 +263,9 @@ gtkada-src: github-src/adacore/gtkada/$(adacore-version)
 gnatcoll-core-src: github-src/adacore/gnatcoll-core/$(adacore-version)
 gnatcoll-bindings-src: github-src/adacore/gnatcoll-bindings/$(adacore-version)
 gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(adacore-version)
-langkit-src: github-src/adacore/langkit/$(adacore-version)
-libadalang-src: github-src/adacore/libadalang/$(adacore-version)
-libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
+langkit-src: github-src/adacore/langkit/$(libadalang-version)
+libadalang-src: github-src/adacore/libadalang/$(libadalang-version)
+libadalang-tools-src: github-src/adacore/libadalang-tools/$(libadalang-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 
 quex-src: downloads/quex-0.65.4
