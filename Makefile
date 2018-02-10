@@ -51,10 +51,12 @@ gnatcoll-db-build: build-cache/gnatcoll-db gnatcoll-db-src
 	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
 	# patch to fix : variable"os" is not a single string variable
 	# this reverts a piece of commit 6b6f9b4
-	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-1
+	# cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-1
 	# patch to fix dl linking problem
 	# this also reverts a piece of commit 6b6f9b4
 	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-2
+	# patch to fix new dl linking problem in db2ada
+	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-3
 
 libadalang-tools-build: build-cache/libadalang-tools libadalang-tools-src
 	mkdir -p $@

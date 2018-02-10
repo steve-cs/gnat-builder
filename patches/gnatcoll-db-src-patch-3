@@ -1,0 +1,15 @@
+diff --git a/gnatcoll_db2ada/gnatcoll_db2ada.gpr b/gnatcoll_db2ada/gnatcoll_db2ada.gpr
+index b281e60e..fc642e75 100644
+--- a/gnatcoll_db2ada/gnatcoll_db2ada.gpr
++++ b/gnatcoll_db2ada/gnatcoll_db2ada.gpr
+@@ -67,6 +67,10 @@ project GNATCOLL_DB2Ada is
+       end case;
+    end Builder;
+ 
++   package Linker is
++      for Switches ("Ada") use ("-ldl");
++   end Linker;
++
+    package Ide is
+       for VCS_Kind use "Git";
+    end Ide;
