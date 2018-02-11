@@ -49,9 +49,6 @@ gnatcoll-db-build: build-cache/gnatcoll-db gnatcoll-db-src
 	mkdir -p $@
 	rsync -a --delete $</ $@
 	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
-	# patch to fix : variable"os" is not a single string variable
-	# this reverts a piece of commit 6b6f9b4
-	# cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-1
 	# patch to fix dl linking problem
 	# this also reverts a piece of commit 6b6f9b4
 	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-2
