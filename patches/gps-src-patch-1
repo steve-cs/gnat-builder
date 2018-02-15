@@ -11,10 +11,10 @@ index 009561a94d..69b6623245 100644
  with "../navigation/navigation";
  with "../prj_editor/prj_editor";
 diff --git a/gps/src/gps-main.adb b/gps/src/gps-main.adb
-index 96582d1920..b34268945a 100644
+index 0cf7d1c9f9..3c8f555532 100644
 --- a/gps/src/gps-main.adb
 +++ b/gps/src/gps-main.adb
-@@ -163,7 +163,6 @@ with KeyManager_Module;
+@@ -164,7 +164,6 @@ with KeyManager_Module;
  with KeyManager_Module.Macros;
  with Toolchains_Module;
  with Ada_Semantic_Tree_Module;
@@ -22,15 +22,15 @@ index 96582d1920..b34268945a 100644
  with Language_Handlers.Assistants;
  with Learn.Views;
  with Memory_Usage_Views.Module;
-@@ -189,7 +188,6 @@ with VFS_Module;
+@@ -190,7 +189,6 @@ with VFS_Module;
  with Vdiff2_Module;
  with Vsearch;
  with Language.Libclang;
 -with Ada_Semantic_Tree.Lang;
+ with GPS.Traces;
  
  procedure GPS.Main is
-    package ICS renames Interfaces.C.Strings;
-@@ -2239,17 +2237,6 @@ procedure GPS.Main is
+@@ -2269,17 +2267,6 @@ procedure GPS.Main is
  
        Ada_Module.Register_Module (GPS_Main.Kernel);
  
@@ -49,7 +49,7 @@ index 96582d1920..b34268945a 100644
           Cpp_Module.Register_Module (GPS_Main.Kernel);
        end if;
 diff --git a/python/src/python_module.adb b/python/src/python_module.adb
-index 37f34e91a9..1792d86d1b 100644
+index 53e4e52298..594be9c203 100644
 --- a/python/src/python_module.adb
 +++ b/python/src/python_module.adb
 @@ -18,7 +18,6 @@

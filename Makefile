@@ -158,17 +158,33 @@ prefix-clean:
 
 .PHONY: bootstrap-install
 bootstrap-install: |                                      \
-gcc-bootstrap gcc-install                                 \
+gcc-bootstrap-install                                     \
 gprbuild-bootstrap-install                                \
+gnatcoll-bootstrap-install                                \
+gps-bootstrap-install
+
+.PHONY: gcc-bootstrap-install
+gcc-bootstrap-install: |                                  \
+gcc-bootstrap gcc-install
+
+.PHONY: gprbuild-bootstrap-install
+gprbuild-bootstrap-install: |                             \
+gprbuild-bootstrap                                        \
 xmlada xmlada-install                                     \
-gprbuild gprbuild-install                                 \
+gprbuild gprbuild-install
+
+.PHONY: gnatcoll-bootstrap-install
+gnatcoll-bootstrap-install: |                             \
 gnatcoll-core gnatcoll-core-install                       \
 gnatcoll-bindings gnatcoll-bindings-install               \
 gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
 gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
-gnatcoll-db                                               \
+gnatcoll-db
+
+.PHONY: gps-bootstrap-install
+gps-bootstrap-install: |                                  \
 libadalang libadalang-install                             \
 gtkada gtkada-install                                     \
 gps gps-install
@@ -396,8 +412,8 @@ gcc: gcc-build gcc-src
 	--enable-shared --enable-shared-host
 	cd $<  && make -j4
 
-.PHONY: gprbuild-bootstrap-install        
-gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build
+.PHONY: gprbuild-bootstrap
+gprbuild-bootstrap: gprbuild-bootstrap-build xmlada-bootstrap-build
 	cd $<  && ./bootstrap.sh \
 	--with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
 
