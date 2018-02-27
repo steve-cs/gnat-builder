@@ -71,6 +71,8 @@ gps-build: build-cache/gps gps-src libadalang-tools-build
 	cd $@ && patch -p1 < ../patches/gps-src-patch-1
 	# patch to re-enable RPATH for development/DEBUG builds
 	cd $@ && patch -p1 < ../patches/gps-src-patch-3
+	# patch to revert recent GDB prompt commit R215-016
+	cd $@ && patch -p1 < ../patches/gps-src-patch-5
 
 .PHONY: gps
 gps: gps-build
