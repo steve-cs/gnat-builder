@@ -45,6 +45,13 @@ install: all-install
 # P A T C H E S
 #
 
+gcc-build: gcc-src
+	mkdir -p $@
+	# patch GNAT.Expect.TTY.terminate_Process (PID : Integer)
+	# into GCC source, i.e. back port from gcc trunk
+	cp patches/g-exptty.ad? gcc-src/gcc/ada/
+	cp patches/terminals.c gcc-src/gcc/ada/
+
 gnatcoll-db-build: build-cache/gnatcoll-db gnatcoll-db-src
 	mkdir -p $@
 	rsync -a --delete $</ $@
@@ -71,8 +78,6 @@ gps-build: build-cache/gps gps-src libadalang-tools-build
 	cd $@ && patch -p1 < ../patches/gps-src-patch-1
 	# patch to re-enable RPATH for development/DEBUG builds
 	cd $@ && patch -p1 < ../patches/gps-src-patch-3
-	# patch to revert recent GDB prompt commit R215-016
-	cd $@ && patch -p1 < ../patches/gps-src-patch-5
 
 .PHONY: gps
 gps: gps-build
@@ -349,8 +354,7 @@ build-cache/%:
 
 binutils-build \
 glibc-build    \
-newlib-build   \
-gcc-build:
+newlib-build:
 	mkdir -p $@
 
 #
