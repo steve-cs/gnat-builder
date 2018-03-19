@@ -1,5 +1,5 @@
 diff --git a/gps/gps.gpr b/gps/gps.gpr
-index 009561a94d..69b6623245 100644
+index a7a80bda3c..2c574406da 100644
 --- a/gps/gps.gpr
 +++ b/gps/gps.gpr
 @@ -18,7 +18,6 @@ with "../gvd/gvd";
@@ -11,45 +11,46 @@ index 009561a94d..69b6623245 100644
  with "../navigation/navigation";
  with "../prj_editor/prj_editor";
 diff --git a/gps/src/gps-main.adb b/gps/src/gps-main.adb
-index 0cf7d1c9f9..3c8f555532 100644
+index d2fe73fe73..55cabb0a0e 100644
 --- a/gps/src/gps-main.adb
 +++ b/gps/src/gps-main.adb
-@@ -164,7 +164,6 @@ with KeyManager_Module;
+@@ -165,7 +165,6 @@ with KeyManager_Module;
  with KeyManager_Module.Macros;
  with Toolchains_Module;
  with Ada_Semantic_Tree_Module;
 -with LAL.Module;
  with Language_Handlers.Assistants;
  with Learn.Views;
- with Memory_Usage_Views.Module;
-@@ -190,7 +189,6 @@ with VFS_Module;
+ with Log_File_Views;
+@@ -192,7 +191,6 @@ with VFS_Module;
  with Vdiff2_Module;
  with Vsearch;
  with Language.Libclang;
 -with Ada_Semantic_Tree.Lang;
  with GPS.Traces;
+ with GPS.Valgrind;
  
- procedure GPS.Main is
-@@ -2269,17 +2267,6 @@ procedure GPS.Main is
+@@ -2316,18 +2314,6 @@ procedure GPS.Main is
  
        Ada_Module.Register_Module (GPS_Main.Kernel);
  
 -      LAL.Module.Register_Module
 -        (GPS_Main.Kernel,
--         (LAL.Use_LAL_In_Editor  => Use_LAL_In_Editor.Get_Pref,
--          LAL.Use_LAL_In_Outline => Use_LAL_In_Outline.Get_Pref,
--          LAL.Use_LAL_In_Shell   => Use_LAL_In_Shell.Get_Pref,
--          LAL.Use_LAL_In_Info    => Use_LAL_In_Info.Get_Pref,
--          LAL.Use_LAL_In_GNATHUB => Use_LAL_In_GNATHUB.Get_Pref,
--          LAL.Use_LAL_In_COV     => Use_LAL_In_COV.Get_Pref,
--          LAL.Use_LAL_In_Indent  => Use_LAL_In_Indent.Get_Pref),
+-         (LAL.Use_LAL_In_Editor    => Use_LAL_In_Editor.Get_Pref,
+-          LAL.Use_LAL_In_Outline   => Use_LAL_In_Outline.Get_Pref,
+-          LAL.Use_LAL_In_Shell     => Use_LAL_In_Shell.Get_Pref,
+-          LAL.Use_LAL_In_Info      => Use_LAL_In_Info.Get_Pref,
+-          LAL.Use_LAL_In_GNATHUB   => Use_LAL_In_GNATHUB.Get_Pref,
+-          LAL.Use_LAL_In_COV       => Use_LAL_In_COV.Get_Pref,
+-          LAL.Use_LAL_In_Indent    => Use_LAL_In_Indent.Get_Pref,
+-          LAL.Use_LAL_In_Highlight => Use_LAL_In_Highlight.Get_Pref),
 -         Legacy => Ada_Semantic_Tree.Lang.Ada_Tree_Lang);
 -
        if Active (CPP_Trace) then
           Cpp_Module.Register_Module (GPS_Main.Kernel);
        end if;
 diff --git a/python/src/python_module.adb b/python/src/python_module.adb
-index 53e4e52298..594be9c203 100644
+index 8586b9ce66..535ce14aec 100644
 --- a/python/src/python_module.adb
 +++ b/python/src/python_module.adb
 @@ -18,7 +18,6 @@
