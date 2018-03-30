@@ -184,6 +184,7 @@ gprbuild gprbuild-install
 gnatcoll-bootstrap-install: |                             \
 gnatcoll-core gnatcoll-core-install                       \
 gnatcoll-bindings gnatcoll-bindings-install               \
+gnatcoll-sql gnatcoll-sql-install                         \
 gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
@@ -470,6 +471,7 @@ gnatcoll-bindings-install: gnatcoll-bindings-build
 
 .PHONY: gnatcoll-db
 gnatcoll-db: |                \
+gnatcoll-sql                  \
 gnatcoll-gnatcoll_db2ada      \
 gnatcoll-sqlite               \
 gnatcoll-xref                 \
@@ -477,18 +479,21 @@ gnatcoll-gnatinspect
 	rsync -a --delete $@-build/ build-cache/$@
 
 .PHONY: gnatcoll-db-install
-gnatcoll-db-install: |          \
+gnatcoll-db-install: |           \
+gnatcoll-sql-install             \
 gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite-install          \
 gnatcoll-xref-install            \
 gnatcoll-gnatinspect-install
 
 .PHONY: \
+gnatcoll-sql gnatcoll-sql-install                         \
 gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
 gnatcoll-gnatinspect gnatcoll-gnatinspect-install
 
+gnatcoll-sql             \
 gnatcoll-gnatcoll_db2ada \
 gnatcoll-sqlite          \
 gnatcoll-xref            \
@@ -496,6 +501,7 @@ gnatcoll-gnatinspect: gnatcoll-db-build
 	make -C $</$(@:gnatcoll-%=%) setup
 	make -C $</$(@:gnatcoll-%=%)
 
+gnatcoll-sql-install             \
 gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite-install          \
 gnatcoll-xref-install            \
