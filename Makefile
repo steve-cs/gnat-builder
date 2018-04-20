@@ -2,7 +2,7 @@
 # gcc-version = master, trunk, gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
-release ?= 0.1.0-20180412
+release ?= 0.1.0-20180419
 gcc-version ?= gcc-7-branch
 adacore-version ?= master
 libadalang-version ?= master
