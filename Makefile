@@ -49,8 +49,8 @@ gcc-build: gcc-src
 	mkdir -p $@
 	# patch GNAT.Expect.TTY.terminate_Process (PID : Integer)
 	# into GCC source, i.e. back port from gcc trunk
-	cp patches/g-exptty.ad? gcc-src/gcc/ada/
-	cp patches/terminals.c gcc-src/gcc/ada/
+	cp -f patches/g-exptty.ad? gcc-src/gcc/ada/
+	cp -f patches/terminals.c gcc-src/gcc/ada/
 
 gnatcoll-db-build: build-cache/gnatcoll-db gnatcoll-db-src
 	mkdir -p $@
