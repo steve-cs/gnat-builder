@@ -1,9 +1,9 @@
 # version = master
-# gcc-version = master, trunk, gcc-7-branch, gcc-7_2_0-release
+# gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
-release ?= 0.1.0-20180511
-gcc-version ?= master
+release ?= 0.1.0-20180518
+gcc-version ?= gcc-8-branch
 adacore-version ?= master
 libadalang-version ?= master
 prefix ?= /usr/local/gnat
@@ -306,6 +306,7 @@ gprbuild-bootstrap-src: gprbuild-src
 github-src/%/stable-gps        \
 github-src/%/0.65.4            \
 github-src/%/gcc-7-branch      \
+github-src/%/gcc-8-branch      \
 github-src/%/trunk             \
 github-src/%/master: github-repo/%
 	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
