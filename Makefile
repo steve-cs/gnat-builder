@@ -74,8 +74,12 @@ gps-build: build-cache/gps gps-src libadalang-tools-build
 	rsync -a --delete $</ $@
 	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
 	rsync -aL libadalang-tools-build/ $@/laltools
+	#
 	# patch to disable libadalang from the build
-	cd $@ && patch -p1 < ../patches/gps-src-patch-1
+	# note gps-src-patch-1 no longer applies correctly
+	# build without until we fix it or decide its not needed any more
+	# cd $@ && patch -p1 < ../patches/gps-src-patch-1
+	#
 	# patch to re-enable RPATH for development/DEBUG builds
 	cd $@ && patch -p1 < ../patches/gps-src-patch-3
 
