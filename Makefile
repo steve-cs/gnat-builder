@@ -7,9 +7,6 @@ gcc-version ?= gcc-8-branch
 adacore-version ?= master
 libadalang-version ?= master
 prefix ?= /usr/local/gnat
-binutils-version ?= 2.29.1
-glibc-version ?= 2.26
-newlib-version ?= 2.4.0.20161025
 
 # gcc configuration
 #
@@ -44,70 +41,6 @@ install: all-install
 #
 # P A T C H E S
 #
-
-gcc-build: gcc-src
-	mkdir -p $@
-	# patch GNAT.Expect.TTY.terminate_Process (PID : Integer)
-	# into GCC source, i.e. back port from gcc trunk
-	cp -f patches/g-exptty.ad? gcc-src/gcc/ada/
-	cp -f patches/terminals.c gcc-src/gcc/ada/
-
-gnatcoll-db-build: build-cache/gnatcoll-db gnatcoll-db-src
-	mkdir -p $@
-	rsync -a --delete $</ $@
-	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
-	# patch to fix dl linking problem
-	# this also reverts a piece of commit 6b6f9b4
-	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-2
-	# patch to fix new dl linking problem in db2ada
-	cd $@ && patch -p1 < ../patches/gnatcoll-db-src-patch-3
-
-libadalang-tools-build: build-cache/libadalang-tools libadalang-tools-src
-	mkdir -p $@
-	rsync -a --delete $</ $@
-	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
-	# patch to fix ambiguous Is_Null
-	cd $@ && patch -p1 < ../patches/libadalang-tools-src-patch-1
-
-gps-build: build-cache/gps gps-src libadalang-tools-build
-	mkdir -p $@  $@/laltools
-	rsync -a --delete $</ $@
-	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
-	rsync -aL libadalang-tools-build/ $@/laltools
-	#
-	# patch to disable libadalang from the build
-	# note gps-src-patch-1 no longer applies correctly
-	# build without until we fix it or decide its not needed any more
-	# cd $@ && patch -p1 < ../patches/gps-src-patch-1
-	#
-	# patch to re-enable RPATH for development/DEBUG builds
-	cd $@ && patch -p1 < ../patches/gps-src-patch-3
-
-.PHONY: gps
-gps: gps-build
-	cd $< && ./configure \
-	--prefix=$(prefix) \
-	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
-	make -C $< PROCESSORS=0
-	mkdir -p build-cache/$@
-	rsync -a --delete $</ build-cache/$@
-
-.PHONY: gps-install
-gps-install: gps-build
-	make -C $< prefix=$(prefix) install
-	# patch to disable lal support at runtime
-	cd $(prefix)/share/gps/support/core/                \
-	&& rm -rf lal.py-disable                            \
-	&& mv lal.py lal.py-disable
-	# patch to disable clang support at runtime
-	cd $(prefix)/share/gps/support/languages/           \
-	&& rm -rf clang_support.py-disable                  \
-	&& mv clang_support.py clang_support.py-disable
-
-.PHONY: gps-run
-gps-run:
-	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
-	&& gps
 
 #
 # E N D   P A T C H E S
@@ -250,28 +183,6 @@ gps-install
 
 # downloads
 
-binutils-src: downloads/binutils-$(binutils-version)
-glibc-src: downloads/glibc-$(glibc-version)
-newlib-src: downloads/newlib-$(newlib-version)
-
-downloads/binutils-%:
-	mkdir -p $(@D)
-	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
-	cd $(@D) && wget https://ftp.gnu.org/gnu/binutils/$(@F).tar.gz
-	cd $(@D) && tar xf $(@F).tar.gz
-
-downloads/glibc-%:
-	mkdir -p $(@D)
-	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
-	cd $(@D) && wget https://ftp.gnu.org/gnu/glibc/$(@F).tar.gz
-	cd $(@D) && tar xf $(@F).tar.gz
-
-downloads/newlib-%:
-	mkdir -p $(@D)
-	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
-	cd $(@D) && wget https://sourceware.org/pub/newlib/$(@F).tar.gz
-	cd $(@D) && tar xf $(@F).tar.gz
-
 downloads/quex-0.65.4:
 	mkdir -p $(@D)
 	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
@@ -358,9 +269,7 @@ build-cache/%:
 	rsync -a --delete $</ $@
 	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
 
-binutils-build \
-glibc-build    \
-newlib-build:
+gcc-build: gcc-src
 	mkdir -p $@
 
 #
@@ -374,13 +283,6 @@ newlib-build:
 %-install: %-build
 	make -C $< prefix=$(prefix) install
 
-.PHONY: binutils
-binutils: binutils-build binutils-src
-	rm -rf $</*
-	cd $< && ../binutils-src/configure \
-	--prefix=$(prefix)
-	cd $< && make -j4
-
 .PHONY: gcc-bootstrap
 gcc-bootstrap: gcc-build gcc-src
 	rm -rf $</*
@@ -390,29 +292,6 @@ gcc-bootstrap: gcc-build gcc-src
 	--enable-bootstrap --disable-multilib \
 	--enable-shared --enable-shared-host
 	cd $<  && make -j4
-
-.PHONY: glibc
-glibc: glibc-build glibc-src
-	rm -rf $</*
-	cd $< && ../glibc-src/configure \
-	--prefix=$(prefix)
-	cd $< && make -j4
-
-.PHONY: glibc-install
-glibc-install: glibc-build
-	make -C $< install
-
-.PHONY: newlib
-newlib: newlib-build newlib-src
-	rm -rf $</*
-	cd $< && ../newlib-src/configure \
-	--prefix=$(prefix) \
-	--target=$(target) --srcdir=$(PWD)/newlib-src
-	cd $< && make -j4
-
-.PHONY: newlib-install
-newlib-install: newlib-build
-	make -C $< install
 
 .PHONY: gcc
 gcc: gcc-build gcc-src
@@ -559,6 +438,38 @@ gtkada: gtkada-build
 	cd $< && ./configure --prefix=$(prefix)
 	make -C $< PROCESSORS=0
 	rsync -a --delete $</ build-cache/$@
+
+.PHONY: gps
+gps: gps-build
+	cd $< && ./configure \
+	--prefix=$(prefix) \
+	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
+	make -C $< PROCESSORS=0
+	mkdir -p build-cache/$@
+	rsync -a --delete $</ build-cache/$@
+
+gps-build: build-cache/gps gps-src libadalang-tools-build
+	mkdir -p $@  $@/laltools
+	rsync -a --delete $</ $@
+	rsync -aL --exclude='.*' $(@:%-build=%)-src/* $@
+	rsync -aL libadalang-tools-build/ $@/laltools
+
+.PHONY: gps-install
+gps-install: gps-build
+	make -C $< prefix=$(prefix) install
+	# patch to disable lal support at runtime
+	cd $(prefix)/share/gps/support/core/                \
+	&& rm -rf lal.py-disable                            \
+	&& mv lal.py lal.py-disable
+	# patch to disable clang support at runtime
+	cd $(prefix)/share/gps/support/languages/           \
+	&& rm -rf clang_support.py-disable                  \
+	&& mv clang_support.py clang_support.py-disable
+
+.PHONY: gps-run
+gps-run:
+	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
+	&& gps
 
 #
 # * - C L E A N ,  * ,  * - I N S T A L L
