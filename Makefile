@@ -2,17 +2,24 @@
 # gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
-release ?= 0.1.0-20180930
+release ?= 0.1.0-20181002
 gcc-version ?= gcc-8-branch
 adacore-version ?= master
 libadalang-version ?= master
 prefix ?= /usr/local/gnat
+
+# Ubuntu bionic configuration
+#
+llvm-version ?= 6.0
+iconv-opt ?= "-lc"
 
 # gcc configuration
 #
 host  ?= x86_64-linux-gnu
 build ?= $(host)
 target ?= $(build)
+gcc-jobs ?= 8
+gcc-bootstrap ?= enable
 
 # release location and naming details
 #
@@ -20,16 +27,6 @@ release-loc = release
 release-url = https://github.com/steve-cs/gnat-builder/releases/download
 release-tag = v$(release)
 release-name = gnat-build_tools-$(release)
-
-# Debian stable configuration
-#
-#llvm-version ?= 3.8
-#iconv-opt ?= "-lc"
-
-# Ubuntu artic configuration
-#
-llvm-version ?= 4.0
-iconv-opt ?= "-lc"
 
 .PHONY: default
 default: all
@@ -54,7 +51,7 @@ prerequisites-install:
 	libgmp-dev zlib1g-dev libreadline-dev postgresql libpq-dev \
 	virtualenv \
 	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
-	python-dev python-pip python-gobject-dev python-cairo-dev \
+	python-dev python-pip python-gobject-2-dev python-cairo-dev \
 	libclang-dev
 
 .PHONY: release
@@ -109,7 +106,7 @@ gps-bootstrap-install
 
 .PHONY: gcc-bootstrap-install
 gcc-bootstrap-install: |                                  \
-gcc-bootstrap gcc-install
+gcc gcc-install
 
 .PHONY: gprbuild-bootstrap-install
 gprbuild-bootstrap-install: |                             \
@@ -283,25 +280,15 @@ gcc-build: gcc-src
 %-install: %-build
 	make -C $< prefix=$(prefix) install
 
-.PHONY: gcc-bootstrap
-gcc-bootstrap: gcc-build gcc-src
-	rm -rf $</*
-	cd $< && ../gcc-src/configure \
-	--host=$(host) --build=$(build) --target=$(target) \
-	--prefix=$(prefix) --enable-languages=c,c++,ada \
-	--enable-bootstrap --disable-multilib \
-	--enable-shared --enable-shared-host
-	cd $<  && make -j4
-
 .PHONY: gcc
 gcc: gcc-build gcc-src
 	rm -rf $</*
 	cd $< && ../gcc-src/configure \
 	--host=$(host) --build=$(build) --target=$(target) \
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
-	--disable-bootstrap --disable-multilib \
+	--$(gcc-bootstrap)-bootstrap --disable-multilib \
 	--enable-shared --enable-shared-host
-	cd $<  && make -j4
+	cd $<  && make -j$(gcc-jobs)
 
 .PHONY: gprbuild-bootstrap
 gprbuild-bootstrap: gprbuild-bootstrap-build xmlada-bootstrap-build
