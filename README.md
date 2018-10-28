@@ -21,7 +21,8 @@ This is a Makefile and a set of patches to build a gcc/gnat tool chain including
 ## Typical usage
 
 ### Starting from scratch, download and install a recent release
-* \# install ubuntu artful
+* \# install ubuntu bionic minimal
+* sudo apt-get update && sudo apt-get upgrade
 * sudo mkdir -p /usr/local/gnat
 * sudo chown $USER /usr/local/gnat
 * sudo apt-get install build-essential git
