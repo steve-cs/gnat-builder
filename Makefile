@@ -1,8 +1,11 @@
+
+include config.mk
+
 # version = master
 # gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
-release ?= 0.1.0-20190201
+release ?= 0.1.0-20181101
 gcc-version ?= gcc-8-branch
 adacore-version ?= master
 libadalang-version ?= master
@@ -48,8 +51,7 @@ install: all-install
 prerequisites-install:
 	apt-get -qq -y install \
 	ubuntu-standard build-essential gnat gawk git flex bison \
-	libgmp-dev zlib1g-dev libreadline-dev postgresql libpq-dev \
-	virtualenv \
+	libgmp-dev zlib1g-dev libreadline-dev postgresql libpq-dev 
 	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
 	python-dev python-pip python-gobject-2-dev python-cairo-dev \
 	libclang-dev
@@ -189,7 +191,7 @@ downloads/quex-0.65.4:
 # from github
 
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
-	ln -s $< $@
+	ln -s $(PWD)/$< $@
 	cd $@ && ./contrib/download_prerequisites
 
 xmlada-src: github-src/adacore/xmlada/$(adacore-version)
