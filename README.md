@@ -1,4 +1,10 @@
+# Information on this fork
+
+* adds changes to fix issues I had running make locally (on my system, no docker, no vm, ..)
+* adds config.mk to set some make variables
+
 # gnat-builder
+
 Makefile for downloading and building gnat from github source.
 
 |Repository|Build Status|
