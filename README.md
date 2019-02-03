@@ -1,6 +1,6 @@
 # Information on this fork
 
-* adds changes to fix issues I had running make locally (on my system, no docker, no vm, ..)
+* adds changes to change some lines in Makefile to get rif of issues I had running the build (on my system, no docker, no vm, ..) -> on-going 
 * adds config.mk to set some make variables
 
 # gnat-builder
