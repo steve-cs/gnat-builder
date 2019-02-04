@@ -5,7 +5,7 @@
 release ?= 0.1.0-20190201
 gcc-version ?= gcc-8-branch
 adacore-version ?= master
-libadalang-version ?= master
+libadalang-version ?= stable
 prefix ?= /usr/local/gnat
 
 # Ubuntu bionic configuration
@@ -200,7 +200,7 @@ gnatcoll-bindings-src: github-src/adacore/gnatcoll-bindings/$(adacore-version)
 gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(adacore-version)
 langkit-src: github-src/adacore/langkit/$(libadalang-version)
 libadalang-src: github-src/adacore/libadalang/$(libadalang-version)
-libadalang-tools-src: github-src/adacore/libadalang-tools/$(libadalang-version)
+libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 
 quex-src: downloads/quex-0.65.4
@@ -216,6 +216,7 @@ gprbuild-bootstrap-src: gprbuild-src
 # github branches where we want to pull updates if available
 #
 github-src/%/stable-gps        \
+github-src/%/stable            \
 github-src/%/0.65.4            \
 github-src/%/gcc-7-branch      \
 github-src/%/gcc-8-branch      \
