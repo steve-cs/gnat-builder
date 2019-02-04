@@ -445,14 +445,6 @@ gps-build: build-cache/gps gps-src libadalang-tools-build
 .PHONY: gps-install
 gps-install: gps-build
 	make -C $< prefix=$(prefix) install
-	# patch to disable lal support at runtime
-	cd $(prefix)/share/gps/support/core/                \
-	&& rm -rf lal.py-disable                            \
-	&& mv lal.py lal.py-disable
-	# patch to disable clang support at runtime
-	cd $(prefix)/share/gps/support/languages/           \
-	&& rm -rf clang_support.py-disable                  \
-	&& mv clang_support.py clang_support.py-disable
 
 .PHONY: gps-run
 gps-run:
