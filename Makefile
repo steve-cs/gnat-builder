@@ -100,6 +100,10 @@ prefix-clean:
 .PHONY: bootstrap-install
 bootstrap-install: |                                      \
 gcc-bootstrap-install                                     \
+adacore-bootstrap-install
+
+.PHONY: adacore-bootstrap-install
+adacore-bootstrap-install: |                              \
 gprbuild-bootstrap-install                                \
 gnatcoll-bootstrap-install                                \
 gps-bootstrap-install
