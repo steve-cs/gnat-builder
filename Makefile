@@ -128,7 +128,7 @@ gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
 gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
-gnatcoll-db
+gnatcoll-db gnatcoll-db-install
 
 .PHONY: gps-bootstrap-install
 gps-bootstrap-install: |                                  \
