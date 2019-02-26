@@ -6,7 +6,8 @@ release ?= 0.1.0-20190221
 gcc-version ?= gcc-8-branch
 adacore-version ?= master
 libadalang-version ?= stable
-prefix ?= /usr/local/gnat
+prefix ?= /usr/local
+sudo ?= sudo
 
 # Ubuntu bionic configuration
 #
@@ -46,7 +47,7 @@ install: all-install
 
 .PHONY: prerequisites-install
 prerequisites-install:
-	apt-get -qq -y install \
+	$(sudo) apt-get -qq -y install \
 	ubuntu-standard build-essential gnat gawk git flex bison \
 	libgmp-dev zlib1g-dev libreadline-dev postgresql libpq-dev \
 	virtualenv \
@@ -66,8 +67,8 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: prefix-clean
-	cp -a $(release-loc)/$(release-name)/* $(prefix)/
+release-install:
+	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 .PHONY: release-download
 release-download: $(release-loc)/$(release-name)
@@ -94,8 +95,8 @@ bootstrap-clean: clean prefix-clean build-cache-clean
 
 .PHONY: prefix-clean
 prefix-clean:
-	rm -rf $(prefix)/*
-	mkdir -p $(prefix)
+	$(sudo) rm -rf $(prefix)/*
+	$(sudo) mkdir -p $(prefix)
 
 .PHONY: bootstrap-install
 bootstrap-install: |                                      \
@@ -283,7 +284,7 @@ gcc-build: gcc-src
 
 .PHONY: %-install
 %-install: %-build
-	make -C $< prefix=$(prefix) install
+	$(sudo) make -C $< prefix=$(prefix) install
 
 .PHONY: gcc
 gcc: gcc-build gcc-src
@@ -297,7 +298,7 @@ gcc: gcc-build gcc-src
 
 .PHONY: gprbuild-bootstrap
 gprbuild-bootstrap: gprbuild-bootstrap-build xmlada-bootstrap-build
-	cd $<  && ./bootstrap.sh \
+	cd $<  && $(sudo) ./bootstrap.sh \
 	--with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
 
 .PHONY: xmlada
@@ -315,8 +316,8 @@ gprbuild: gprbuild-build
 
 .PHONY: gprbuild-install
 gprbuild-install: gprbuild-build
-	make -C $< install
-	make -C $< libgpr.install
+	$(sudo) make -C $< install
+	$(sudo) make -C $< libgpr.install
 
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build
@@ -326,7 +327,7 @@ gnatcoll-core: gnatcoll-core-build
 
 .PHONY: gnatcoll-core-install
 gnatcoll-core-install: gnatcoll-core-build
-	make -C $< prefix=$(prefix) install
+	$(sudo) make -C $< prefix=$(prefix) install
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
@@ -339,11 +340,11 @@ gnatcoll-bindings: gnatcoll-bindings-build
 
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install: gnatcoll-bindings-build
-	cd $</gmp && ./setup.py install
-	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && ./setup.py install
-	cd $</python && ./setup.py install
-	cd $</readline && ./setup.py install
-	cd $</syslog && ./setup.py install
+	cd $</gmp && $(sudo) ./setup.py install
+	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && $(sudo) ./setup.py install
+	cd $</python && $(sudo) ./setup.py install
+	cd $</readline && $(sudo) ./setup.py install
+	cd $</syslog && $(sudo) ./setup.py install
 
 .PHONY: gnatcoll-db
 gnatcoll-db: |                \
@@ -382,7 +383,7 @@ gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite-install          \
 gnatcoll-xref-install            \
 gnatcoll-gnatinspect-install: gnatcoll-db-build
-	make -C $</$(@:gnatcoll-%-install=%) install
+	$(sudo) make -C $</$(@:gnatcoll-%-install=%) install
 
 .PHONY: libadalang
 libadalang: libadalang-build langkit-build quex-src
@@ -399,31 +400,31 @@ libadalang: libadalang-build langkit-build quex-src
 
 .PHONY: libadalang-install
 libadalang-install: libadalang-build clean-libadalang-prefix
-	cd $< && . lal-venv/bin/activate \
+	cd $< && $(sudo) sh -c ". lal-venv/bin/activate \
 	&& export QUEX_PATH=$(PWD)/quex-src \
 	&& ada/manage.py install $(prefix) \
-	&& deactivate
+	&& deactivate"
 
 
 .PHONY: clean-libadalang-prefix
 clean-libadalang-prefix:
 	# clean up old langkit install if there
-	rm -rf $(prefix)/include/langkit*
-	rm -rf $(prefix)/lib/langkit*
-	rm -rf $(prefix)/share/gpr/langkit*
-	rm -rf $(prefix)/share/gpr/manifests/langkit*
+	$(sudo) rm -rf $(prefix)/include/langkit*
+	$(sudo) rm -rf $(prefix)/lib/langkit*
+	$(sudo) rm -rf $(prefix)/share/gpr/langkit*
+	$(sudo) rm -rf $(prefix)/share/gpr/manifests/langkit*
 	# clean up old libadalang install if there
-	rm -rf $(prefix)/include/libadalang*
-	rm -rf $(prefix)/lib/libadalang*
-	rm -rf $(prefix)/share/gpr/libadalang*
-	rm -rf $(prefix)/share/gpr/manifests/libadalang*
-	rm -rf $(prefix)/python/libadalang*
+	$(sudo) rm -rf $(prefix)/include/libadalang*
+	$(sudo) rm -rf $(prefix)/lib/libadalang*
+	$(sudo) rm -rf $(prefix)/share/gpr/libadalang*
+	$(sudo) rm -rf $(prefix)/share/gpr/manifests/libadalang*
+	$(sudo) rm -rf $(prefix)/python/libadalang*
 	# clean up old Mains project if there
-	rm -rf $(prefix)/share/gpr/manifests/mains
-	rm -rf $(prefix)/bin/parse
-	rm -rf $(prefix)/bin/navigate
-	rm -rf $(prefix)/bin/gnat_compare
-	rm -rf $(prefix)/bin/nameres
+	$(sudo) rm -rf $(prefix)/share/gpr/manifests/mains
+	$(sudo) rm -rf $(prefix)/bin/parse
+	$(sudo) rm -rf $(prefix)/bin/navigate
+	$(sudo) rm -rf $(prefix)/bin/gnat_compare
+	$(sudo) rm -rf $(prefix)/bin/nameres
 
 .PHONY: gtkada
 gtkada: gtkada-build
@@ -448,7 +449,7 @@ gps-build: build-cache/gps gps-src libadalang-tools-build
 
 .PHONY: gps-install
 gps-install: gps-build
-	make -C $< prefix=$(prefix) install
+	$(sudo) make -C $< prefix=$(prefix) install
 
 .PHONY: gps-run
 gps-run:

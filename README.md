@@ -23,19 +23,12 @@ This is a Makefile and a set of patches to build a gcc/gnat tool chain including
 ### Starting from scratch, download and install a recent release
 * \# install ubuntu bionic minimal
 * sudo apt-get update && sudo apt-get upgrade
-* sudo mkdir -p /usr/local/gnat
-* sudo chown $USER /usr/local/gnat
 * sudo apt-get install build-essential git
 * git clone https://github.com/steve-cs/gnat-builder
 * cd gnat-builder
-* sudo make prerequisites-install
+* make prerequisites-install
 * make release-download
 * make release-install
-
-### Don't forget to add the \<prefix\>/bin to your PATH, check that it works...
-
-* export PATH=/usr/local/gnat/bin:$PATH
-* which gcc
 
 ### Bootstrap from source (not requiring a prexisting release or gpl-2017 binaries)
 
@@ -43,13 +36,13 @@ This starts from linux distribution gcc/gnat compiler and bootstraps a new compi
 
 After doing the prerequisites above it should be as simple as:
 
-* make bootstrap-clean
 * make bootstrap-install
 
 ### Build and install the development trunk of gcc
 
 After doing (at least) the prerequisites above:
 
+* make clean
 * make gcc-version=trunk gcc
 * make gcc-install
 
@@ -77,22 +70,22 @@ Save a snapshot of the contents of the prefix as a locally defined release.  Cha
 
 ## Variables and their current defaults
 
-### release ?= \<latest-release\>, e.g. 0.1.0-20180109
+### release ?= \<latest-release\>, e.g. 0.1.0-20190225
 
 This is used by the release, release-download, and release-install targets.
 
-### gcc-version ?= gcc-7-branch
+### gcc-version ?= gcc-8-branch
 
 This is either a tag or a branch of gcc as it exists in the github.com gcc-mirror/gcc repository.
-Currently this is limited to: master, trunk, gcc-7-branch, gcc-7_2_0-release.
+Currently this is limited to: master, trunk, gcc-8-branch, gcc-7-branch, gcc-7_2_0-release.
 
 ### adacore-version ?= master
 
 Currently this is limited to master.
 
-### prefix ?= /usr/local/gnat
+### prefix ?= /usr/local
 
-This specifies where the build tools directory is or will be located.  Its contents are deleted by a number of targets including prefix-clean, bootstrap-clean and release-install.
+This specifies where the build tools directory is or will be located.  Its contents are deleted by a number of targets including prefix-clean, bootstrap-clean.
 
 ## Main make targets
 
