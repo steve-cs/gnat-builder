@@ -69,7 +69,7 @@ gnatcoll-bindings-depends:
 .PHONY: libadalang-depends
 libadalang-depends:
 	$(sudo) apt-get -qq -y install \
-	virtualenv python libgmp-dev
+	virtualenv python-dev libgmp-dev
 
 .PHONY: gtkada-depends
 gtkada-depends:
