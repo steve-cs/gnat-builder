@@ -44,17 +44,49 @@ install: all-install
 # E N D   P A T C H E S
 #
 ##############################################################
+#
+# B U I L D  D E P E N D E N C I E S
+#
 
 .PHONY: prerequisites-install
-prerequisites-install:
-	apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard \
-	build-essential gnat gawk git flex bison \
-	libgmp-dev zlib1g-dev libreadline-dev postgresql libpq-dev \
-	virtualenv \
+prerequisites-install: base-depends
+
+.PHONY: base-depends
+base-depends:
+	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git
+
+.PHONY: gcc-depends
+gcc-depends:
+	$(sudo) apt-get -qq -y install \
+	gnat gawk flex bison
+
+.PHONY: gnatcoll-bindings-depends
+gnatcoll-bindings-depends:
+	$(sudo) apt-get -qq -y install \
+	python-dev libgmp-dev zlib1g-dev libreadline-dev
+
+.PHONY: libadalang-depends
+libadalang-depends:
+	$(sudo) apt-get -qq -y install \
+	virtualenv python libgmp-dev
+
+.PHONY: gtkada-depends
+gtkada-depends:
+	$(sudo) apt-get -qq -y install \
+	pkg-config libgtk-3-dev
+
+.PHONY: gps-depends
+gps-depends:
+	$(sudo) apt-get -qq -y install \
 	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
 	python-dev python-pip python-gobject-2-dev python-cairo-dev \
-	libclang-dev
+	libclang-dev libgmp-dev
+
+#
+# E N D   B U I L D   D E P E N D E N C I E S
+#
+##############################################################
 
 .PHONY: release
 release: $(release-name)
@@ -279,7 +311,7 @@ gcc-build: gcc-src
 	$(sudo) make -C $< prefix=$(prefix) install
 
 .PHONY: gcc
-gcc: gcc-build gcc-src
+gcc: gcc-build gcc-src gcc-depends
 	rm -rf $</*
 	cd $< && ../gcc-src/configure \
 	--host=$(host) --build=$(build) --target=$(target) \
@@ -319,7 +351,7 @@ gnatcoll-core-install: gnatcoll-core-build
 	$(sudo) make -C $< prefix=$(prefix) install
 
 .PHONY: gnatcoll-bindings
-gnatcoll-bindings: gnatcoll-bindings-build
+gnatcoll-bindings: gnatcoll-bindings-build gnatcoll-bindings-depends
 	cd $</gmp && ./setup.py build
 	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && ./setup.py build
 	cd $</python && ./setup.py build
@@ -373,7 +405,7 @@ gnatcoll-gnatinspect-install: gnatcoll-db-build
 	$(sudo) make -C $</$(@:gnatcoll-%-install=%) install
 
 .PHONY: libadalang
-libadalang: libadalang-build langkit-build quex-src
+libadalang: libadalang-build langkit-build quex-src libadalang-depends
 	cd $< && virtualenv lal-venv
 	cd $< && . lal-venv/bin/activate \
 	&& pip install -r REQUIREMENTS.dev \
@@ -413,12 +445,12 @@ clean-libadalang-prefix:
 	$(sudo) rm -rf $(prefix)/bin/nameres
 
 .PHONY: gtkada
-gtkada: gtkada-build
+gtkada: gtkada-build gtkada-depends
 	cd $< && ./configure --prefix=$(prefix)
 	make -C $< PROCESSORS=0
 
 .PHONY: gps
-gps: gps-build
+gps: gps-build gps-depends
 	cd $< && ./configure \
 	--prefix=$(prefix) \
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
