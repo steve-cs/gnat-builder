@@ -20,7 +20,6 @@ host  ?= x86_64-linux-gnu
 build ?= $(host)
 target ?= $(build)
 gcc-jobs ?= 8
-gcc-bootstrap ?= enable
 
 # release location and naming details
 #
@@ -45,11 +44,15 @@ install: all-install
 #
 ##############################################################
 #
-# B U I L D  D E P E N D E N C I E S
+# E X T E R N A L  B U I L D  D E P E N D E N C I E S
 #
 
 .PHONY: prerequisites-install
 prerequisites-install: base-depends
+
+.PHONY: depends
+depends: base-depends gcc-depends gnatcoll-bindings-depends \
+	     libadalang-depends gtkada-depends gps-depends
 
 .PHONY: base-depends
 base-depends:
@@ -57,34 +60,34 @@ base-depends:
 	ubuntu-minimal ubuntu-standard build-essential git
 
 .PHONY: gcc-depends
-gcc-depends:
+gcc-depends: base-depends
 	$(sudo) apt-get -qq -y install \
-	gnat gawk flex bison
+	gnat gawk flex bison libc6-dev libc6-dev-i386
 
 .PHONY: gnatcoll-bindings-depends
-gnatcoll-bindings-depends:
+gnatcoll-bindings-depends: base-depends
 	$(sudo) apt-get -qq -y install \
 	python-dev libgmp-dev zlib1g-dev libreadline-dev
 
 .PHONY: libadalang-depends
-libadalang-depends:
+libadalang-depends: base-depends
 	$(sudo) apt-get -qq -y install \
 	virtualenv python-dev libgmp-dev
 
 .PHONY: gtkada-depends
-gtkada-depends:
+gtkada-depends: base-depends
 	$(sudo) apt-get -qq -y install \
 	pkg-config libgtk-3-dev
 
 .PHONY: gps-depends
-gps-depends:
+gps-depends: base-depends
 	$(sudo) apt-get -qq -y install \
 	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
 	python-dev python-pip python-gobject-2-dev python-cairo-dev \
 	libclang-dev libgmp-dev
 
 #
-# E N D   B U I L D   D E P E N D E N C I E S
+# E N D  E X T E R N A L  B U I L D  D E P E N D E N C I E S
 #
 ##############################################################
 
@@ -131,29 +134,29 @@ prefix-clean:
 	$(sudo) rm -rf $(prefix)/*
 	$(sudo) mkdir -p $(prefix)
 
-.PHONY: bootstrap-install
-bootstrap-install: |                                      \
-gcc-bootstrap-install                                     \
-adacore-bootstrap-install
+.PHONY: bootstrap
+bootstrap: |                                              \
+gcc-bootstrap                                             \
+adacore-bootstrap
 
-.PHONY: adacore-bootstrap-install
-adacore-bootstrap-install: |                              \
-gprbuild-bootstrap-install                                \
-gnatcoll-bootstrap-install                                \
-gps-bootstrap-install
-
-.PHONY: gcc-bootstrap-install
-gcc-bootstrap-install: |                                  \
+.PHONY: gcc-bootstrap
+gcc-bootstrap: |                                          \
 gcc gcc-install
 
-.PHONY: gprbuild-bootstrap-install
-gprbuild-bootstrap-install: |                             \
+.PHONY: adacore-bootstrap
+adacore-bootstrap: |                                      \
 gprbuild-bootstrap                                        \
+gnatcoll-bootstrap                                        \
+gps-bootstrap
+
+.PHONY: gprbuild-bootstrap
+gprbuild-bootstrap: |                                     \
+gprbuild-boot                                             \
 xmlada xmlada-install                                     \
 gprbuild gprbuild-install
 
-.PHONY: gnatcoll-bootstrap-install
-gnatcoll-bootstrap-install: |                             \
+.PHONY: gnatcoll-bootstrap
+gnatcoll-bootstrap: |                                     \
 gnatcoll-core gnatcoll-core-install                       \
 gnatcoll-bindings gnatcoll-bindings-install               \
 gnatcoll-sql gnatcoll-sql-install                         \
@@ -163,14 +166,15 @@ gnatcoll-xref gnatcoll-xref-install                       \
 gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
 gnatcoll-db gnatcoll-db-install
 
-.PHONY: gps-bootstrap-install
-gps-bootstrap-install: |                                  \
+.PHONY: gps-bootstrap
+gps-bootstrap: |                                          \
 libadalang libadalang-install                             \
 gtkada gtkada-install                                     \
 gps gps-install
 
 .PHONY: all
 all: |                   \
+gcc                      \
 xmlada                   \
 gprbuild                 \
 gnatcoll-core            \
@@ -196,6 +200,7 @@ gps-src
 
 .PHONY: all-install
 all-install: |                   \
+gcc-install                      \
 xmlada-install                   \
 gprbuild-install                 \
 gnatcoll-core-install            \
@@ -310,28 +315,35 @@ gcc-build: gcc-src
 %-install: %-build
 	$(sudo) make -C $< prefix=$(prefix) install
 
+.PHONY: gcc-boot
+gcc-boot: gcc-build gcc-src gcc-depends
+	rm -rf $</*
+	cd $< && ../gcc-src/configure \
+	--host=$(host) --build=$(build) --target=$(target) \
+	--prefix=$(prefix) --enable-languages=c,c++,ada \
+	-disable-shared --disable-multilib
+	cd $<  && make -j$(gcc-jobs)
+
 .PHONY: gcc
 gcc: gcc-build gcc-src gcc-depends
 	rm -rf $</*
 	cd $< && ../gcc-src/configure \
 	--host=$(host) --build=$(build) --target=$(target) \
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
-	--$(gcc-bootstrap)-bootstrap --disable-multilib \
-	--enable-shared --enable-shared-host
 	cd $<  && make -j$(gcc-jobs)
 
-.PHONY: gprbuild-bootstrap
-gprbuild-bootstrap: gprbuild-bootstrap-build xmlada-bootstrap-build
+.PHONY: gprbuild-boot
+gprbuild-boot: gprbuild-bootstrap-build xmlada-bootstrap-build base-depends
 	cd $<  && $(sudo) ./bootstrap.sh \
 	--with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
 
 .PHONY: xmlada
-xmlada: xmlada-build
+xmlada: xmlada-build base-depends
 	cd $< && ./configure --prefix=$(prefix)
 	make -C $< all
 
 .PHONY: gprbuild
-gprbuild: gprbuild-build
+gprbuild: gprbuild-build base-depends
 	make -C $< prefix=$(prefix) setup
 	make -C $< all
 	make -C $< libgpr.build
@@ -342,7 +354,7 @@ gprbuild-install: gprbuild-build
 	$(sudo) make -C $< libgpr.install
 
 .PHONY: gnatcoll-core
-gnatcoll-core: gnatcoll-core-build
+gnatcoll-core: gnatcoll-core-build base-depends
 	make -C $< setup
 	make -C $<
 
@@ -367,7 +379,7 @@ gnatcoll-bindings-install: gnatcoll-bindings-build
 	cd $</syslog && $(sudo) ./setup.py install
 
 .PHONY: gnatcoll-db
-gnatcoll-db: |                \
+gnatcoll-db: | base-depends   \
 gnatcoll-sql                  \
 gnatcoll-gnatcoll_db2ada      \
 gnatcoll-sqlite               \
