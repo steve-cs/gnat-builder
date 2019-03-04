@@ -120,8 +120,7 @@ gnatcoll-sql gnatcoll-sql-install                         \
 gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
-gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
-gnatcoll-db gnatcoll-db-install
+gnatcoll-gnatinspect gnatcoll-gnatinspect-install
 
 .PHONY: gps-bootstrap
 gps-bootstrap: |                                          \
@@ -401,6 +400,8 @@ gnatcoll-core: gnatcoll-core-build gnatcoll-core-depends
 .PHONY: gnatcoll-core-install
 gnatcoll-core-install: gnatcoll-core-build
 	$(sudo) make -C $< prefix=$(prefix) install
+
+#####
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build gnatcoll-bindings-depends
