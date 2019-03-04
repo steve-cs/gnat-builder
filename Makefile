@@ -436,27 +436,50 @@ gnatcoll-sqlite-install          \
 gnatcoll-xref-install            \
 gnatcoll-gnatinspect-install
 
-.PHONY: \
-gnatcoll-sql gnatcoll-sql-install                         \
-gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
-gnatcoll-sqlite gnatcoll-sqlite-install                   \
-gnatcoll-xref gnatcoll-xref-install                       \
-gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+.PHONY: gnatcoll-sql
+gnatcoll-sql: gnatcoll-db-build gnatcoll-db-depends
+	make -C $</sql setup
+	make -C $</sql
 
-gnatcoll-sql             \
-gnatcoll-gnatcoll_db2ada \
-gnatcoll-sqlite          \
-gnatcoll-xref            \
+.PHONY: gnatcoll-sql-install
+gnatcoll-sql-install: gnatcoll-db-build
+	$(sudo) make -C $</sql install
+
+.PHONY: gnatcoll-gnatcoll_db2ada
+gnatcoll-gnatcoll_db2ada: gnatcoll-db-build gnatcoll-db-depends
+	make -C $</gnatcoll_db2ada setup
+	make -C $</gnatcoll_db2ada
+
+.PHONY: gnatcoll-gnatcoll_db2ada-install
+gnatcoll-gnatcoll_db2ada-install: gnatcoll-db-build
+	$(sudo) make -C $</gnatcoll_db2ada install
+
+.PHONY: gnatcoll-sqlite
+gnatcoll-sqlite: gnatcoll-db-build gnatcoll-db-depends
+	make -C $</sqlite setup
+	make -C $</sqlite
+
+.PHONY: gnatcoll-sqlite-install
+gnatcoll-sqlite-install: gnatcoll-db-build
+	$(sudo) make -C $</sqlite install
+
+.PHONY: gnatcoll-xref
+gnatcoll-xref: gnatcoll-db-build gnatcoll-db-depends
+	make -C $</xref setup
+	make -C $</xref
+
+.PHONY: gnatcoll-xref-install
+gnatcoll-xref-install: gnatcoll-db-build
+	$(sudo) make -C $</xref install
+
+.PHONY: gnatcoll-gnatinspect
 gnatcoll-gnatinspect: gnatcoll-db-build gnatcoll-db-depends
-	make -C $</$(@:gnatcoll-%=%) setup
-	make -C $</$(@:gnatcoll-%=%)
+	make -C $</gnatinspect setup
+	make -C $</gnatinspect
 
-gnatcoll-sql-install             \
-gnatcoll-gnatcoll_db2ada-install \
-gnatcoll-sqlite-install          \
-gnatcoll-xref-install            \
+.PHONY: gnatcoll-gnatinspect-install
 gnatcoll-gnatinspect-install: gnatcoll-db-build
-	$(sudo) make -C $</$(@:gnatcoll-%-install=%) install
+	$(sudo) make -C $</gnatinspect install
 
 #####
 
