@@ -47,6 +47,7 @@ install: all-install
 
 .PHONY: all-src
 all-src: |               \
+base-depends             \
 gcc-src                  \
 xmlada-src               \
 gprbuild-src             \
@@ -61,6 +62,7 @@ gps-src
 
 .PHONY: all
 all: |                   \
+base-depends             \
 gcc                      \
 xmlada                   \
 gprbuild                 \
@@ -73,6 +75,7 @@ gps
 
 .PHONY: all-install
 all-install: |                   \
+base-depends                     \
 gcc-install                      \
 xmlada-install                   \
 gprbuild-install                 \
@@ -98,6 +101,7 @@ adacore-bootstrap
 
 .PHONY: gcc-bootstrap
 gcc-bootstrap: |                                          \
+base-depends                                              \
 gcc gcc-install
 
 .PHONY: adacore-bootstrap
@@ -108,12 +112,14 @@ gps-bootstrap
 
 .PHONY: gprbuild-bootstrap
 gprbuild-bootstrap: |                                     \
+base-depends                                              \
 gprbuild-boot                                             \
 xmlada xmlada-install                                     \
 gprbuild gprbuild-install
 
 .PHONY: gnatcoll-bootstrap
 gnatcoll-bootstrap: |                                     \
+base-depends                                              \
 gnatcoll-core gnatcoll-core-install                       \
 gnatcoll-bindings gnatcoll-bindings-install               \
 gnatcoll-sql gnatcoll-sql-install                         \
@@ -124,6 +130,7 @@ gnatcoll-gnatinspect gnatcoll-gnatinspect-install
 
 .PHONY: gps-bootstrap
 gps-bootstrap: |                                          \
+base-depends                                              \
 libadalang libadalang-install                             \
 gtkada gtkada-install                                     \
 gps gps-install
@@ -137,7 +144,7 @@ gps gps-install
 #
 
 .PHONY: release
-release: $(release-name)
+release: $(release-name) base-depends
 
 .PHONY: $(release-name)
 $(release-name):
@@ -148,11 +155,11 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: release-download
+release-install: release-download base-depends
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 .PHONY: release-download
-release-download: $(release-loc)/$(release-name)
+release-download: $(release-loc)/$(release-name) base-depends
 
 $(release-loc)/$(release-name):
 	rm -rf $@ $@.tar.gz
