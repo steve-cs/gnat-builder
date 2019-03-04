@@ -28,6 +28,12 @@ release-url = https://github.com/steve-cs/gnat-builder/releases/download
 release-tag = v$(release)
 release-name = gnat-build_tools-$(release)
 
+.PHONY: prerequisites-install
+prerequisites-install: base-depends
+
+.PHONY: depends
+depends: base-depends
+
 .PHONY: default
 default: all
 
@@ -36,103 +42,54 @@ install: all-install
 
 ##############################################################
 #
-# P A T C H E S
+# A L L
 #
 
-#
-# E N D   P A T C H E S
-#
-##############################################################
-#
-# E X T E R N A L  B U I L D  D E P E N D E N C I E S
-#
+.PHONY: all-src
+all-src: |               \
+gcc-src                  \
+xmlada-src               \
+gprbuild-src             \
+gnatcoll-core-src        \
+gnatcoll-bindings-src    \
+gnatcoll-db-src          \
+langkit-src              \
+quex-src                 \
+libadalang-src           \
+gtkada-src               \
+gps-src
 
-.PHONY: prerequisites-install
-prerequisites-install: base-depends
+.PHONY: all
+all: |                   \
+gcc                      \
+xmlada                   \
+gprbuild                 \
+gnatcoll-core            \
+gnatcoll-bindings        \
+gnatcoll-db              \
+libadalang               \
+gtkada                   \
+gps
 
-.PHONY: depends
-depends: base-depends gcc-depends gnatcoll-bindings-depends \
-	     libadalang-depends gtkada-depends gps-depends
-
-.PHONY: base-depends
-base-depends:
-	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git
-
-.PHONY: gcc-depends
-gcc-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	gnat gawk flex bison libc6-dev libc6-dev-i386
-
-.PHONY: gnatcoll-bindings-depends
-gnatcoll-bindings-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	python-dev libgmp-dev zlib1g-dev libreadline-dev
-
-.PHONY: libadalang-depends
-libadalang-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	virtualenv python-dev libgmp-dev
-
-.PHONY: gtkada-depends
-gtkada-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	pkg-config libgtk-3-dev
-
-.PHONY: gps-depends
-gps-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
-	python-dev python-pip python-gobject-2-dev python-cairo-dev \
-	libclang-dev libgmp-dev
+.PHONY: all-install
+all-install: |                   \
+gcc-install                      \
+xmlada-install                   \
+gprbuild-install                 \
+gnatcoll-core-install            \
+gnatcoll-bindings-install        \
+gnatcoll-db-install              \
+libadalang-install               \
+gtkada-install                   \
+gps-install
 
 #
-# E N D  E X T E R N A L  B U I L D  D E P E N D E N C I E S
+# E N D  A L L
 #
 ##############################################################
-
-.PHONY: release
-release: $(release-name)
-
-.PHONY: $(release-name)
-$(release-name):
-	mkdir -p $(release-loc)
-	cd $(release-loc) && rm -rf $@ $@.tar.gz
-	mkdir -p $(release-loc)/$@
-	cp -r $(prefix)/* $(release-loc)/$@/
-	cd $(release-loc) && tar czf $@.tar.gz $@
-
-.PHONY: release-install
-release-install:
-	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
-
-.PHONY: release-download
-release-download: $(release-loc)/$(release-name)
-
-$(release-loc)/$(release-name):
-	rm -rf $@ $@.tar.gz
-	mkdir -p $(@D)
-	cd $(@D) && wget -q $(release-url)/$(release-tag)/$(@F).tar.gz
-	cd $(@D) && tar xf $(@F).tar.gz
-
-.PHONY: clean
-clean: 
-	rm -rf *-src *-build
-
-.PHONY: dist-clean
-dist-clean : clean
-	rm -rf downloads github-repo release
-
-%-clean:
-	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
-
-.PHONY: bootstrap-clean
-bootstrap-clean: clean prefix-clean
-
-.PHONY: prefix-clean
-prefix-clean:
-	$(sudo) rm -rf $(prefix)/*
-	$(sudo) mkdir -p $(prefix)
+#
+# B O O T S T R A P
+#
 
 .PHONY: bootstrap
 bootstrap: |                                              \
@@ -172,44 +129,120 @@ libadalang libadalang-install                             \
 gtkada gtkada-install                                     \
 gps gps-install
 
-.PHONY: all
-all: |                   \
-gcc                      \
-xmlada                   \
-gprbuild                 \
-gnatcoll-core            \
-gnatcoll-bindings        \
-gnatcoll-db              \
-libadalang               \
-gtkada                   \
-gps
+#
+# E N D  B O O T  S T R A P
+#
+##############################################################
+#
+# R E L E A S E
+#
 
-.PHONY: all-src
-all-src: |               \
-gcc-src                  \
-xmlada-src               \
-gprbuild-src             \
-gnatcoll-core-src        \
-gnatcoll-bindings-src    \
-gnatcoll-db-src          \
-langkit-src              \
-quex-src                 \
-libadalang-src           \
-gtkada-src               \
-gps-src
+.PHONY: release
+release: $(release-name)
 
-.PHONY: all-install
-all-install: |                   \
-gcc-install                      \
-xmlada-install                   \
-gprbuild-install                 \
-gnatcoll-core-install            \
-gnatcoll-bindings-install        \
-gnatcoll-db-install              \
-libadalang-install               \
-gtkada-install                   \
-gps-install
+.PHONY: $(release-name)
+$(release-name):
+	mkdir -p $(release-loc)
+	cd $(release-loc) && rm -rf $@ $@.tar.gz
+	mkdir -p $(release-loc)/$@
+	cp -r $(prefix)/* $(release-loc)/$@/
+	cd $(release-loc) && tar czf $@.tar.gz $@
 
+.PHONY: release-install
+release-install: release-download
+	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
+
+.PHONY: release-download
+release-download: $(release-loc)/$(release-name)
+
+$(release-loc)/$(release-name):
+	rm -rf $@ $@.tar.gz
+	mkdir -p $(@D)
+	cd $(@D) && wget -q $(release-url)/$(release-tag)/$(@F).tar.gz
+	cd $(@D) && tar xf $(@F).tar.gz
+
+#
+# E N D  R E L E A S E
+#
+##############################################################
+#
+# C L E A N
+#
+
+.PHONY: clean
+clean: 
+	rm -rf *-src *-build
+
+%-clean:
+	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
+
+.PHONY: dist-clean
+dist-clean : clean
+	rm -rf downloads github-repo release
+
+.PHONY: bootstrap-clean
+bootstrap-clean: clean prefix-clean
+
+.PHONY: prefix-clean
+prefix-clean:
+	$(sudo) rm -rf $(prefix)/*
+	$(sudo) mkdir -p $(prefix)
+
+#
+# E N D  C L E A N
+#
+##############################################################
+#
+# E X T E R N A L  B U I L D  D E P E N D E N C I E S
+#
+
+.PHONY: base-depends
+base-depends:
+	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git
+
+.PHONY: gcc-depends
+gcc-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+	gnat gawk flex bison libc6-dev libc6-dev-i386
+
+.PHONY: xmlada-depends
+xmlada-depends: base-depends
+
+.PHONY: gprbuild-depends
+gprbuild-depends: base-depends
+
+.PHONY: gnatcoll-core-depends
+gnatcoll-core-depends: base-depends
+
+.PHONY: gnatcoll-bindings-depends
+gnatcoll-bindings-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+	python-dev libgmp-dev zlib1g-dev libreadline-dev
+
+.PHONY: gnatcoll-db-depends
+gnatcoll-db-depends: base-depends
+
+.PHONY: libadalang-depends
+libadalang-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+	virtualenv python-dev libgmp-dev
+
+.PHONY: gtkada-depends
+gtkada-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+	pkg-config libgtk-3-dev
+
+.PHONY: gps-depends
+gps-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
+	python-dev python-pip python-gobject-2-dev python-cairo-dev \
+	libclang-dev libgmp-dev
+
+#
+# E N D  E X T E R N A L  B U I L D  D E P E N D E N C I E S
+#
 ##############################################################
 #
 # * - S R C
@@ -294,26 +327,29 @@ github-repo/%:
 #
 ##############################################################
 #
-# * - B U I L D
+# P A T C H E S
+#
+
+#
+# E N D   P A T C H E S
+#
+##############################################################
+#
+# * - B U I L D / I N S T A L L
 #
 
 %-build: %-src
 	mkdir -p $@
 	rsync -a --delete $</ $@
 
-gcc-build: gcc-src
-	mkdir -p $@
-
-#
-# * - B U I L D
-#
-##############################################################
-#
-#
-
 .PHONY: %-install
 %-install: %-build
 	$(sudo) make -C $< prefix=$(prefix) install
+
+#####
+
+gcc-build: gcc-src
+	mkdir -p $@
 
 .PHONY: gcc-boot
 gcc-boot: gcc-build gcc-src gcc-depends
@@ -332,18 +368,20 @@ gcc: gcc-build gcc-src gcc-depends
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
 	cd $<  && make -j$(gcc-jobs)
 
+#####
+
 .PHONY: gprbuild-boot
-gprbuild-boot: gprbuild-bootstrap-build xmlada-bootstrap-build base-depends
+gprbuild-boot: gprbuild-bootstrap-build xmlada-bootstrap-build gprbuild-depends
 	cd $<  && $(sudo) ./bootstrap.sh \
 	--with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
 
 .PHONY: xmlada
-xmlada: xmlada-build base-depends
+xmlada: xmlada-build xmlada-depends
 	cd $< && ./configure --prefix=$(prefix)
 	make -C $< all
 
 .PHONY: gprbuild
-gprbuild: gprbuild-build base-depends
+gprbuild: gprbuild-build gprbuild-depends
 	make -C $< prefix=$(prefix) setup
 	make -C $< all
 	make -C $< libgpr.build
@@ -353,8 +391,10 @@ gprbuild-install: gprbuild-build
 	$(sudo) make -C $< install
 	$(sudo) make -C $< libgpr.install
 
+#####
+
 .PHONY: gnatcoll-core
-gnatcoll-core: gnatcoll-core-build base-depends
+gnatcoll-core: gnatcoll-core-build gnatcoll-core-depends
 	make -C $< setup
 	make -C $<
 
@@ -378,8 +418,10 @@ gnatcoll-bindings-install: gnatcoll-bindings-build
 	cd $</readline && $(sudo) ./setup.py install
 	cd $</syslog && $(sudo) ./setup.py install
 
+#####
+
 .PHONY: gnatcoll-db
-gnatcoll-db: | base-depends   \
+gnatcoll-db: |                \
 gnatcoll-sql                  \
 gnatcoll-gnatcoll_db2ada      \
 gnatcoll-sqlite               \
@@ -405,7 +447,7 @@ gnatcoll-sql             \
 gnatcoll-gnatcoll_db2ada \
 gnatcoll-sqlite          \
 gnatcoll-xref            \
-gnatcoll-gnatinspect: gnatcoll-db-build
+gnatcoll-gnatinspect: gnatcoll-db-build gnatcoll-db-depends
 	make -C $</$(@:gnatcoll-%=%) setup
 	make -C $</$(@:gnatcoll-%=%)
 
@@ -415,6 +457,8 @@ gnatcoll-sqlite-install          \
 gnatcoll-xref-install            \
 gnatcoll-gnatinspect-install: gnatcoll-db-build
 	$(sudo) make -C $</$(@:gnatcoll-%-install=%) install
+
+#####
 
 .PHONY: libadalang
 libadalang: libadalang-build langkit-build quex-src libadalang-depends
@@ -456,10 +500,14 @@ clean-libadalang-prefix:
 	$(sudo) rm -rf $(prefix)/bin/gnat_compare
 	$(sudo) rm -rf $(prefix)/bin/nameres
 
+#####
+
 .PHONY: gtkada
 gtkada: gtkada-build gtkada-depends
 	cd $< && ./configure --prefix=$(prefix)
 	make -C $< PROCESSORS=0
+
+#####
 
 .PHONY: gps
 gps: gps-build gps-depends
@@ -477,12 +525,18 @@ gps-build: gps-src libadalang-tools-build
 gps-install: gps-build
 	$(sudo) make -C $< prefix=$(prefix) install
 
+#
+# E N D  * - B U I L D / I N S T A L L
+#
+##############################################################
+#
+#
+
 .PHONY: gps-run
 gps-run:
 	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
 	&& gps
 
 #
-# * - C L E A N ,  * ,  * - I N S T A L L
 #
 ##############################################################
