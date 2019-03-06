@@ -566,6 +566,8 @@ gps-install: gps-build
 .PHONY: gps-run
 gps-run:
 	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
+	&& export LD_LIBRARY_PATH= \
+	&& export DYLD_FALLBACK_LIBRARY_PATH= \
 	&& gps
 
 #
