@@ -243,7 +243,7 @@ gtkada-depends: base-depends
 gps-depends: base-depends
 	$(sudo) apt-get -qq -y install \
 	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
-	python-dev python-pip python-gobject-2-dev python-cairo-dev \
+	python-pip python-dev python-gi-dev python-cairo-dev \
 	libclang-dev libgmp-dev
 
 #
