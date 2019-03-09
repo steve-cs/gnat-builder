@@ -335,7 +335,7 @@ github-repo/%:
 # * - B U I L D / I N S T A L L
 #
 
-gcc-build: gcc-src
+gcc-build: gcc-src gcc-depends
 	mkdir -p $@
 	rm -rf $@/*
 	cd $@ && ../$</configure \
@@ -343,7 +343,7 @@ gcc-build: gcc-src
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
 
 .PHONY: gcc
-gcc: gcc-build gcc-src gcc-depends
+gcc: gcc-build gcc-src
 	make -C $< -j$(gcc-jobs)
 
 .PHONY: gcc-install
@@ -353,28 +353,28 @@ gcc-install: gcc-build
 
 #####
 
-gprbuild-bootstrap-build: gprbuild-bootstrap-src
+gprbuild-bootstrap-build: gprbuild-bootstrap-src gprbuild-depends
 	mkdir -p $@
 	cp -a $</* $@
 
-xmlada-bootstrap-build: xmlada-bootstrap-src
+xmlada-bootstrap-build: xmlada-bootstrap-src xmlada-depends
 	mkdir -p $@
 	cp -a $</* $@
 
 .PHONY: gprbuild-bootstrap-install
-gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build gprbuild-depends
+gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build
 	cd $<  && $(sudo) ./bootstrap.sh \
 	--with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
 
 ####
 
-xmlada-build: xmlada-src
+xmlada-build: xmlada-src xmlada-depends
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && ./configure --prefix=$(prefix)
 
 .PHONY: xmlada
-xmlada: xmlada-build xmlada-depends
+xmlada: xmlada-build
 	make -C $< all
 
 .PHONY: xmlada-install
@@ -384,13 +384,13 @@ xmlada-install: xmlada-build
 
 ####
 
-gprbuild-build: gprbuild-src
+gprbuild-build: gprbuild-src gprbuild-depends
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $@ prefix=$(prefix) setup
 
 .PHONY: gprbuild
-gprbuild: gprbuild-build gprbuild-depends
+gprbuild: gprbuild-build
 	make -C $< all
 	make -C $< libgpr.build
 
@@ -401,13 +401,13 @@ gprbuild-install: gprbuild-build
 
 #####
 
-gnatcoll-core-build: gnatcoll-core-src
+gnatcoll-core-build: gnatcoll-core-src gnatcoll-core-depends
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $@ setup
 
 .PHONY: gnatcoll-core
-gnatcoll-core: gnatcoll-core-build gnatcoll-core-depends
+gnatcoll-core: gnatcoll-core-build
 	make -C $<
 
 .PHONY: gnatcoll-core-install
@@ -416,12 +416,12 @@ gnatcoll-core-install: gnatcoll-core-build
 
 #####
 
-gnatcoll-bindings-build: gnatcoll-bindings-src
+gnatcoll-bindings-build: gnatcoll-bindings-src gnatcoll-bindings-depends
 	mkdir -p $@
 	cp -a $</* $@
 
 .PHONY: gnatcoll-bindings
-gnatcoll-bindings: gnatcoll-bindings-build gnatcoll-bindings-depends
+gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</gmp && ./setup.py build
 	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && ./setup.py build
 	cd $</python && ./setup.py build
@@ -438,7 +438,7 @@ gnatcoll-bindings-install: gnatcoll-bindings-build
 
 #####
 
-gnatcoll-db-build: gnatcoll-db-src
+gnatcoll-db-build: gnatcoll-db-src gnatcoll-db-depends
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $</sql prefix=$(prefix) setup
@@ -464,7 +464,7 @@ gnatcoll-xref-install            \
 gnatcoll-gnatinspect-install
 
 .PHONY: gnatcoll-sql
-gnatcoll-sql: gnatcoll-db-build gnatcoll-db-depends
+gnatcoll-sql: gnatcoll-db-build
 	make -C $</sql
 
 .PHONY: gnatcoll-sql-install
@@ -472,7 +472,7 @@ gnatcoll-sql-install: gnatcoll-db-build
 	$(sudo) make -C $</sql install
 
 .PHONY: gnatcoll-gnatcoll_db2ada
-gnatcoll-gnatcoll_db2ada: gnatcoll-db-build gnatcoll-db-depends
+gnatcoll-gnatcoll_db2ada: gnatcoll-db-build
 	make -C $</gnatcoll_db2ada
 
 .PHONY: gnatcoll-gnatcoll_db2ada-install
@@ -480,7 +480,7 @@ gnatcoll-gnatcoll_db2ada-install: gnatcoll-db-build
 	$(sudo) make -C $</gnatcoll_db2ada install
 
 .PHONY: gnatcoll-sqlite
-gnatcoll-sqlite: gnatcoll-db-build gnatcoll-db-depends
+gnatcoll-sqlite: gnatcoll-db-build
 	make -C $</sqlite
 
 .PHONY: gnatcoll-sqlite-install
@@ -488,7 +488,7 @@ gnatcoll-sqlite-install: gnatcoll-db-build
 	$(sudo) make -C $</sqlite install
 
 .PHONY: gnatcoll-xref
-gnatcoll-xref: gnatcoll-db-build gnatcoll-db-depends
+gnatcoll-xref: gnatcoll-db-build
 	make -C $</xref
 
 .PHONY: gnatcoll-xref-install
@@ -496,7 +496,7 @@ gnatcoll-xref-install: gnatcoll-db-build
 	$(sudo) make -C $</xref install
 
 .PHONY: gnatcoll-gnatinspect
-gnatcoll-gnatinspect: gnatcoll-db-build gnatcoll-db-depends
+gnatcoll-gnatinspect: gnatcoll-db-build
 	make -C $</gnatinspect
 
 .PHONY: gnatcoll-gnatinspect-install
@@ -517,7 +517,7 @@ libadalang-build: libadalang-src langkit-src libadalang-depends
 	&& deactivate
 
 .PHONY: libadalang
-libadalang: libadalang-build quex-src libadalang-depends
+libadalang: libadalang-build quex-src
 	cd $< && . lal-venv/bin/activate \
 	&& export QUEX_PATH=$(PWD)/quex-src \
 	&& ada/manage.py make \
@@ -553,13 +553,13 @@ clean-libadalang-prefix:
 
 #####
 
-gtkada-build: gtkada-src
+gtkada-build: gtkada-src gtkada-depends
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && ./configure --prefix=$(prefix)
 
 .PHONY: gtkada
-gtkada: gtkada-build gtkada-depends
+gtkada: gtkada-build
 	make -C $< PROCESSORS=0
 
 .PHONY: gtkada-install
@@ -568,7 +568,7 @@ gtkada-install: gtkada-build
 
 #####
 
-gps-build: gps-src libadalang-tools-src
+gps-build: gps-src libadalang-tools-src gps-depends
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -577,7 +577,7 @@ gps-build: gps-src libadalang-tools-src
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
 
 .PHONY: gps
-gps: gps-build gps-depends
+gps: gps-build
 	make -C $< PROCESSORS=0
 
 
