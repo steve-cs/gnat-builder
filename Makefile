@@ -1,4 +1,4 @@
-# version = master
+ version = master
 # gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local/gnat, /usr/gnat, etc.
 
@@ -28,17 +28,19 @@ release-url = https://github.com/steve-cs/gnat-builder/releases/download
 release-tag = v$(release)
 release-name = gnat-build_tools-$(release)
 
-.PHONY: prerequisites-install
-prerequisites-install: base-depends
-
-.PHONY: depends
-depends: base-depends
-
 .PHONY: default
 default: all
 
 .PHONY: install
 install: all-install
+
+.PHONY: depends
+depends: base-depends
+
+# deprecated target still used by travis-test
+
+.PHONY: prerequisites-install
+prerequisites-install: base-depends
 
 ##############################################################
 #
@@ -46,8 +48,7 @@ install: all-install
 #
 
 .PHONY: all-src
-all-src: |               \
-base-depends             \
+all-src: |  base-depends \
 gcc-src                  \
 xmlada-src               \
 gprbuild-src             \
@@ -58,11 +59,11 @@ langkit-src              \
 quex-src                 \
 libadalang-src           \
 gtkada-src               \
+libadalang-tools-src     \
 gps-src
 
 .PHONY: all
-all: |                   \
-base-depends             \
+all: | base-depends      \
 gcc                      \
 xmlada                   \
 gprbuild                 \
@@ -74,8 +75,7 @@ gtkada                   \
 gps
 
 .PHONY: all-install
-all-install: |                   \
-base-depends                     \
+all-install: | base-depends      \
 gcc-install                      \
 xmlada-install                   \
 gprbuild-install                 \
@@ -95,48 +95,24 @@ gps-install
 #
 
 .PHONY: bootstrap
-bootstrap: |                                              \
-gcc-bootstrap                                             \
-adacore-bootstrap
-
-.PHONY: gcc-bootstrap
-gcc-bootstrap: |                                          \
-base-depends                                              \
-gcc gcc-install
-
-.PHONY: adacore-bootstrap
-adacore-bootstrap: |                                      \
-gprbuild-bootstrap                                        \
-gnatcoll-bootstrap                                        \
-gps-bootstrap
-
-.PHONY: gprbuild-bootstrap
-gprbuild-bootstrap: |                                     \
-base-depends                                              \
-gprbuild-boot                                             \
+bootstrap: | base-depends                                 \
+gcc gcc-install                                           \
+gprbuild-bootstrap-install                                \
 xmlada xmlada-install                                     \
-gprbuild gprbuild-install
-
-.PHONY: gnatcoll-bootstrap
-gnatcoll-bootstrap: |                                     \
-base-depends                                              \
+gprbuild gprbuild-install                                 \
 gnatcoll-core gnatcoll-core-install                       \
 gnatcoll-bindings gnatcoll-bindings-install               \
 gnatcoll-sql gnatcoll-sql-install                         \
 gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
 gnatcoll-sqlite gnatcoll-sqlite-install                   \
 gnatcoll-xref gnatcoll-xref-install                       \
-gnatcoll-gnatinspect gnatcoll-gnatinspect-install
-
-.PHONY: gps-bootstrap
-gps-bootstrap: |                                          \
-base-depends                                              \
+gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
 libadalang libadalang-install                             \
 gtkada gtkada-install                                     \
 gps gps-install
 
 #
-# E N D  B O O T  S T R A P
+# E N D  B O O T S T R A P
 #
 ##############################################################
 #
@@ -297,13 +273,13 @@ gprbuild-bootstrap-src: gprbuild-src
 
 # github branches where we want to pull updates if available
 #
-github-src/%/stable-gps        \
-github-src/%/stable            \
-github-src/%/0.65.4            \
-github-src/%/gcc-7-branch      \
-github-src/%/gcc-8-branch      \
+github-src/%/branch            \
+github-src/%/master            \
 github-src/%/trunk             \
-github-src/%/master: github-repo/%
+github-src/%/gcc-8-branch      \
+github-src/%/gcc-7-branch      \
+github-src/%/stable            \
+    : github-repo/%
 	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
 	cd github-repo/$(@D:github-src/%=%) && git pull
 	rm -rf $(@D)/*
@@ -312,7 +288,9 @@ github-src/%/master: github-repo/%
 
 # github tags, e.g. releases, which don't have updates to pull
 #
-github-src/%/gcc-7_2_0-release: github-repo/%
+github-src/%/tag               \
+github-src/%/gcc-7_2_0-release \
+    : github-repo/%
 	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
@@ -344,51 +322,62 @@ github-repo/%:
 # * - B U I L D / I N S T A L L
 #
 
-%-build: %-src
-	mkdir -p $@
-	rsync -a --delete $</ $@
-
-.PHONY: %-install
-%-install: %-build
-	$(sudo) make -C $< prefix=$(prefix) install
-
-#####
-
 gcc-build: gcc-src
 	mkdir -p $@
-
-.PHONY: gcc-boot
-gcc-boot: gcc-build gcc-src gcc-depends
-	rm -rf $</*
-	cd $< && ../gcc-src/configure \
+	rm -rf $@/*
+	cd $@ && ../$</configure \
 	--host=$(host) --build=$(build) --target=$(target) \
 	--prefix=$(prefix) --enable-languages=c,c++,ada \
-	-disable-shared --disable-multilib
-	cd $<  && make -j$(gcc-jobs)
 
 .PHONY: gcc
 gcc: gcc-build gcc-src gcc-depends
-	rm -rf $</*
-	cd $< && ../gcc-src/configure \
-	--host=$(host) --build=$(build) --target=$(target) \
-	--prefix=$(prefix) --enable-languages=c,c++,ada \
-	cd $<  && make -j$(gcc-jobs)
+	make -C $< -j$(gcc-jobs)
+
+.PHONY: gcc-install
+gcc-install: gcc-build
+	$(sudo) make -C $< install
+
 
 #####
 
-.PHONY: gprbuild-boot
-gprbuild-boot: gprbuild-bootstrap-build xmlada-bootstrap-build gprbuild-depends
+gprbuild-bootstrap-build: gprbuild-bootstrap-src
+	mkdir -p $@
+	cp -a $</* $@
+
+xmlada-bootstrap-build: xmlada-bootstrap-src
+	mkdir -p $@
+	cp -a $</* $@
+
+.PHONY: gprbuild-bootstrap-install
+gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build gprbuild-depends
 	cd $<  && $(sudo) ./bootstrap.sh \
 	--with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
 
+####
+
+xmlada-build: xmlada-src
+	mkdir -p $@
+	cp -a $</* $@
+	cd $@ && ./configure --prefix=$(prefix)
+
 .PHONY: xmlada
 xmlada: xmlada-build xmlada-depends
-	cd $< && ./configure --prefix=$(prefix)
 	make -C $< all
+
+.PHONY: xmlada-install
+xmlada-install: xmlada-build
+	$(sudo) make -C $< install
+
+
+####
+
+gprbuild-build: gprbuild-src
+	mkdir -p $@
+	cp -a $</* $@
+	make -C $@ prefix=$(prefix) setup
 
 .PHONY: gprbuild
 gprbuild: gprbuild-build gprbuild-depends
-	make -C $< prefix=$(prefix) setup
 	make -C $< all
 	make -C $< libgpr.build
 
@@ -399,16 +388,24 @@ gprbuild-install: gprbuild-build
 
 #####
 
+gnatcoll-core-build: gnatcoll-core-src
+	mkdir -p $@
+	cp -a $</* $@
+	make -C $@ setup
+
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build gnatcoll-core-depends
-	make -C $< setup
 	make -C $<
 
 .PHONY: gnatcoll-core-install
 gnatcoll-core-install: gnatcoll-core-build
-	$(sudo) make -C $< prefix=$(prefix) install
+	$(sudo) make -C $< install
 
 #####
+
+gnatcoll-bindings-build: gnatcoll-bindings-src
+	mkdir -p $@
+	cp -a $</* $@
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build gnatcoll-bindings-depends
@@ -420,13 +417,22 @@ gnatcoll-bindings: gnatcoll-bindings-build gnatcoll-bindings-depends
 
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install: gnatcoll-bindings-build
-	cd $</gmp && $(sudo) ./setup.py install
-	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && $(sudo) ./setup.py install
-	cd $</python && $(sudo) ./setup.py install
-	cd $</readline && $(sudo) ./setup.py install
-	cd $</syslog && $(sudo) ./setup.py install
+	cd $</gmp && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd $</python && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd $</readline && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd $</syslog && $(sudo) ./setup.py install --prefix=$(prefix)
 
 #####
+
+gnatcoll-db-build: gnatcoll-db-src
+	mkdir -p $@
+	cp -a $</* $@
+	make -C $</sql prefix=$(prefix) setup
+	make -C $</gnatcoll_db2ada prefix=$(prefix) setup
+	make -C $</sqlite prefix=$(prefix) setup
+	make -C $</xref prefix=$(prefix) setup
+	make -C $</gnatinspect prefix=$(prefix) setup
 
 .PHONY: gnatcoll-db
 gnatcoll-db: |                \
@@ -446,7 +452,6 @@ gnatcoll-gnatinspect-install
 
 .PHONY: gnatcoll-sql
 gnatcoll-sql: gnatcoll-db-build gnatcoll-db-depends
-	make -C $</sql setup
 	make -C $</sql
 
 .PHONY: gnatcoll-sql-install
@@ -455,7 +460,6 @@ gnatcoll-sql-install: gnatcoll-db-build
 
 .PHONY: gnatcoll-gnatcoll_db2ada
 gnatcoll-gnatcoll_db2ada: gnatcoll-db-build gnatcoll-db-depends
-	make -C $</gnatcoll_db2ada setup
 	make -C $</gnatcoll_db2ada
 
 .PHONY: gnatcoll-gnatcoll_db2ada-install
@@ -464,7 +468,6 @@ gnatcoll-gnatcoll_db2ada-install: gnatcoll-db-build
 
 .PHONY: gnatcoll-sqlite
 gnatcoll-sqlite: gnatcoll-db-build gnatcoll-db-depends
-	make -C $</sqlite setup
 	make -C $</sqlite
 
 .PHONY: gnatcoll-sqlite-install
@@ -473,7 +476,6 @@ gnatcoll-sqlite-install: gnatcoll-db-build
 
 .PHONY: gnatcoll-xref
 gnatcoll-xref: gnatcoll-db-build gnatcoll-db-depends
-	make -C $</xref setup
 	make -C $</xref
 
 .PHONY: gnatcoll-xref-install
@@ -482,7 +484,6 @@ gnatcoll-xref-install: gnatcoll-db-build
 
 .PHONY: gnatcoll-gnatinspect
 gnatcoll-gnatinspect: gnatcoll-db-build gnatcoll-db-depends
-	make -C $</gnatinspect setup
 	make -C $</gnatinspect
 
 .PHONY: gnatcoll-gnatinspect-install
@@ -491,14 +492,20 @@ gnatcoll-gnatinspect-install: gnatcoll-db-build
 
 #####
 
-.PHONY: libadalang
-libadalang: libadalang-build langkit-build quex-src libadalang-depends
-	cd $< && virtualenv lal-venv
-	cd $< && . lal-venv/bin/activate \
+libadalang-build: libadalang-src langkit-src libadalang-depends
+	mkdir -p $@
+	cp -a $</* $@
+	cd $@ && virtualenv lal-venv
+	cd $@ && . lal-venv/bin/activate \
 	&& pip install -r REQUIREMENTS.dev \
 	&& mkdir -p lal-venv/src/langkit \
 	&& rm -rf lal-venv/src/langkit/* \
-	&& cp -a ../langkit-build/* lal-venv/src/langkit \
+	&& cp -a ../langkit-src/* lal-venv/src/langkit \
+	&& deactivate
+
+.PHONY: libadalang
+libadalang: libadalang-build quex-src libadalang-depends
+	cd $< && . lal-venv/bin/activate \
 	&& export QUEX_PATH=$(PWD)/quex-src \
 	&& ada/manage.py make \
 	&& deactivate
@@ -533,28 +540,37 @@ clean-libadalang-prefix:
 
 #####
 
+gtkada-build: gtkada-src
+	mkdir -p $@
+	cp -a $</* $@
+	cd $@ && ./configure --prefix=$(prefix)
+
 .PHONY: gtkada
 gtkada: gtkada-build gtkada-depends
-	cd $< && ./configure --prefix=$(prefix)
 	make -C $< PROCESSORS=0
+
+.PHONY: gtkada-install
+gtkada-install: gtkada-build
+	$(sudo) make -C $< install
 
 #####
 
-.PHONY: gps
-gps: gps-build gps-depends
-	cd $< && ./configure \
+gps-build: gps-src libadalang-tools-src
+	mkdir -p $@  $@/laltools
+	cp -a $</* $@
+	cp -a libadalang-tools-src/* $@/laltools
+	cd $@ && ./configure \
 	--prefix=$(prefix) \
 	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
+
+.PHONY: gps
+gps: gps-build gps-depends
 	make -C $< PROCESSORS=0
 
-gps-build: gps-src libadalang-tools-build
-	mkdir -p $@  $@/laltools
-	rsync -a --delete $</ $@
-	rsync -aL libadalang-tools-build/ $@/laltools
 
 .PHONY: gps-install
 gps-install: gps-build
-	$(sudo) make -C $< prefix=$(prefix) install
+	$(sudo) make -C $< install
 
 #
 # E N D  * - B U I L D / I N S T A L L
