@@ -120,7 +120,7 @@ gps gps-install
 #
 
 .PHONY: release
-release: $(release-name) base-depends
+release: $(release-name)
 
 .PHONY: $(release-name)
 $(release-name):
@@ -131,11 +131,11 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: release-download base-depends
+release-install: release-download
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 .PHONY: release-download
-release-download: $(release-loc)/$(release-name) base-depends
+release-download: $(release-loc)/$(release-name)
 
 $(release-loc)/$(release-name):
 	rm -rf $@ $@.tar.gz
@@ -184,40 +184,53 @@ base-depends:
 	ubuntu-minimal ubuntu-standard build-essential git
 
 .PHONY: gcc-depends
-gcc-depends: base-depends
+gcc-depends:
 	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git \
 	gnat gawk flex bison libc6-dev libc6-dev-i386
 
 .PHONY: xmlada-depends
-xmlada-depends: base-depends
+xmlada-depends:
+	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git
 
 .PHONY: gprbuild-depends
-gprbuild-depends: base-depends
+gprbuild-depends:
+	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git
 
 .PHONY: gnatcoll-core-depends
-gnatcoll-core-depends: base-depends
+gnatcoll-core-depends:
+	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git
 
 .PHONY: gnatcoll-bindings-depends
-gnatcoll-bindings-depends: base-depends
+gnatcoll-bindings-depends:
 	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git \
 	python-dev libgmp-dev zlib1g-dev libreadline-dev
 
 .PHONY: gnatcoll-db-depends
-gnatcoll-db-depends: base-depends
+gnatcoll-db-depends:
+	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git
 
 .PHONY: libadalang-depends
-libadalang-depends: base-depends
+libadalang-depends:
 	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git \
 	virtualenv python-dev libgmp-dev
 
 .PHONY: gtkada-depends
-gtkada-depends: base-depends
+gtkada-depends:
 	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git \
 	pkg-config libgtk-3-dev
 
 .PHONY: gps-depends
-gps-depends: base-depends
+gps-depends:
 	$(sudo) apt-get -qq -y install \
+	ubuntu-minimal ubuntu-standard build-essential git \
 	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
 	python-pip python-dev python-gi-dev python-cairo-dev \
 	libclang-dev libgmp-dev
