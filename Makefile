@@ -1,6 +1,6 @@
- version = master
+# adacore-version = master
 # gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
-# prefix = /usr/local/gnat, /usr/gnat, etc.
+# prefix = /usr/local, /usr/local/gnat, /usr/gnat, etc.
 
 release ?= 0.1.0-20190306
 gcc-version ?= gcc-8-branch
@@ -38,7 +38,7 @@ install: all-install
 depends: base-depends
 
 # deprecated target still used by travis-test
-
+#
 .PHONY: prerequisites-install
 prerequisites-install: base-depends
 
@@ -48,46 +48,31 @@ prerequisites-install: base-depends
 #
 
 .PHONY: all-src
-all-src: |  base-depends \
-gcc-src                  \
-xmlada-src               \
-gprbuild-src             \
-gnatcoll-core-src        \
-gnatcoll-bindings-src    \
-gnatcoll-db-src          \
-langkit-src              \
-quex-src                 \
-libadalang-src           \
-gtkada-src               \
-libadalang-tools-src     \
-gps-src
+all-src: base-depends
+all-src: gcc-src xmlada-src gprbuild-src
+all-src: gnatcoll-core-src gnatcoll-bindings-src gnatcoll-db-src
+all-src: libadalang-src langkit-src quex-src
+all-src: gtkada-src
+all-src: gps-src libadalang-tools-src
 
 .PHONY: all
-all: | base-depends      \
-gcc                      \
-xmlada                   \
-gprbuild                 \
-gnatcoll-core            \
-gnatcoll-bindings        \
-gnatcoll-db              \
-libadalang               \
-gtkada                   \
-gps
+all: base-depends
+all: gcc xmlada gprbuild
+all: gnatcoll-core gnatcoll-bindings gnatcoll-db
+all: libadalang
+all: gtkada
+all: gps
 
 .PHONY: all-install
-all-install: | base-depends      \
-gcc-install                      \
-xmlada-install                   \
-gprbuild-install                 \
-gnatcoll-core-install            \
-gnatcoll-bindings-install        \
-gnatcoll-db-install              \
-libadalang-install               \
-gtkada-install                   \
-gps-install
+all-install: base-depends
+all-install: gcc-install xmlada-install gprbuild-install
+all-install: gnatcoll-core-install gnatcoll-bindings-install gnatcoll-db-install
+all-install: libadalang-install
+all-install: gtkada-install
+all-install: gps-install
 
 #
-# E N D  A L L
+# A L L
 #
 ##############################################################
 #
@@ -95,24 +80,24 @@ gps-install
 #
 
 .PHONY: bootstrap
-bootstrap: | base-depends                                 \
-gcc gcc-install                                           \
-gprbuild-bootstrap-install                                \
-xmlada xmlada-install                                     \
-gprbuild gprbuild-install                                 \
-gnatcoll-core gnatcoll-core-install                       \
-gnatcoll-bindings gnatcoll-bindings-install               \
-gnatcoll-sql gnatcoll-sql-install                         \
-gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install \
-gnatcoll-sqlite gnatcoll-sqlite-install                   \
-gnatcoll-xref gnatcoll-xref-install                       \
-gnatcoll-gnatinspect gnatcoll-gnatinspect-install         \
-libadalang libadalang-install                             \
-gtkada gtkada-install                                     \
-gps gps-install
+bootstrap: base-depends
+bootstrap: gcc gcc-install
+bootstrap: gprbuild-bootstrap-install
+bootstrap: xmlada xmlada-install
+bootstrap: gprbuild gprbuild-install
+bootstrap: gnatcoll-core gnatcoll-core-install
+bootstrap: gnatcoll-bindings gnatcoll-bindings-install
+bootstrap: gnatcoll-sql gnatcoll-sql-install
+bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
+bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
+bootstrap: gnatcoll-xref gnatcoll-xref-install
+bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+bootstrap: libadalang libadalang-install
+bootstrap: gtkada gtkada-install
+bootstrap: gps gps-install
 
 #
-# E N D  B O O T S T R A P
+# B O O T S T R A P
 #
 ##############################################################
 #
@@ -144,7 +129,7 @@ $(release-loc)/$(release-name):
 	cd $(@D) && tar xf $(@F).tar.gz
 
 #
-# E N D  R E L E A S E
+# R E L E A S E
 #
 ##############################################################
 #
@@ -171,7 +156,7 @@ prefix-clean:
 	$(sudo) mkdir -p $(prefix)
 
 #
-# E N D  C L E A N
+# C L E A N
 #
 ##############################################################
 #
@@ -181,62 +166,50 @@ prefix-clean:
 .PHONY: base-depends
 base-depends:
 	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git
+	    ubuntu-minimal ubuntu-standard build-essential git
 
 .PHONY: gcc-depends
-gcc-depends:
+gcc-depends: base-depends
 	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git \
-	gnat gawk flex bison libc6-dev libc6-dev-i386
+	    gnat gawk flex bison libc6-dev libc6-dev-i386
 
 .PHONY: xmlada-depends
-xmlada-depends:
-	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git
+xmlada-depends: base-depends
 
 .PHONY: gprbuild-depends
-gprbuild-depends:
-	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git
+gprbuild-depends: base-depends
 
 .PHONY: gnatcoll-core-depends
-gnatcoll-core-depends:
-	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git
+gnatcoll-core-depends: base-depends
 
 .PHONY: gnatcoll-bindings-depends
-gnatcoll-bindings-depends:
+gnatcoll-bindings-depends: base-depends
 	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git \
-	python-dev libgmp-dev zlib1g-dev libreadline-dev
+	    python-dev libgmp-dev zlib1g-dev libreadline-dev
 
 .PHONY: gnatcoll-db-depends
-gnatcoll-db-depends:
-	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git
+gnatcoll-db-depends: base-depends
 
 .PHONY: libadalang-depends
-libadalang-depends:
+libadalang-depends: base-depends
 	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git \
-	virtualenv python-dev libgmp-dev
+	    virtualenv python-dev libgmp-dev
 
 .PHONY: gtkada-depends
-gtkada-depends:
+gtkada-depends: base-depends
 	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git \
-	pkg-config libgtk-3-dev
+	    pkg-config libgtk-3-dev
 
 .PHONY: gps-depends
-gps-depends:
+gps-depends: base-depends
 	$(sudo) apt-get -qq -y install \
-	ubuntu-minimal ubuntu-standard build-essential git \
-	pkg-config libglib2.0-dev libpango1.0-dev libatk1.0-dev libgtk-3-dev \
-	python-pip python-dev python-gi-dev python-cairo-dev \
-	libclang-dev libgmp-dev
+	    pkg-config libglib2.0-dev libpango1.0-dev \
+	    libatk1.0-dev libgtk-3-dev \
+	    python-dev python-gi-dev python-cairo-dev \
+	    libclang-dev libgmp-dev
 
 #
-# E N D  E X T E R N A L  B U I L D  D E P E N D E N C I E S
+# E X T E R N A L  B U I L D  D E P E N D E N C I E S
 #
 ##############################################################
 #
@@ -328,7 +301,7 @@ github-repo/%:
 #
 
 #
-# E N D   P A T C H E S
+# P A T C H E S
 #
 ##############################################################
 #
@@ -339,8 +312,8 @@ gcc-build: gcc-src gcc-depends
 	mkdir -p $@
 	rm -rf $@/*
 	cd $@ && ../$</configure \
-	--host=$(host) --build=$(build) --target=$(target) \
-	--prefix=$(prefix) --enable-languages=c,c++,ada \
+	    --host=$(host) --build=$(build) --target=$(target) \
+	    --prefix=$(prefix) --enable-languages=c,c++,ada \
 
 .PHONY: gcc
 gcc: gcc-build gcc-src
@@ -364,7 +337,7 @@ xmlada-bootstrap-build: xmlada-bootstrap-src xmlada-depends
 .PHONY: gprbuild-bootstrap-install
 gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build
 	cd $<  && $(sudo) ./bootstrap.sh \
-	--with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
+	    --with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
 
 ####
 
@@ -448,20 +421,18 @@ gnatcoll-db-build: gnatcoll-db-src gnatcoll-db-depends
 	make -C $</gnatinspect prefix=$(prefix) setup
 
 .PHONY: gnatcoll-db
-gnatcoll-db: |                \
-gnatcoll-sql                  \
-gnatcoll-gnatcoll_db2ada      \
-gnatcoll-sqlite               \
-gnatcoll-xref                 \
-gnatcoll-gnatinspect
+gnatcoll-db: gnatcoll-sql
+gnatcoll-db: gnatcoll-gnatcoll_db2ada
+gnatcoll-db: gnatcoll-sqlite
+gnatcoll-db: gnatcoll-xref
+gnatcoll-db: gnatcoll-gnatinspect
 
 .PHONY: gnatcoll-db-install
-gnatcoll-db-install: |           \
-gnatcoll-sql-install             \
-gnatcoll-gnatcoll_db2ada-install \
-gnatcoll-sqlite-install          \
-gnatcoll-xref-install            \
-gnatcoll-gnatinspect-install
+gnatcoll-db-install: gnatcoll-sql-install
+gnatcoll-db-install: gnatcoll-gnatcoll_db2ada-install
+gnatcoll-db-install: gnatcoll-sqlite-install
+gnatcoll-db-install: gnatcoll-xref-install
+gnatcoll-db-install: gnatcoll-gnatinspect-install
 
 .PHONY: gnatcoll-sql
 gnatcoll-sql: gnatcoll-db-build
@@ -510,25 +481,25 @@ libadalang-build: libadalang-src langkit-src libadalang-depends
 	cp -a $</* $@
 	cd $@ && virtualenv lal-venv
 	cd $@ && . lal-venv/bin/activate \
-	&& pip install -r REQUIREMENTS.dev \
-	&& mkdir -p lal-venv/src/langkit \
-	&& rm -rf lal-venv/src/langkit/* \
-	&& cp -a ../langkit-src/* lal-venv/src/langkit \
-	&& deactivate
+	    && pip install -r REQUIREMENTS.dev \
+	    && mkdir -p lal-venv/src/langkit \
+	    && rm -rf lal-venv/src/langkit/* \
+	    && cp -a ../langkit-src/* lal-venv/src/langkit \
+	    && deactivate
 
 .PHONY: libadalang
 libadalang: libadalang-build quex-src
 	cd $< && . lal-venv/bin/activate \
-	&& export QUEX_PATH=$(PWD)/quex-src \
-	&& ada/manage.py make \
-	&& deactivate
+	    && export QUEX_PATH=$(PWD)/quex-src \
+	    && ada/manage.py make \
+	    && deactivate
 
 .PHONY: libadalang-install
 libadalang-install: libadalang-build clean-libadalang-prefix
 	cd $< && $(sudo) sh -c ". lal-venv/bin/activate \
-	&& export QUEX_PATH=$(PWD)/quex-src \
-	&& ada/manage.py install $(prefix) \
-	&& deactivate"
+	    && export QUEX_PATH=$(PWD)/quex-src \
+	    && ada/manage.py install $(prefix) \
+	    && deactivate"
 
 
 .PHONY: clean-libadalang-prefix
@@ -573,8 +544,8 @@ gps-build: gps-src libadalang-tools-src gps-depends
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
 	cd $@ && ./configure \
-	--prefix=$(prefix) \
-	--with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
+	    --prefix=$(prefix) \
+	    --with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
 
 .PHONY: gps
 gps: gps-build
@@ -586,7 +557,7 @@ gps-install: gps-build
 	$(sudo) make -C $< install
 
 #
-# E N D  * - B U I L D / I N S T A L L
+# * - B U I L D / I N S T A L L
 #
 ##############################################################
 #
@@ -595,11 +566,11 @@ gps-install: gps-build
 .PHONY: gps-run
 gps-run:
 	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
-	&& export PYTHONPATH=$$PYTHONPATH:/usr/lib/python2.7/lib-dynload \
-	&& export PYTHONPATH=$$PYTHONPATH:$(prefix)/python \
-	&& export LD_LIBRARY_PATH= \
-	&& export DYLD_FALLBACK_LIBRARY_PATH= \
-	&& gps
+	    && export PYTHONPATH=$$PYTHONPATH:/usr/lib/python2.7/lib-dynload \
+	    && export PYTHONPATH=$$PYTHONPATH:$(prefix)/python \
+	    && export LD_LIBRARY_PATH= \
+	    && export DYLD_FALLBACK_LIBRARY_PATH= \
+	    && gps
 
 #
 #
