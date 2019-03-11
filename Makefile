@@ -3,9 +3,10 @@
 # prefix = /usr/local, /usr/local/gnat, /usr/gnat, etc.
 
 release ?= 0.1.0-20190306
-gcc-version ?= gcc-8-branch
+gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
+spark2014-version ?= fsf
 prefix ?= /usr/local
 sudo ?= sudo
 
@@ -54,6 +55,7 @@ all-src: gnatcoll-core-src gnatcoll-bindings-src gnatcoll-db-src
 all-src: libadalang-src langkit-src quex-src
 all-src: gtkada-src
 all-src: gps-src libadalang-tools-src
+all-src: spark2014-src CVC4-src Z3-src Alt-Ergo-src
 
 .PHONY: all
 all: base-depends
@@ -62,6 +64,7 @@ all: gnatcoll-core gnatcoll-bindings gnatcoll-db
 all: libadalang
 all: gtkada
 all: gps
+all: spark2014
 
 .PHONY: all-install
 all-install: base-depends
@@ -70,6 +73,7 @@ all-install: gnatcoll-core-install gnatcoll-bindings-install gnatcoll-db-install
 all-install: libadalang-install
 all-install: gtkada-install
 all-install: gps-install
+all-install: spark2014-install
 
 #
 # A L L
@@ -95,6 +99,7 @@ bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
 bootstrap: libadalang libadalang-install
 bootstrap: gtkada gtkada-install
 bootstrap: gps gps-install
+bootstrap: spark2014 spark2014-install
 
 #
 # B O O T S T R A P
@@ -208,6 +213,25 @@ gps-depends: base-depends
 	    python-dev python-gi-dev python-cairo-dev \
 	    libclang-dev libgmp-dev
 
+.PHONY: spark2014-depends
+spark2014-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+	    ocaml libocamlgraph-ocaml-dev \
+	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
+	    libzip-ocaml-dev ocplib-simplex-ocaml-dev
+
+.PHONY: CVC4-depends
+CVC4-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+
+.PHONY: Z3-depends
+Z3-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+
+.PHONY: Alt-Ergo-depends
+Alt-Ergo-depends: base-depends
+	$(sudo) apt-get -qq -y install \
+
 #
 # E X T E R N A L  B U I L D  D E P E N D E N C I E S
 #
@@ -246,6 +270,10 @@ langkit-src: github-src/adacore/langkit/$(libadalang-version)
 libadalang-src: github-src/adacore/libadalang/$(libadalang-version)
 libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
+spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
+CVC4-src: github-src/adacore/CVC4/$(adacore-version)
+Z3-src: github-src/adacore/Z3/$(adacore-version)
+Alt-Ergo-src: github-src/adacore/Alt-Ergo/$(adacore-version)
 
 quex-src: downloads/quex-0.65.4
 
@@ -265,6 +293,7 @@ github-src/%/trunk             \
 github-src/%/gcc-8-branch      \
 github-src/%/gcc-7-branch      \
 github-src/%/stable            \
+github-src/%/fsf               \
     : github-repo/%
 	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
 	cd github-repo/$(@D:github-src/%=%) && git pull
@@ -555,6 +584,75 @@ gps: gps-build
 .PHONY: gps-install
 gps-install: gps-build
 	$(sudo) make -C $< install
+
+#####
+
+spark2014-build: spark2014-src gcc-src spark2014-depends
+	cd $< && git submodule init
+	cd $< && git submodule update
+	mkdir -p $@
+	cp -a $</* $@
+	cd $@/gnat2why && ln -sf ../../gcc-src/gcc/ada gnat_src
+	make -C $@ setup
+
+
+.PHONY: spark2014
+spark2014: spark2014-build
+	make -C $<
+
+
+.PHONY: spark2014-install
+spark2014-install: spark2014-build
+	make -C $< install-all
+	$(sudo) cp -a $</install/* $(prefix)
+
+#####
+
+CVC4-build: CVC4-src gcc-src CVC4-depends
+	mkdir -p $@
+	cp -a $</* $@
+
+
+.PHONY: CVC4
+CVC4: CVC4-build
+	make -C $<
+
+
+.PHONY: CVC4-install
+CVC4-install: CVC4-build
+	make -C $< install
+
+#####
+
+Z3-build: Z3-src gcc-src Z3-depends
+	mkdir -p $@
+	cp -a $</* $@
+
+
+.PHONY: Z3
+Z3: Z3-build
+	make -C $<
+
+
+.PHONY: Z3-install
+Z3-install: Z3-build
+	make -C $< install
+
+#####
+
+Alt-Ergo-build: Alt-Ergo-src gcc-src Alt-Ergo-depends
+	mkdir -p $@
+	cp -a $</* $@
+
+
+.PHONY: Alt-Ergo
+Alt-Ergo: Alt-Ergo-build
+	make -C $<
+
+
+.PHONY: Alt-Ergo-install
+Alt-Ergo-install: Alt-Ergo-build
+	make -C $< install
 
 #
 # * - B U I L D / I N S T A L L
