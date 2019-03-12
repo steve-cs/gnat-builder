@@ -218,11 +218,13 @@ spark2014-depends: base-depends
 	$(sudo) apt-get -qq -y install \
 	    ocaml libocamlgraph-ocaml-dev \
 	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
-	    libzip-ocaml-dev ocplib-simplex-ocaml-dev
+	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
+	    cvc4 z3 alt-ergo
 
 .PHONY: CVC4-depends
 CVC4-depends: base-depends
 	$(sudo) apt-get -qq -y install \
+	libgmp-dev libantlr3c-dev libboost-dev
 
 .PHONY: Z3-depends
 Z3-depends: base-depends
@@ -608,15 +610,14 @@ spark2014-install: spark2014-build
 
 #####
 
-CVC4-build: CVC4-src gcc-src CVC4-depends
+CVC4-build: CVC4-src CVC4-depends
 	mkdir -p $@
 	cp -a $</* $@
-
+	cd $@ && ./configure --prefix=$(prefix)
 
 .PHONY: CVC4
 CVC4: CVC4-build
 	make -C $<
-
 
 .PHONY: CVC4-install
 CVC4-install: CVC4-build
@@ -624,7 +625,7 @@ CVC4-install: CVC4-build
 
 #####
 
-Z3-build: Z3-src gcc-src Z3-depends
+Z3-build: Z3-src Z3-depends
 	mkdir -p $@
 	cp -a $</* $@
 
