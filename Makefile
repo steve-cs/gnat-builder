@@ -259,9 +259,6 @@ downloads/quex-0.65.4:
 # from github
 
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
-	ln -s $< $@
-	cd $@ && ./contrib/download_prerequisites
-
 xmlada-src: github-src/adacore/xmlada/$(adacore-version)
 gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
 gtkada-src: github-src/adacore/gtkada/$(adacore-version)
@@ -329,6 +326,7 @@ github-repo/%:
 gcc-build: gcc-src gcc-depends
 	mkdir -p $@
 	rm -rf $@/*
+	cd $< && ./contrib/download_prerequisites
 	cd $@ && ../$</configure \
 	    --host=$(host) --build=$(build) --target=$(target) \
 	    --prefix=$(prefix) --enable-languages=c,c++,ada \
