@@ -279,11 +279,6 @@ Alt-Ergo-src: github-src/adacore/Alt-Ergo/$(adacore-version)
 
 quex-src: downloads/quex-0.65.4
 
-# aliases to other %-src
-
-xmlada-bootstrap-src: xmlada-src
-gprbuild-bootstrap-src: gprbuild-src
-
 # linking github-src/<account>/<repository>/<branch> from github
 # get the repository, update it, and checkout the requested branch
 
@@ -351,24 +346,18 @@ gcc: gcc-build gcc-src
 	make -C $< -j$(gcc-jobs)
 
 .PHONY: gcc-install
-gcc-install: gcc-build
-	$(sudo) make -C $< install
+gcc-install:
+	$(sudo) make -C gcc-build install
 
 
 #####
 
-gprbuild-bootstrap-build: gprbuild-bootstrap-src gprbuild-depends
-	mkdir -p $@
-	cp -a $</* $@
-
-xmlada-bootstrap-build: xmlada-bootstrap-src xmlada-depends
-	mkdir -p $@
-	cp -a $</* $@
-
 .PHONY: gprbuild-bootstrap-install
-gprbuild-bootstrap-install: gprbuild-bootstrap-build xmlada-bootstrap-build
-	cd $<  && $(sudo) ./bootstrap.sh \
-	    --with-xmlada=../xmlada-bootstrap-build --prefix=$(prefix)
+gprbuild-bootstrap-install: gprbuild-src xmlada-src
+	mkdir -p gprbuild-bootstrap-build
+	cp -a gprbuild-src/* gprbuild-bootstrap-build
+	cd gprbuild-bootstrap-build && $(sudo) ./bootstrap.sh \
+	    --with-xmlada=../xmlada-src --prefix=$(prefix)
 
 ####
 
@@ -382,8 +371,8 @@ xmlada: xmlada-build
 	make -C $< all
 
 .PHONY: xmlada-install
-xmlada-install: xmlada-build
-	$(sudo) make -C $< install
+xmlada-install:
+	$(sudo) make -C xmlada-build install
 
 
 ####
@@ -399,9 +388,9 @@ gprbuild: gprbuild-build
 	make -C $< libgpr.build
 
 .PHONY: gprbuild-install
-gprbuild-install: gprbuild-build
-	$(sudo) make -C $< install
-	$(sudo) make -C $< libgpr.install
+gprbuild-install:
+	$(sudo) make -C gprbuild-build install
+	$(sudo) make -C gprbuild-build libgpr.install
 
 #####
 
@@ -415,8 +404,8 @@ gnatcoll-core: gnatcoll-core-build
 	make -C $<
 
 .PHONY: gnatcoll-core-install
-gnatcoll-core-install: gnatcoll-core-build
-	$(sudo) make -C $< install
+gnatcoll-core-install:
+	$(sudo) make -C gnatcoll-core-build install
 
 #####
 
@@ -433,12 +422,12 @@ gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</syslog && ./setup.py build
 
 .PHONY: gnatcoll-bindings-install
-gnatcoll-bindings-install: gnatcoll-bindings-build
-	cd $</gmp && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd $</python && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd $</readline && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd $</syslog && $(sudo) ./setup.py install --prefix=$(prefix)
+gnatcoll-bindings-install:
+	cd gnatcoll-bindings-build/gmp && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd gnatcoll-bindings-build/iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd gnatcoll-bindings-build/python && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd gnatcoll-bindings-build/readline && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd gnatcoll-bindings-build/syslog && $(sudo) ./setup.py install --prefix=$(prefix)
 
 #####
 
@@ -470,40 +459,40 @@ gnatcoll-sql: gnatcoll-db-build
 	make -C $</sql
 
 .PHONY: gnatcoll-sql-install
-gnatcoll-sql-install: gnatcoll-db-build
-	$(sudo) make -C $</sql install
+gnatcoll-sql-install:
+	$(sudo) make -C gnatcoll-db-build/sql install
 
 .PHONY: gnatcoll-gnatcoll_db2ada
 gnatcoll-gnatcoll_db2ada: gnatcoll-db-build
 	make -C $</gnatcoll_db2ada
 
 .PHONY: gnatcoll-gnatcoll_db2ada-install
-gnatcoll-gnatcoll_db2ada-install: gnatcoll-db-build
-	$(sudo) make -C $</gnatcoll_db2ada install
+gnatcoll-gnatcoll_db2ada-install:
+	$(sudo) make -C gnatcoll-db-build/gnatcoll_db2ada install
 
 .PHONY: gnatcoll-sqlite
 gnatcoll-sqlite: gnatcoll-db-build
 	make -C $</sqlite
 
 .PHONY: gnatcoll-sqlite-install
-gnatcoll-sqlite-install: gnatcoll-db-build
-	$(sudo) make -C $</sqlite install
+gnatcoll-sqlite-install:
+	$(sudo) make -C gnatcoll-db-build/sqlite install
 
 .PHONY: gnatcoll-xref
 gnatcoll-xref: gnatcoll-db-build
 	make -C $</xref
 
 .PHONY: gnatcoll-xref-install
-gnatcoll-xref-install: gnatcoll-db-build
-	$(sudo) make -C $</xref install
+gnatcoll-xref-install:
+	$(sudo) make -C gnatcoll-db-build/xref install
 
 .PHONY: gnatcoll-gnatinspect
 gnatcoll-gnatinspect: gnatcoll-db-build
 	make -C $</gnatinspect
 
 .PHONY: gnatcoll-gnatinspect-install
-gnatcoll-gnatinspect-install: gnatcoll-db-build
-	$(sudo) make -C $</gnatinspect install
+gnatcoll-gnatinspect-install:
+	$(sudo) make -C gnatcoll-db-build/gnatinspect install
 
 #####
 
@@ -526,8 +515,8 @@ libadalang: libadalang-build quex-src
 	    && deactivate
 
 .PHONY: libadalang-install
-libadalang-install: libadalang-build clean-libadalang-prefix
-	cd $< && $(sudo) sh -c ". lal-venv/bin/activate \
+libadalang-install: clean-libadalang-prefix
+	cd libadalang-build && $(sudo) sh -c ". lal-venv/bin/activate \
 	    && export QUEX_PATH=$(PWD)/quex-src \
 	    && ada/manage.py install $(prefix) \
 	    && deactivate"
@@ -565,8 +554,8 @@ gtkada: gtkada-build
 	make -C $< PROCESSORS=0
 
 .PHONY: gtkada-install
-gtkada-install: gtkada-build
-	$(sudo) make -C $< install
+gtkada-install:
+	$(sudo) make -C gtkada-build install
 
 #####
 
@@ -584,8 +573,8 @@ gps: gps-build
 
 
 .PHONY: gps-install
-gps-install: gps-build gps-python-fixup
-	$(sudo) make -C $< install
+gps-install: gps-python-fixup
+	$(sudo) make -C gps-build install
 
 .PHONY: gps-python-fixup
 gps-python-fixup:
@@ -620,9 +609,9 @@ spark2014: spark2014-build
 
 
 .PHONY: spark2014-install
-spark2014-install: spark2014-build
-	make -C $< install-all
-	$(sudo) cp -a $</install/* $(prefix)
+spark2014-install:
+	make -C spark2014-build install-all
+	$(sudo) cp -a spark2014-build/install/* $(prefix)
 
 #####
 #
@@ -639,8 +628,8 @@ CVC4: CVC4-build
 	make -C $<
 
 .PHONY: CVC4-install
-CVC4-install: CVC4-build
-	make -C $< install
+CVC4-install:
+	make -C CVC4-build install
 
 #####
 #
@@ -659,8 +648,8 @@ Z3: Z3-build
 
 
 .PHONY: Z3-install
-Z3-install: Z3-build
-	make -C $< install
+Z3-install:
+	make -C Z3-build install
 
 #####
 #
@@ -677,8 +666,8 @@ Alt-Ergo: Alt-Ergo-build
 
 
 .PHONY: Alt-Ergo-install
-Alt-Ergo-install: Alt-Ergo-build
-	make -C $< install
+Alt-Ergo-install:
+	make -C Alt-Ergo-build install
 
 #
 # * - B U I L D / I N S T A L L
