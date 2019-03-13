@@ -584,8 +584,24 @@ gps: gps-build
 
 
 .PHONY: gps-install
-gps-install: gps-build
+gps-install: gps-build gps-python-fixup
 	$(sudo) make -C $< install
+
+.PHONY: gps-python-fixup
+gps-python-fixup:
+	$(sudo) mkdir -p $(prefix)/lib/python2.7
+	#
+	# gps is looking in $(prefix)/lib/python2.7/ to resolve dependencies
+	# debian/ubuntu apt-get is installing them in /usr/lib/python2.7
+	# copy the whole pile over so that we don't have to hack PYTHONPATH
+	#
+	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
+	#
+	# libadalang build is leaving some bits in $(prefix)/python/
+	# put them in $(prefix)/lib/python2.7/ where they will be found
+	#
+	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
+	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
 
 #####
 
@@ -609,6 +625,9 @@ spark2014-install: spark2014-build
 	$(sudo) cp -a $</install/* $(prefix)
 
 #####
+#
+# Not working yet.
+#
 
 CVC4-build: CVC4-src CVC4-depends
 	mkdir -p $@
@@ -624,6 +643,10 @@ CVC4-install: CVC4-build
 	make -C $< install
 
 #####
+#
+# Not working yet.
+#
+
 
 Z3-build: Z3-src Z3-depends
 	mkdir -p $@
@@ -640,7 +663,9 @@ Z3-install: Z3-build
 	make -C $< install
 
 #####
-
+#
+# not working yet.
+#
 Alt-Ergo-build: Alt-Ergo-src gcc-src Alt-Ergo-depends
 	mkdir -p $@
 	cp -a $</* $@
@@ -662,6 +687,8 @@ Alt-Ergo-install: Alt-Ergo-build
 #
 #
 
+# gps-run is no longer needed as gps-python-fixup does the work instead
+#
 .PHONY: gps-run
 gps-run:
 	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
