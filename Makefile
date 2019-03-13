@@ -323,14 +323,6 @@ github-repo/%:
 #
 ##############################################################
 #
-# P A T C H E S
-#
-
-#
-# P A T C H E S
-#
-##############################################################
-#
 # * - B U I L D / I N S T A L L
 #
 
@@ -613,80 +605,9 @@ spark2014-install:
 	make -C spark2014-build install-all
 	$(sudo) cp -a spark2014-build/install/* $(prefix)
 
-#####
-#
-# Not working yet.
-#
-
-CVC4-build: CVC4-src CVC4-depends
-	mkdir -p $@
-	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix)
-
-.PHONY: CVC4
-CVC4: CVC4-build
-	make -C $<
-
-.PHONY: CVC4-install
-CVC4-install:
-	make -C CVC4-build install
-
-#####
-#
-# Not working yet.
-#
-
-
-Z3-build: Z3-src Z3-depends
-	mkdir -p $@
-	cp -a $</* $@
-
-
-.PHONY: Z3
-Z3: Z3-build
-	make -C $<
-
-
-.PHONY: Z3-install
-Z3-install:
-	make -C Z3-build install
-
-#####
-#
-# not working yet.
-#
-Alt-Ergo-build: Alt-Ergo-src gcc-src Alt-Ergo-depends
-	mkdir -p $@
-	cp -a $</* $@
-
-
-.PHONY: Alt-Ergo
-Alt-Ergo: Alt-Ergo-build
-	make -C $<
-
-
-.PHONY: Alt-Ergo-install
-Alt-Ergo-install:
-	make -C Alt-Ergo-build install
 
 #
 # * - B U I L D / I N S T A L L
 #
 ##############################################################
-#
-#
 
-# gps-run is no longer needed as gps-python-fixup does the work instead
-#
-.PHONY: gps-run
-gps-run:
-	export PYTHONPATH=/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/dist-packages \
-	    && export PYTHONPATH=$$PYTHONPATH:/usr/lib/python2.7/lib-dynload \
-	    && export PYTHONPATH=$$PYTHONPATH:$(prefix)/python \
-	    && export LD_LIBRARY_PATH= \
-	    && export DYLD_FALLBACK_LIBRARY_PATH= \
-	    && gps
-
-#
-#
-##############################################################
