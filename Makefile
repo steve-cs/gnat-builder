@@ -38,11 +38,6 @@ install: all-install
 .PHONY: depends
 depends: base-depends
 
-# deprecated target still used by travis-test
-#
-.PHONY: prerequisites-install
-prerequisites-install: base-depends
-
 ##############################################################
 #
 # A L L
