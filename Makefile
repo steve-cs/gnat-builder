@@ -204,8 +204,10 @@ gnatcoll-db-depends: base-depends
 
 .PHONY: libadalang-depends
 libadalang-depends: base-depends
+ifeq ($(host), Linux)
 	$(sudo) apt-get -qq -y install \
 	    virtualenv python-dev libgmp-dev
+endif
 
 .PHONY: gtkada-depends
 gtkada-depends: base-depends
@@ -262,7 +264,7 @@ Alt-Ergo-depends: base-depends
 downloads/quex-0.65.4:
 	mkdir -p $(@D)
 	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
-	cd $(@D) && wget https://phoenixnap.dl.sourceforge.net/project/quex/HISTORY/0.65/$(@F).tar.gz
+	cd $(@D) && wget --no-check-certificate https://phoenixnap.dl.sourceforge.net/project/quex/HISTORY/0.65/$(@F).tar.gz
 	cd $(@D) && tar xf $(@F).tar.gz
 
 # from github
@@ -518,10 +520,17 @@ libadalang-build: libadalang-src langkit-src libadalang-depends
 
 .PHONY: libadalang
 libadalang: libadalang-build quex-src
+ifeq ($(host), Linux)
 	cd $< && . lal-venv/bin/activate \
 	    && export QUEX_PATH=$(PWD)/quex-src \
 	    && ada/manage.py make \
 	    && deactivate
+else ifeq ($(host), Darwin)
+	cd $< && . lal-venv/bin/activate \
+	    && export QUEX_PATH=$(PWD)/quex-src \
+	    && LIBRARY_PATH=$(prefix_gtk)/lib ada/manage.py make \
+	    && deactivate
+endif
 
 .PHONY: libadalang-install
 libadalang-install: clean-libadalang-prefix
