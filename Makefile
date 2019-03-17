@@ -171,7 +171,7 @@ prefix-clean:
 .PHONY: base-depends
 base-depends: sudo
 	$(sudo) apt-get -qq -y install \
-	    build-essential git
+	    make git wget build-essential
 
 .PHONY: sudo
 sudo: /usr/bin/sudo
