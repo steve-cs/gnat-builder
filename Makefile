@@ -139,7 +139,7 @@ $(release-loc)/$(release-name):
 #
 
 .PHONY: clean
-clean: 
+clean:
 	rm -rf *-src *-build
 
 %-clean:
@@ -194,8 +194,10 @@ gnatcoll-core-depends: base-depends
 
 .PHONY: gnatcoll-bindings-depends
 gnatcoll-bindings-depends: base-depends
+ifeq ($(host), Linux)
 	$(sudo) apt-get -qq -y install \
 	    python-dev libgmp-dev zlib1g-dev libreadline-dev
+endif
 
 .PHONY: gnatcoll-db-depends
 gnatcoll-db-depends: base-depends
@@ -418,7 +420,11 @@ gnatcoll-bindings-build: gnatcoll-bindings-src gnatcoll-bindings-depends
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
+ifeq ($(host), Linux)
 	cd $</gmp && ./setup.py build
+else ifeq ($(host), Darwin)
+	cd $</gmp && C_INCLUDE_PATH=$(prefix_gtk)/include LIBRARY_PATH=$(prefix_gtk)/lib ./setup.py build
+endif
 	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && ./setup.py build
 	cd $</python && ./setup.py build
 	cd $</readline && ./setup.py build --accept-gpl
@@ -572,7 +578,7 @@ gps-build: gps-src libadalang-tools-src gps-depends
 	cp -a libadalang-tools-src/* $@/laltools
 	cd $@ && ./configure \
 	    --prefix=$(prefix) \
-	    --with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
+	    --with-clang=/usr/lib/llvm-$(llvm-version)/lib/
 
 .PHONY: gps
 gps: gps-build
