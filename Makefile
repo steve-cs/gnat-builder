@@ -169,9 +169,15 @@ prefix-clean:
 #
 
 .PHONY: base-depends
-base-depends:
+base-depends: sudo
 	$(sudo) apt-get -qq -y install \
-	    ubuntu-minimal ubuntu-standard build-essential git
+	    build-essential git
+
+.PHONY: sudo
+sudo: /usr/bin/sudo
+
+/usr/bin/sudo:
+	apt-get -qq -y install sudo
 
 .PHONY: gcc-depends
 gcc-depends: base-depends
