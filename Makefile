@@ -9,6 +9,7 @@ libadalang-version ?= stable
 spark2014-version ?= fsf
 prefix ?= /usr/local
 sudo ?= sudo
+xnadalib-version ?= xnadalib-2018
 
 # Ubuntu bionic configuration
 #
@@ -17,7 +18,8 @@ iconv-opt ?= "-lc"
 
 # gcc configuration
 #
-host  ?= x86_64-linux-gnu
+UNAME=$(shell uname)
+host  ?= $(UNAME)
 build ?= $(host)
 target ?= $(build)
 gcc-jobs ?= 8
@@ -165,8 +167,10 @@ prefix-clean:
 
 .PHONY: base-depends
 base-depends: sudo
+ifeq ($(host), Linux)
 	$(sudo) apt-get -qq -y install \
 	    make git wget build-essential
+endif
 
 .PHONY: sudo
 sudo: /usr/bin/sudo
@@ -203,8 +207,10 @@ libadalang-depends: base-depends
 
 .PHONY: gtkada-depends
 gtkada-depends: base-depends
+ifeq ($(host), Linux)
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libgtk-3-dev
+endif
 
 .PHONY: gps-depends
 gps-depends: base-depends
@@ -262,7 +268,12 @@ downloads/quex-0.65.4:
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
 xmlada-src: github-src/adacore/xmlada/$(adacore-version)
 gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
+ifeq ($(host), Linux)
 gtkada-src: github-src/adacore/gtkada/$(adacore-version)
+else ifeq ($(host), Darwin)
+gtkada-src: github-src/blady-com/gtkada/$(xnadalib-version)
+endif
+
 gnatcoll-core-src: github-src/adacore/gnatcoll-core/$(adacore-version)
 gnatcoll-bindings-src: github-src/adacore/gnatcoll-bindings/$(adacore-version)
 gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(adacore-version)
@@ -289,6 +300,7 @@ github-src/%/gcc-8-branch      \
 github-src/%/gcc-7-branch      \
 github-src/%/stable            \
 github-src/%/fsf               \
+github-src/%/$(xnadalib-version) \
     : github-repo/%
 	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
 	cd github-repo/$(@D:github-src/%=%) && git pull
@@ -538,7 +550,11 @@ clean-libadalang-prefix:
 gtkada-build: gtkada-src gtkada-depends
 	mkdir -p $@
 	cp -a $</* $@
+ifeq ($(host), Linux)
 	cd $@ && ./configure --prefix=$(prefix)
+else ifeq ($(host), Darwin)
+	cd $@ && CPPFLAGS=-I$(prefix_gtk)/include LDFLAGS=-L$(prefix_gtk)/lib ./configure --prefix=$(prefix)
+endif
 
 .PHONY: gtkada
 gtkada: gtkada-build
