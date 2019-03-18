@@ -44,27 +44,55 @@ depends: base-depends
 #
 
 .PHONY: all-src
-all-src: base-depends
-all-src: gcc-src xmlada-src gprbuild-src
-all-src: gnatcoll-core-src gnatcoll-bindings-src gnatcoll-db-src
-all-src: libadalang-src langkit-src quex-src
+all-src: gcc-src
+all-src: xmlada-src
+all-src: gprbuild-src
+all-src: gnatcoll-core-src
+all-src: gnatcoll-bindings-src
+all-src: gnatcoll-db-src
+all-src: libadalang-src
+all-src: langkit-src
+all-src: quex-src
 all-src: gtkada-src
-all-src: gps-src libadalang-tools-src
-all-src: spark2014-src CVC4-src Z3-src Alt-Ergo-src
+all-src: gps-src
+all-src:libadalang-tools-src
+all-src: spark2014-src
+all-src: CVC4-src
+all-src: Z3-src
+all-src: Alt-Ergo-src
+
+.PHONY: all-depends
+all-depends: base-depends
+all-depends: gcc-depends
+all-depends: xmlada-depends
+all-depends: gprbuild-depends
+all-depends: gnatcoll-core-depends
+all-depends: gnatcoll-bindings-depends
+all-depends: gnatcoll-db-depends
+all-depends: libadalang-depends
+all-depends: gtkada-depends
+all-depends: gps-depends
+all-depends: spark2014-depends
 
 .PHONY: all
-all: base-depends
-all: gcc xmlada gprbuild
-all: gnatcoll-core gnatcoll-bindings gnatcoll-db
+all: gcc
+all: xmlada
+all: gprbuild
+all: gnatcoll-core
+all: gnatcoll-bindings
+all: gnatcoll-db
 all: libadalang
 all: gtkada
 all: gps
 all: spark2014
 
 .PHONY: all-install
-all-install: base-depends
-all-install: gcc-install xmlada-install gprbuild-install
-all-install: gnatcoll-core-install gnatcoll-bindings-install gnatcoll-db-install
+all-install: gcc-install
+all-install: xmlada-install
+all-install: gprbuild-install
+all-install: gnatcoll-core-install
+all-install: gnatcoll-bindings-install
+all-install: gnatcoll-db-install
 all-install: libadalang-install
 all-install: gtkada-install
 all-install: gps-install
@@ -78,8 +106,10 @@ all-install: spark2014-install
 # B O O T S T R A P
 #
 
+.PHONY: bootstrap-depends
+bootstrap-depends: all-depends
+
 .PHONY: bootstrap
-bootstrap: base-depends
 bootstrap: gcc gcc-install
 bootstrap: gprbuild-bootstrap-install
 bootstrap: xmlada xmlada-install
@@ -87,6 +117,7 @@ bootstrap: gprbuild gprbuild-install
 bootstrap: gnatcoll-core gnatcoll-core-install
 bootstrap: gnatcoll-bindings gnatcoll-bindings-install
 bootstrap: gnatcoll-sql gnatcoll-sql-install
+bootstrap: gnatcoll-db gnatcoll-db-install
 bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
 bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
 bootstrap: gnatcoll-xref gnatcoll-xref-install
@@ -324,7 +355,7 @@ github-repo/%:
 # * - B U I L D / I N S T A L L
 #
 
-gcc-build: gcc-src gcc-depends
+gcc-build: gcc-src
 	mkdir -p $@
 	rm -rf $@/*
 	cd $< && ./contrib/download_prerequisites
@@ -352,7 +383,7 @@ gprbuild-bootstrap-install: gprbuild-src xmlada-src
 
 ####
 
-xmlada-build: xmlada-src xmlada-depends
+xmlada-build: xmlada-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && ./configure --prefix=$(prefix)
@@ -368,7 +399,7 @@ xmlada-install:
 
 ####
 
-gprbuild-build: gprbuild-src gprbuild-depends
+gprbuild-build: gprbuild-src
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $@ prefix=$(prefix) setup
@@ -385,7 +416,7 @@ gprbuild-install:
 
 #####
 
-gnatcoll-core-build: gnatcoll-core-src gnatcoll-core-depends
+gnatcoll-core-build: gnatcoll-core-src
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $@ setup
@@ -400,7 +431,7 @@ gnatcoll-core-install:
 
 #####
 
-gnatcoll-bindings-build: gnatcoll-bindings-src gnatcoll-bindings-depends
+gnatcoll-bindings-build: gnatcoll-bindings-src
 	mkdir -p $@
 	cp -a $</* $@
 
@@ -422,7 +453,7 @@ gnatcoll-bindings-install:
 
 #####
 
-gnatcoll-db-build: gnatcoll-db-src gnatcoll-db-depends
+gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $</sql prefix=$(prefix) setup
@@ -487,7 +518,7 @@ gnatcoll-gnatinspect-install:
 
 #####
 
-libadalang-build: libadalang-src langkit-src libadalang-depends
+libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && virtualenv lal-venv
@@ -535,7 +566,7 @@ clean-libadalang-prefix:
 
 #####
 
-gtkada-build: gtkada-src gtkada-depends
+gtkada-build: gtkada-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && ./configure --prefix=$(prefix)
@@ -550,7 +581,7 @@ gtkada-install:
 
 #####
 
-gps-build: gps-src libadalang-tools-src gps-depends
+gps-build: gps-src libadalang-tools-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -585,7 +616,7 @@ gps-python-fixup:
 
 #####
 
-spark2014-build: spark2014-src gcc-src spark2014-depends
+spark2014-build: spark2014-src gcc-src
 	cd $< && git submodule init
 	cd $< && git submodule update
 	mkdir -p $@
