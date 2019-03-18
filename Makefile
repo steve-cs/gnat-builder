@@ -137,7 +137,7 @@ $(release-loc)/$(release-name):
 #
 
 .PHONY: clean
-clean: 
+clean:
 	rm -rf *-src *-build
 
 %-clean:
@@ -556,7 +556,7 @@ gps-build: gps-src libadalang-tools-src gps-depends
 	cp -a libadalang-tools-src/* $@/laltools
 	cd $@ && ./configure \
 	    --prefix=$(prefix) \
-	    --with-clang=/usr/lib/llvm-$(llvm-version)/lib/ 
+	    --with-clang=/usr/lib/llvm-$(llvm-version)/lib/
 
 .PHONY: gps
 gps: gps-build
