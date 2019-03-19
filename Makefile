@@ -110,22 +110,22 @@ all-install: spark2014-install
 bootstrap-depends: all-depends
 
 .PHONY: bootstrap
-bootstrap: | gcc gcc-install
-bootstrap: | gprbuild-bootstrap-install
-bootstrap: | xmlada xmlada-install
-bootstrap: | gprbuild gprbuild-install
-bootstrap: | gnatcoll-core gnatcoll-core-install
-bootstrap: | gnatcoll-bindings gnatcoll-bindings-install
-bootstrap: | gnatcoll-sql gnatcoll-sql-install
-bootstrap: | gnatcoll-db gnatcoll-db-install
-bootstrap: | gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
-bootstrap: | gnatcoll-sqlite gnatcoll-sqlite-install
-bootstrap: | gnatcoll-xref gnatcoll-xref-install
-bootstrap: | gnatcoll-gnatinspect gnatcoll-gnatinspect-install
-bootstrap: | libadalang libadalang-install
-bootstrap: | gtkada gtkada-install
-bootstrap: | gps gps-install
-bootstrap: | spark2014 spark2014-install
+bootstrap: gcc gcc-install
+bootstrap: gprbuild-bootstrap-install
+bootstrap: xmlada xmlada-install
+bootstrap: gprbuild gprbuild-install
+bootstrap: gnatcoll-core gnatcoll-core-install
+bootstrap: gnatcoll-bindings gnatcoll-bindings-install
+bootstrap: gnatcoll-sql gnatcoll-sql-install
+bootstrap: gnatcoll-db-build
+bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
+bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
+bootstrap: gnatcoll-xref gnatcoll-xref-install
+bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+bootstrap: libadalang libadalang-install
+bootstrap: gtkada gtkada-install
+bootstrap: gps gps-install
+bootstrap: spark2014 spark2014-install
 
 #
 # B O O T S T R A P
