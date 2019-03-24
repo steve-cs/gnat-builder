@@ -303,13 +303,10 @@ libadalang-src: github-src/adacore/libadalang/$(libadalang-version)
 libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
+gnat-src: github-src/steve-cs/gnat/master
 CVC4-src: github-src/adacore/CVC4/$(adacore-version)
 Z3-src: github-src/adacore/Z3/$(adacore-version)
 Alt-Ergo-src: github-src/adacore/Alt-Ergo/$(adacore-version)
-
-# really should have its own github repo
-gnat-src: gcc-src
-	ln -s $</gcc/ada $@
 
 quex-src: downloads/quex-0.65.4
 
