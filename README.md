@@ -12,6 +12,7 @@ gnatcoll-db | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?br
 libadalang | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=libadalang)](https://travis-ci.org/steve-cs/travis-test/branches) 
 gtkada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gtkada)](https://travis-ci.org/steve-cs/travis-test/branches) 
 gps | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gps)](https://travis-ci.org/steve-cs/travis-test/branches)
+spark2014 | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=spark2014)](https://travis-ci.org/steve-cs/travis-test/branches)
 
 
 ## Overview
@@ -118,3 +119,5 @@ This specifies where the build tools directory is or will be located.  Its conte
 ### gtkada, gtkada-install, gtkada-clean
 
 ### gps, gps-install, gps-clean
+
+### spark2014, spark2014-install, spark2014-clean
