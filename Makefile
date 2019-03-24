@@ -57,6 +57,7 @@ all-src: gtkada-src
 all-src: gps-src
 all-src:libadalang-tools-src
 all-src: spark2014-src
+all-src: gnat-src
 all-src: CVC4-src
 all-src: Z3-src
 all-src: Alt-Ergo-src
@@ -305,6 +306,10 @@ spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
 CVC4-src: github-src/adacore/CVC4/$(adacore-version)
 Z3-src: github-src/adacore/Z3/$(adacore-version)
 Alt-Ergo-src: github-src/adacore/Alt-Ergo/$(adacore-version)
+
+# really should have its own github repo
+gnat-src: gcc-src
+	ln -s $</gcc/ada $@
 
 quex-src: downloads/quex-0.65.4
 
@@ -616,12 +621,13 @@ gps-python-fixup:
 
 #####
 
-spark2014-build: spark2014-src gcc-src
+spark2014-build: spark2014-src gnat-src
 	cd $< && git submodule init
 	cd $< && git submodule update
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@/gnat2why && ln -sf ../../gcc-src/gcc/ada gnat_src
+	rm -rf $@/gnat2why/gnat_src
+	ln -s ../../gnat-src $@/gnat2why/gnat_src
 	make -C $@ setup
 
 
