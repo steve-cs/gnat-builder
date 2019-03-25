@@ -294,7 +294,7 @@ github-src/%/$(adacore-version)    \
 github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
     : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) && git reset --hard $(@F)
+	cd github-repo/$(@D:github-src/%=%) && git reset --hard origin/$(@F)
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
