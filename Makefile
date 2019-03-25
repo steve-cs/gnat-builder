@@ -51,15 +51,11 @@ all-src: gnatcoll-bindings-src
 all-src: gnatcoll-db-src
 all-src: libadalang-src
 all-src: langkit-src
-all-src: quex-src
 all-src: gtkada-src
 all-src: gps-src
 all-src:libadalang-tools-src
 all-src: spark2014-src
 all-src: gnat-src
-all-src: CVC4-src
-all-src: Z3-src
-all-src: Alt-Ergo-src
 
 .PHONY: all-depends
 all-depends: base-depends
@@ -277,16 +273,6 @@ Alt-Ergo-depends: base-depends
 	if [ "x$<" = "x" ]; then false; fi
 	ln -s $< $@
 
-# downloads
-
-downloads/quex-0.65.4:
-	mkdir -p $(@D)
-	cd $(@D) && rm -rf $(@F) $(@F).tar.gz
-	cd $(@D) && wget https://phoenixnap.dl.sourceforge.net/project/quex/HISTORY/0.65/$(@F).tar.gz
-	cd $(@D) && tar xf $(@F).tar.gz
-
-# from github
-
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
 xmlada-src: github-src/adacore/xmlada/$(adacore-version)
 gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
@@ -300,11 +286,6 @@ libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
 gnat-src: github-src/steve-cs/gnat/master
-CVC4-src: github-src/adacore/CVC4/$(adacore-version)
-Z3-src: github-src/adacore/Z3/$(adacore-version)
-Alt-Ergo-src: github-src/adacore/Alt-Ergo/$(adacore-version)
-
-quex-src: downloads/quex-0.65.4
 
 # linking github-src/<account>/<repository>/<branch> from github
 
@@ -510,16 +491,14 @@ libadalang-build: libadalang-src langkit-src
 	    && deactivate
 
 .PHONY: libadalang
-libadalang: libadalang-build quex-src
+libadalang: libadalang-build
 	cd $< && . lal-venv/bin/activate \
-	    && export QUEX_PATH=$(PWD)/quex-src \
 	    && ada/manage.py make \
 	    && deactivate
 
 .PHONY: libadalang-install
 libadalang-install: clean-libadalang-prefix
 	cd libadalang-build && $(sudo) sh -c ". lal-venv/bin/activate \
-	    && export QUEX_PATH=$(PWD)/quex-src \
 	    && ada/manage.py install $(prefix) \
 	    && deactivate"
 
