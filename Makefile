@@ -215,6 +215,9 @@ xmlada-depends: base-depends
 .PHONY: gprbuild-depends
 gprbuild-depends: base-depends
 
+.PHONY: libiconv-depends
+libiconv-depends: base-depends
+
 .PHONY: gnatcoll-core-depends
 gnatcoll-core-depends: base-depends
 
@@ -292,6 +295,7 @@ libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
 gnat-src: github-src/steve-cs/gnat/master
+libiconv-src: github-src/steve-cs/libiconv/master
 
 # linking github-src/<account>/<repository>/<branch> from github
 
@@ -380,6 +384,21 @@ gprbuild: gprbuild-build
 gprbuild-install:
 	$(sudo) make -C gprbuild-build install
 	$(sudo) make -C gprbuild-build libgpr.install
+
+#####
+
+libiconv-build: libiconv-src
+	mkdir -p $@
+	cp -a $</* $@
+	cd $@ && ./configure --prefix=$(prefix)
+
+.PHONY: libiconv
+libiconv: libiconv-build
+	make -C $<
+
+.PHONY: libiconv-install
+libiconv-install:
+	$(sudo) make -C libiconv-build install
 
 #####
 
