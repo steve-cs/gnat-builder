@@ -44,7 +44,6 @@ depends: base-depends
 #
 
 .PHONY: all-src
-all-src: gcc-src
 all-src: xmlada-src
 all-src: gprbuild-src
 all-src: gnatcoll-core-src
@@ -64,7 +63,6 @@ all-src: Alt-Ergo-src
 
 .PHONY: all-depends
 all-depends: base-depends
-all-depends: gcc-depends
 all-depends: xmlada-depends
 all-depends: gprbuild-depends
 all-depends: gnatcoll-core-depends
@@ -76,7 +74,6 @@ all-depends: gps-depends
 all-depends: spark2014-depends
 
 .PHONY: all
-all: gcc
 all: xmlada
 all: gprbuild
 all: gnatcoll-core
@@ -88,7 +85,6 @@ all: gps
 all: spark2014
 
 .PHONY: all-install
-all-install: gcc-install
 all-install: xmlada-install
 all-install: gprbuild-install
 all-install: gnatcoll-core-install
@@ -108,7 +104,7 @@ all-install: spark2014-install
 #
 
 .PHONY: bootstrap-depends
-bootstrap-depends: all-depends
+bootstrap-depends: gcc-depends all-depends
 
 .PHONY: bootstrap
 bootstrap: gcc gcc-install
@@ -311,34 +307,16 @@ Alt-Ergo-src: github-src/adacore/Alt-Ergo/$(adacore-version)
 quex-src: downloads/quex-0.65.4
 
 # linking github-src/<account>/<repository>/<branch> from github
-# get the repository, update it, and checkout the requested branch
 
-# github branches where we want to pull updates if available
-#
-github-src/%/branch            \
-github-src/%/master            \
-github-src/%/trunk             \
-github-src/%/gcc-8-branch      \
-github-src/%/gcc-7-branch      \
-github-src/%/stable            \
-github-src/%/fsf               \
+github-src/%/$(gcc-version)        \
+github-src/%/$(adacore-version)    \
+github-src/%/$(libadalang-version) \
+github-src/%/$(spark2014-version)  \
     : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
-	cd github-repo/$(@D:github-src/%=%) && git pull
+	cd github-repo/$(@D:github-src/%=%) && git reset --hard $(@F)
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
-
-# github tags, e.g. releases, which don't have updates to pull
-#
-github-src/%/tag               \
-github-src/%/gcc-7_2_0-release \
-    : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) && git checkout -f $(@F)
-	rm -rf $(@D)/*
-	mkdir -p $(@D)
-	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
-
 
 # Clone github-repo/<account>/<repository> from github.com
 
