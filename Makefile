@@ -99,11 +99,19 @@ all-install: spark2014-install
 # B O O T S T R A P
 #
 
+.PHONY: bootstrap-release
+bootstrap-release: bootstrap-clean
+bootstrap-release: bootstrap-gcc
+bootstrap-release: bootstrap
+
+.PHONY: bootstrap-gcc
+bootstrap-gcc: gcc-depends
+bootstrap-gcc: gcc gcc-install
+
 .PHONY: bootstrap-depends
-bootstrap-depends: gcc-depends all-depends
+bootstrap-depends: all-depends
 
 .PHONY: bootstrap
-bootstrap: gcc gcc-install
 bootstrap: gprbuild-bootstrap-install
 bootstrap: xmlada xmlada-install
 bootstrap: gprbuild gprbuild-install
@@ -129,6 +137,7 @@ bootstrap: spark2014 spark2014-install
 #
 
 .PHONY: release
+release: bootstrap-release
 release: $(release-name)
 
 .PHONY: $(release-name)
@@ -140,11 +149,8 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: release-download
+release-install: $(release-loc)/$(release-name)
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
-
-.PHONY: release-download
-release-download: $(release-loc)/$(release-name)
 
 $(release-loc)/$(release-name):
 	rm -rf $@ $@.tar.gz
