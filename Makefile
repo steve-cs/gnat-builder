@@ -13,7 +13,6 @@ sudo ?= sudo
 # Ubuntu bionic configuration
 #
 llvm-version ?= 6.0
-iconv-opt ?= "-lc"
 
 # gcc configuration
 #
@@ -46,6 +45,7 @@ depends: base-depends
 .PHONY: all-src
 all-src: xmlada-src
 all-src: gprbuild-src
+all-src: libconv-src
 all-src: gnatcoll-core-src
 all-src: gnatcoll-bindings-src
 all-src: gnatcoll-db-src
@@ -61,6 +61,7 @@ all-src: gnat-src
 all-depends: base-depends
 all-depends: xmlada-depends
 all-depends: gprbuild-depends
+all-depends: libiconv-depends
 all-depends: gnatcoll-core-depends
 all-depends: gnatcoll-bindings-depends
 all-depends: gnatcoll-db-depends
@@ -72,6 +73,7 @@ all-depends: spark2014-depends
 .PHONY: all
 all: xmlada
 all: gprbuild
+all: libiconv
 all: gnatcoll-core
 all: gnatcoll-bindings
 all: gnatcoll-db
@@ -83,6 +85,7 @@ all: spark2014
 .PHONY: all-install
 all-install: xmlada-install
 all-install: gprbuild-install
+all-install: libiconv-install
 all-install: gnatcoll-core-install
 all-install: gnatcoll-bindings-install
 all-install: gnatcoll-db-install
@@ -115,6 +118,7 @@ bootstrap-depends: all-depends
 bootstrap: gprbuild-bootstrap-install
 bootstrap: xmlada xmlada-install
 bootstrap: gprbuild gprbuild-install
+bootstrap: libiconv libiconv-install
 bootstrap: gnatcoll-core gnatcoll-core-install
 bootstrap: gnatcoll-bindings gnatcoll-bindings-install
 bootstrap: gnatcoll-sql gnatcoll-sql-install
@@ -424,7 +428,7 @@ gnatcoll-bindings-build: gnatcoll-bindings-src
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</gmp && ./setup.py build
-	cd $</iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && ./setup.py build
+	cd $</iconv && ./setup.py build
 	cd $</python && ./setup.py build
 	cd $</readline && ./setup.py build --accept-gpl
 	cd $</syslog && ./setup.py build
@@ -432,7 +436,7 @@ gnatcoll-bindings: gnatcoll-bindings-build
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install:
 	cd gnatcoll-bindings-build/gmp && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd gnatcoll-bindings-build/iconv && export GNATCOLL_ICONV_OPT=$(iconv-opt) && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd gnatcoll-bindings-build/iconv && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/python && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/readline && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/syslog && $(sudo) ./setup.py install --prefix=$(prefix)
