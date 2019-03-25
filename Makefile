@@ -10,10 +10,6 @@ spark2014-version ?= fsf
 prefix ?= /usr/local
 sudo ?= sudo
 
-# Ubuntu bionic configuration
-#
-llvm-version ?= 6.0
-
 # gcc configuration
 #
 host  ?= x86_64-linux-gnu
@@ -250,6 +246,7 @@ gps-depends: base-depends
 	    libatk1.0-dev libgtk-3-dev \
 	    python-dev python-gi-dev python-cairo-dev \
 	    libclang-dev libgmp-dev
+	$(sudo) cp /usr/lib/llvm-*/lib/libclang.so $(prefix)/lib
 
 .PHONY: spark2014-depends
 spark2014-depends: base-depends
@@ -573,9 +570,7 @@ gps-build: gps-src libadalang-tools-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
-	cd $@ && ./configure \
-	    --prefix=$(prefix) \
-	    --with-clang=/usr/lib/llvm-$(llvm-version)/lib/
+	cd $@ && ./configure --prefix=$(prefix)
 
 .PHONY: gps
 gps: gps-build
