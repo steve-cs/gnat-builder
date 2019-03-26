@@ -57,7 +57,6 @@ all-src: gnat-src
 all-depends: base-depends
 all-depends: xmlada-depends
 all-depends: gprbuild-depends
-all-depends: libiconv-depends
 all-depends: gnatcoll-core-depends
 all-depends: gnatcoll-bindings-depends
 all-depends: gnatcoll-db-depends
@@ -69,7 +68,6 @@ all-depends: spark2014-depends
 .PHONY: all
 all: xmlada
 all: gprbuild
-all: libiconv
 all: gnatcoll-core
 all: gnatcoll-bindings
 all: gnatcoll-db
@@ -81,7 +79,6 @@ all: spark2014
 .PHONY: all-install
 all-install: xmlada-install
 all-install: gprbuild-install
-all-install: libiconv-install
 all-install: gnatcoll-core-install
 all-install: gnatcoll-bindings-install
 all-install: gnatcoll-db-install
@@ -114,7 +111,6 @@ bootstrap-depends: all-depends
 bootstrap: gprbuild-bootstrap-install
 bootstrap: xmlada xmlada-install
 bootstrap: gprbuild gprbuild-install
-bootstrap: libiconv libiconv-install
 bootstrap: gnatcoll-core gnatcoll-core-install
 bootstrap: gnatcoll-bindings gnatcoll-bindings-install
 bootstrap: gnatcoll-sql gnatcoll-sql-install
@@ -215,9 +211,6 @@ xmlada-depends: base-depends
 .PHONY: gprbuild-depends
 gprbuild-depends: base-depends
 
-.PHONY: libiconv-depends
-libiconv-depends: base-depends
-
 .PHONY: gnatcoll-core-depends
 gnatcoll-core-depends: base-depends
 
@@ -296,7 +289,6 @@ libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
 gnat-src: github-src/steve-cs/gnat/master
-libiconv-src: github-src/steve-cs/libiconv/master
 
 # linking github-src/<account>/<repository>/<branch> from github
 
@@ -385,21 +377,6 @@ gprbuild: gprbuild-build
 gprbuild-install:
 	$(sudo) make -C gprbuild-build install
 	$(sudo) make -C gprbuild-build libgpr.install
-
-#####
-
-libiconv-build: libiconv-src
-	mkdir -p $@
-	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix)
-
-.PHONY: libiconv
-libiconv: libiconv-build
-	make -C $<
-
-.PHONY: libiconv-install
-libiconv-install:
-	$(sudo) make -C libiconv-build install
 
 #####
 
