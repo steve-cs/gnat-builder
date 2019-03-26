@@ -21,8 +21,8 @@ gcc-jobs ?= 8
 #
 release-loc = release
 release-url = https://github.com/steve-cs/gnat-builder/releases/download
-release-tag = v$(release)
-release-name = gnat-build_tools-$(release)
+release-tag = cs-$(release)
+release-name = gnat-$(release-tag)-$(host)
 
 .PHONY: default
 default: all
@@ -30,8 +30,8 @@ default: all
 .PHONY: install
 install: all-install
 
-.PHONY: depends
-depends: base-depends
+.PHONY: bootstrap
+bootstrap: all-bootstrap
 
 ##############################################################
 #
@@ -52,18 +52,6 @@ all-src: gps-src
 all-src:libadalang-tools-src
 all-src: spark2014-src
 all-src: gnat-src
-
-.PHONY: all-depends
-all-depends: base-depends
-all-depends: xmlada-depends
-all-depends: gprbuild-depends
-all-depends: gnatcoll-core-depends
-all-depends: gnatcoll-bindings-depends
-all-depends: gnatcoll-db-depends
-all-depends: libadalang-depends
-all-depends: gtkada-depends
-all-depends: gps-depends
-all-depends: spark2014-depends
 
 .PHONY: all
 all: xmlada
@@ -97,32 +85,31 @@ all-install: spark2014-install
 
 .PHONY: bootstrap-release
 bootstrap-release: bootstrap-clean
-bootstrap-release: bootstrap-gcc
-bootstrap-release: bootstrap
+bootstrap-release: gcc-bootstrap
+bootstrap-release: all-bootstrap
+bootstrap-release: release
 
-.PHONY: bootstrap-gcc
-bootstrap-gcc: gcc-depends
-bootstrap-gcc: gcc gcc-install
+.PHONY: gcc-bootstrap
+gcc-bootstrap: gcc-depends
+gcc-bootstrap: gcc gcc-install
 
-.PHONY: bootstrap-depends
-bootstrap-depends: all-depends
-
-.PHONY: bootstrap
-bootstrap: gprbuild-bootstrap-install
-bootstrap: xmlada xmlada-install
-bootstrap: gprbuild gprbuild-install
-bootstrap: gnatcoll-core gnatcoll-core-install
-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
-bootstrap: gnatcoll-sql gnatcoll-sql-install
-bootstrap: gnatcoll-db-build
-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
-bootstrap: gnatcoll-xref gnatcoll-xref-install
-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
-bootstrap: libadalang libadalang-install
-bootstrap: gtkada gtkada-install
-bootstrap: gps gps-install
-bootstrap: spark2014 spark2014-install
+.PHONY: all-bootstrap
+all-bootstrap: all-depends
+all-bootstrap: gprbuild-bootstrap-install
+all-bootstrap: xmlada xmlada-install
+all-bootstrap: gprbuild gprbuild-install
+all-bootstrap: gnatcoll-core gnatcoll-core-install
+all-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
+all-bootstrap: gnatcoll-sql gnatcoll-sql-install
+all-bootstrap: gnatcoll-db-build
+all-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
+all-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
+all-bootstrap: gnatcoll-xref gnatcoll-xref-install
+all-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+all-bootstrap: libadalang libadalang-install
+all-bootstrap: gtkada gtkada-install
+all-bootstrap: gps gps-install
+all-bootstrap: spark2014 spark2014-install
 
 #
 # B O O T S T R A P
@@ -133,7 +120,6 @@ bootstrap: spark2014 spark2014-install
 #
 
 .PHONY: release
-release: bootstrap-release
 release: $(release-name)
 
 .PHONY: $(release-name)
@@ -145,7 +131,7 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: $(release-loc)/$(release-name)
+release-install: $(release-loc)/$(release-name) all-depends
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 $(release-loc)/$(release-name):
@@ -188,6 +174,21 @@ prefix-clean:
 #
 # E X T E R N A L  B U I L D  D E P E N D E N C I E S
 #
+
+.PHONY: all-depends
+all-depends: base-depends
+all-depends: xmlada-depends
+all-depends: gprbuild-depends
+all-depends: gnatcoll-core-depends
+all-depends: gnatcoll-bindings-depends
+all-depends: gnatcoll-db-depends
+all-depends: libadalang-depends
+all-depends: gtkada-depends
+all-depends: gps-depends
+all-depends: spark2014-depends
+
+.PHONY: depends
+depends: base-depends
 
 .PHONY: base-depends
 base-depends: sudo
@@ -239,7 +240,15 @@ gps-depends: base-depends
 	    libatk1.0-dev libgtk-3-dev \
 	    python-dev python-gi-dev python-cairo-dev \
 	    libclang-dev libgmp-dev
+	#
+	# patch
+	# copy gps dependencies from /usr/lib to $(prefix)/lib
+	# so that gps can find them.
+	#
+	$(sudo) mkdir -p $(prefix)/lib
 	$(sudo) cp /usr/lib/llvm-*/lib/libclang.so $(prefix)/lib
+	$(sudo) mkdir -p $(prefix)/lib/python2.7
+	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
 
 .PHONY: spark2014-depends
 spark2014-depends: base-depends
@@ -248,19 +257,6 @@ spark2014-depends: base-depends
 	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
 	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
 	    cvc4 z3 alt-ergo
-
-.PHONY: CVC4-depends
-CVC4-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	libgmp-dev libantlr3c-dev libboost-dev
-
-.PHONY: Z3-depends
-Z3-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-
-.PHONY: Alt-Ergo-depends
-Alt-Ergo-depends: base-depends
-	$(sudo) apt-get -qq -y install \
 
 #
 # E X T E R N A L  B U I L D  D E P E N D E N C I E S
@@ -324,8 +320,9 @@ gcc-build: gcc-src
 	rm -rf $@/*
 	cd $< && ./contrib/download_prerequisites
 	cd $@ && ../$</configure \
+	    --prefix=$(prefix) \
 	    --host=$(host) --build=$(build) --target=$(target) \
-	    --prefix=$(prefix) --enable-languages=c,c++,ada \
+	    --enable-languages=c,c++,ada
 
 .PHONY: gcc
 gcc: gcc-build gcc-src
@@ -504,7 +501,15 @@ libadalang-install: clean-libadalang-prefix
 	cd libadalang-build && $(sudo) sh -c ". lal-venv/bin/activate \
 	    && ada/manage.py install $(prefix) \
 	    && deactivate"
-
+	#
+	# patch
+	# libadalang install is leaving some bits in $(prefix)/python/
+	# put them in $(prefix)/lib/python2.7/ where they will be found
+	# by gps at run (or build?) time
+	#
+	$(sudo) mkdir -p $(prefix)/lib/python2.7
+	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
+	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
 
 .PHONY: clean-libadalang-prefix
 clean-libadalang-prefix:
@@ -555,24 +560,8 @@ gps: gps-build
 
 
 .PHONY: gps-install
-gps-install: gps-python-fixup
+gps-install:
 	$(sudo) make -C gps-build install
-
-.PHONY: gps-python-fixup
-gps-python-fixup:
-	$(sudo) mkdir -p $(prefix)/lib/python2.7
-	#
-	# gps is looking in $(prefix)/lib/python2.7/ to resolve dependencies
-	# debian/ubuntu apt-get is installing them in /usr/lib/python2.7
-	# copy the whole pile over so that we don't have to hack PYTHONPATH
-	#
-	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
-	#
-	# libadalang build is leaving some bits in $(prefix)/python/
-	# put them in $(prefix)/lib/python2.7/ where they will be found
-	#
-	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
-	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
 
 #####
 
