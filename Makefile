@@ -41,7 +41,6 @@ bootstrap: all-bootstrap
 .PHONY: all-src
 all-src: xmlada-src
 all-src: gprbuild-src
-all-src: libconv-src
 all-src: gnatcoll-core-src
 all-src: gnatcoll-bindings-src
 all-src: gnatcoll-db-src
@@ -293,7 +292,8 @@ github-src/%/$(adacore-version)    \
 github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
     : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) && git reset --hard origin/$(@F)
+	cd github-repo/$(@D:github-src/%=%) && git reset --hard origin/master
+	cd github-repo/$(@D:github-src/%=%) && git checkout $(@F)
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
