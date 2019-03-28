@@ -2,7 +2,7 @@
 # gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local, /usr/local/gnat, /usr/gnat, etc.
 
-release ?= 20190326
+release ?= cs-20190326
 gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
@@ -30,8 +30,7 @@ gps-env        = export Build=Production
 #
 release-loc = release
 release-url = https://github.com/steve-cs/gnat-builder/releases/download
-release-tag = cs-$(release)
-release-name = gnat-$(release-tag)-$(host)
+release-name = gnat-$(release)-$(host)
 
 .PHONY: default
 default: all gcc
@@ -146,14 +145,19 @@ all-bootstrap: spark2014 spark2014-install
 .PHONY: release
 release: all gcc
 release: prefix-clean all-install gcc-install
+release: release-remove
 release: $(release-name)
+
+.PHONY: release-remove
+release-remove:
+	rm -rf $(release-loc)/$(release-name)
+	rm -rf $(release-loc)/$(release-name).tar.gz
 
 .PHONY: $(release-name)
 $(release-name):
 	mkdir -p $(release-loc)
-	cd $(release-loc) && rm -rf $@ $@.tar.gz
 	mkdir -p $(release-loc)/$@
-	cp -r $(prefix)/* $(release-loc)/$@/
+	cp -r $(prefix)/* $(release-loc)/$@
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
@@ -163,7 +167,7 @@ release-install: $(release-loc)/$(release-name) all-depends
 $(release-loc)/$(release-name):
 	rm -rf $@ $@.tar.gz
 	mkdir -p $(@D)
-	cd $(@D) && wget -q $(release-url)/$(release-tag)/$(@F).tar.gz
+	cd $(@D) && wget -q $(release-url)/$(release)/$(@F).tar.gz
 	cd $(@D) && tar xf $(@F).tar.gz
 
 #
