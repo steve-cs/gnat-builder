@@ -39,7 +39,7 @@ default: all gcc
 install: all-install gcc-install
 
 .PHONY: bootstrap
-bootstrap: all-bootstrap
+bootstrap: gcc-bootstrap all-bootstrap
 
 ##############################################################
 #
@@ -62,6 +62,7 @@ all-src: gnat-src
 all-src: quex-src
 
 .PHONY: all-clean
+all-clean: gprbuild-bootstrap-clean
 all-clean: xmlada-clean
 all-clean: gprbuild-clean
 all-clean: gnatcoll-core-clean
@@ -71,7 +72,7 @@ all-clean: libadalang-clean
 all-clean: langkit-clean
 all-clean: gtkada-clean
 all-clean: gps-clean
-all-clean:libadalang-tools-clean
+all-clean: libadalang-tools-clean
 all-clean: spark2014-clean
 all-clean: gnat-clean
 all-clean: quex-clean
@@ -107,10 +108,7 @@ all-install: spark2014-install
 #
 
 .PHONY: bootstrap-release
-bootstrap-release: bootstrap-clean
-bootstrap-release: gcc-bootstrap
-bootstrap-release: all-bootstrap
-bootstrap-release: release
+bootstrap-release: bootstrap release
 
 .PHONY: gcc-bootstrap
 gcc-bootstrap: gcc-depends
@@ -144,7 +142,7 @@ all-bootstrap: spark2014 spark2014-install
 
 .PHONY: release
 release: all gcc
-release: prefix-clean all-install gcc-install
+release: all-install gcc-install
 release: release-remove
 release: $(release-name)
 
