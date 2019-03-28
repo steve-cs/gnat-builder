@@ -56,7 +56,8 @@ all-src: libadalang-src
 all-src: langkit-src
 all-src: gtkada-src
 all-src: gps-src
-all-src:libadalang-tools-src
+all-src: libadalang-tools-src
+all-src: ada_language_server-src
 all-src: spark2014-src
 all-src: gnat-src
 all-src: quex-src
@@ -73,6 +74,7 @@ all-clean: langkit-clean
 all-clean: gtkada-clean
 all-clean: gps-clean
 all-clean: libadalang-tools-clean
+all-clean: ada_language_server-clean
 all-clean: spark2014-clean
 all-clean: gnat-clean
 all-clean: quex-clean
@@ -309,6 +311,7 @@ gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(adacore-version)
 langkit-src: github-src/adacore/langkit/$(libadalang-version)
 libadalang-src: github-src/adacore/libadalang/$(libadalang-version)
 libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
+ada_language_server-src: github-src/adacore/ada_language_server/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
 gnat-src: github-src/steve-cs/gnat/master
@@ -581,10 +584,12 @@ gtkada-install:
 
 #####
 
-gps-build: gps-src libadalang-tools-src
+gps-build: gps-src libadalang-tools-src ada_language_server-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
+	mkdir -p $@/ada_language_server
+	cp -a ada_language_server-src/* $@/ada_language_server
 	cd $@ && ./configure --prefix=$(prefix)
 
 .PHONY: gps
