@@ -34,10 +34,10 @@ release-tag = cs-$(release)
 release-name = gnat-$(release-tag)-$(host)
 
 .PHONY: default
-default: all
+default: all gcc
 
 .PHONY: install
-install: all-install
+install: all-install gcc-install
 
 .PHONY: bootstrap
 bootstrap: all-bootstrap
@@ -60,6 +60,22 @@ all-src: gps-src
 all-src:libadalang-tools-src
 all-src: spark2014-src
 all-src: gnat-src
+all-src: quex-src
+
+.PHONY: all-clean
+all-clean: xmlada-clean
+all-clean: gprbuild-clean
+all-clean: gnatcoll-core-clean
+all-clean: gnatcoll-bindings-clean
+all-clean: gnatcoll-db-clean
+all-clean: libadalang-clean
+all-clean: langkit-clean
+all-clean: gtkada-clean
+all-clean: gps-clean
+all-clean:libadalang-tools-clean
+all-clean: spark2014-clean
+all-clean: gnat-clean
+all-clean: quex-clean
 
 .PHONY: all
 all: xmlada
@@ -128,8 +144,8 @@ all-bootstrap: spark2014 spark2014-install
 #
 
 .PHONY: release
-release: clean gcc all
-release: prefix-clean gcc-install all-install
+release: all gcc
+release: prefix-clean all-install gcc-install
 release: $(release-name)
 
 .PHONY: $(release-name)
@@ -159,8 +175,7 @@ $(release-loc)/$(release-name):
 #
 
 .PHONY: clean
-clean:
-	rm -rf *-src *-build
+clean: all-clean gcc-clean github-clean
 
 %-clean:
 	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
