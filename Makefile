@@ -7,6 +7,7 @@ gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
 spark2014-version ?= fsf
+
 prefix ?= /usr/local
 sudo ?= sudo
 
@@ -16,6 +17,14 @@ host  ?= x86_64-linux-gnu
 build ?= $(host)
 target ?= $(build)
 gcc-jobs ?= 8
+
+# 19.X builds need some environment help in places
+# gnatcoll can't find iconv in libc unless we tell it
+# libadalang requires quex support
+# gps warnings fail in default Debug build
+gnatcoll-env   = export GNATCOLL_ICONV_OPT=-lc
+libadalang-env = export QUEX_PATH=$(PWD)/quex-src
+gps-env        = export Build=Production
 
 # release location and naming details
 #
@@ -119,6 +128,8 @@ all-bootstrap: spark2014 spark2014-install
 #
 
 .PHONY: release
+release: clean gcc all
+release: prefix-clean gcc-install all-install
 release: $(release-name)
 
 .PHONY: $(release-name)
@@ -284,16 +295,18 @@ libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
 gnat-src: github-src/steve-cs/gnat/master
+quex-src: github-src/steve-cs/quex/master
 
 # linking github-src/<account>/<repository>/<branch> from github
 
+github-src/%/master                \
 github-src/%/$(gcc-version)        \
 github-src/%/$(adacore-version)    \
 github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
     : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) && git reset --hard origin/master
-	cd github-repo/$(@D:github-src/%=%) && git checkout $(@F)
+	cd github-repo/$(@D:github-src/%=%) && git reset --hard
+	cd github-repo/$(@D:github-src/%=%) && git checkout origin/$(@F)
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
@@ -347,6 +360,8 @@ gprbuild-bootstrap-install: gprbuild-src xmlada-src
 xmlada-build: xmlada-src
 	mkdir -p $@
 	cp -a $</* $@
+	# 19.X releases might not have execute privileges
+	chmod 755 $@/configure
 	cd $@ && ./configure --prefix=$(prefix)
 
 .PHONY: xmlada
@@ -399,7 +414,7 @@ gnatcoll-bindings-build: gnatcoll-bindings-src
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</gmp && ./setup.py build
-	cd $</iconv && ./setup.py build
+	$(gnatcoll-env) && cd $</iconv && ./setup.py build
 	cd $</python && ./setup.py build
 	cd $</readline && ./setup.py build --accept-gpl
 	cd $</syslog && ./setup.py build
@@ -479,7 +494,7 @@ gnatcoll-gnatinspect-install:
 
 #####
 
-libadalang-build: libadalang-src langkit-src
+libadalang-build: libadalang-src langkit-src quex-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && virtualenv lal-venv
@@ -491,14 +506,16 @@ libadalang-build: libadalang-src langkit-src
 	    && deactivate
 
 .PHONY: libadalang
-libadalang: libadalang-build
+libadalang: libadalang-build quex-src
 	cd $< && . lal-venv/bin/activate \
+	    && $(libadalang-env) \
 	    && ada/manage.py make \
 	    && deactivate
 
 .PHONY: libadalang-install
 libadalang-install: clean-libadalang-prefix
 	cd libadalang-build && $(sudo) sh -c ". lal-venv/bin/activate \
+	    && $(libadalang-env) \
 	    && ada/manage.py install $(prefix) \
 	    && deactivate"
 	#
@@ -556,7 +573,7 @@ gps-build: gps-src libadalang-tools-src
 
 .PHONY: gps
 gps: gps-build
-	make -C $< PROCESSORS=0
+	$(gps-env) && make -C $< PROCESSORS=0
 
 
 .PHONY: gps-install
