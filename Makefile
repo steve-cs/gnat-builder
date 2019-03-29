@@ -33,191 +33,129 @@ release-url = https://github.com/steve-cs/gnat-builder/releases/download
 release-name = gnat-$(release)-$(host)
 
 .PHONY: default
-default: all gcc
+default: all
 
-.PHONY: install
-install: all-install gcc-install
-
-.PHONY: bootstrap
-bootstrap: gcc-bootstrap all-bootstrap
-
-##############################################################
-#
-# A L L
-#
-
-.PHONY: all-src
-all-src: xmlada-src
-all-src: gprbuild-src
-all-src: gnatcoll-core-src
-all-src: gnatcoll-bindings-src
-all-src: gnatcoll-db-src
-all-src: libadalang-src
-all-src: langkit-src
-all-src: gtkada-src
-all-src: gps-src
-all-src: libadalang-tools-src
-all-src: ada_language_server-src
-all-src: spark2014-src
-all-src: gnat-src
-all-src: quex-src
-
-.PHONY: all-clean
-all-clean: gprbuild-bootstrap-clean
-all-clean: xmlada-clean
-all-clean: gprbuild-clean
-all-clean: gnatcoll-core-clean
-all-clean: gnatcoll-bindings-clean
-all-clean: gnatcoll-db-clean
-all-clean: libadalang-clean
-all-clean: langkit-clean
-all-clean: gtkada-clean
-all-clean: gps-clean
-all-clean: libadalang-tools-clean
-all-clean: ada_language_server-clean
-all-clean: spark2014-clean
-all-clean: gnat-clean
-all-clean: quex-clean
+.PHONY: depends
+depends: all-depends
 
 .PHONY: all
-all: xmlada
-all: gprbuild
-all: gnatcoll-core
-all: gnatcoll-bindings
-all: gnatcoll-db
-all: libadalang
-all: gtkada
-all: gps
-all: spark2014
+all: all-gnat gcc
 
-.PHONY: all-install
-all-install: xmlada-install
-all-install: gprbuild-install
-all-install: gnatcoll-core-install
-all-install: gnatcoll-bindings-install
-all-install: gnatcoll-db-install
-all-install: libadalang-install
-all-install: gtkada-install
-all-install: gps-install
-all-install: spark2014-install
+.PHONY: install
+install: all-install
 
-#
-# A L L
-#
-##############################################################
-#
-# B O O T S T R A P
-#
+.PHONY: bootstrap
+bootstrap: all-bootstrap
+
+.PHONY: release
+release: all-release
 
 .PHONY: bootstrap-release
 bootstrap-release: bootstrap release
 
-.PHONY: gcc-bootstrap
-gcc-bootstrap: gcc-depends
-gcc-bootstrap: gcc gcc-install
+.PHONY: clean
+clean: all-clean
+
+##############################################################
+#
+# A L L
+#
+
+.PHONY: all-install
+all-install: gcc-install all-gnat-install
+
+.PHONY: all-gnat
+all-gnat: xmlada
+all-gnat: gprbuild
+all-gnat: gnatcoll-core
+all-gnat: gnatcoll-bindings
+all-gnat: gnatcoll-db
+all-gnat: libadalang
+all-gnat: gtkada
+all-gnat: gps
+all-gnat: spark2014
+
+.PHONY: all-gnat-install
+all-gnat-install: xmlada-install
+all-gnat-install: gprbuild-install
+all-gnat-install: gnatcoll-core-install
+all-gnat-install: gnatcoll-bindings-install
+all-gnat-install: gnatcoll-db-install
+all-gnat-install: libadalang-install
+all-gnat-install: gtkada-install
+all-gnat-install: gps-install
+all-gnat-install: spark2014-install
 
 .PHONY: all-bootstrap
-all-bootstrap: all-depends
-all-bootstrap: gprbuild-bootstrap-install
-all-bootstrap: xmlada xmlada-install
-all-bootstrap: gprbuild gprbuild-install
-all-bootstrap: gnatcoll-core gnatcoll-core-install
-all-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
-all-bootstrap: gnatcoll-sql gnatcoll-sql-install
-all-bootstrap: gnatcoll-db-build
-all-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
-all-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
-all-bootstrap: gnatcoll-xref gnatcoll-xref-install
-all-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
-all-bootstrap: libadalang libadalang-install
-all-bootstrap: gtkada gtkada-install
-all-bootstrap: gps gps-install
-all-bootstrap: spark2014 spark2014-install
+all-bootstrap: gcc-bootstrap all-gnat-bootstrap
+
+.PHONY: all-release
+all-release: all-gnat gcc
+all-release: all-gnat-install gcc-install
+all-release: release-remove
+all-release: $(release-name)
+
+.PHONY: all-clean
+all-clean: gcc-clean all-gnat-clean github-clean
+
+.PHONY: all-gnat-clean
+all-gnat-clean: gprbuild-bootstrap-clean
+all-gnat-clean: xmlada-clean
+all-gnat-clean: gprbuild-clean
+all-gnat-clean: gnatcoll-core-clean
+all-gnat-clean: gnatcoll-bindings-clean
+all-gnat-clean: gnatcoll-db-clean
+all-gnat-clean: libadalang-clean
+all-gnat-clean: langkit-clean
+all-gnat-clean: gtkada-clean
+all-gnat-clean: gps-clean
+all-gnat-clean: libadalang-tools-clean
+all-gnat-clean: ada_language_server-clean
+all-gnat-clean: spark2014-clean
+all-gnat-clean: gnat-clean
+all-gnat-clean: quex-clean
+
+.PHONY: all-src
+all-src: gcc-src all-gnat-src
+
+.PHONY: all-gnat-src
+all-gnat-src: xmlada-src
+all-gnat-src: gprbuild-src
+all-gnat-src: gnatcoll-core-src
+all-gnat-src: gnatcoll-bindings-src
+all-gnat-src: gnatcoll-db-src
+all-gnat-src: libadalang-src
+all-gnat-src: langkit-src
+all-gnat-src: gtkada-src
+all-gnat-src: gps-src
+all-gnat-src: libadalang-tools-src
+all-gnat-src: ada_language_server-src
+all-gnat-src: spark2014-src
+all-gnat-src: gnat-src
+all-gnat-src: quex-src
+
+.PHONY: all-depends
+all-depends: base-depends all-gnat-depends
+
+.PHONY: all-gnat-depends
+all-gnat-depends: base-depends
+all-gnat-depends: xmlada-depends
+all-gnat-depends: gprbuild-depends
+all-gnat-depends: gnatcoll-core-depends
+all-gnat-depends: gnatcoll-bindings-depends
+all-gnat-depends: gnatcoll-db-depends
+all-gnat-depends: libadalang-depends
+all-gnat-depends: gtkada-depends
+all-gnat-depends: gps-depends
+all-gnat-depends: spark2014-depends
 
 #
-# B O O T S T R A P
-#
-##############################################################
-#
-# R E L E A S E
-#
-
-.PHONY: release
-release: all gcc
-release: all-install gcc-install
-release: release-remove
-release: $(release-name)
-
-.PHONY: release-remove
-release-remove:
-	rm -rf $(release-loc)/$(release-name)
-	rm -rf $(release-loc)/$(release-name).tar.gz
-
-.PHONY: $(release-name)
-$(release-name):
-	mkdir -p $(release-loc)
-	mkdir -p $(release-loc)/$@
-	cp -r $(prefix)/* $(release-loc)/$@
-	cd $(release-loc) && tar czf $@.tar.gz $@
-
-.PHONY: release-install
-release-install: $(release-loc)/$(release-name) all-depends
-	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
-
-$(release-loc)/$(release-name):
-	rm -rf $@ $@.tar.gz
-	mkdir -p $(@D)
-	cd $(@D) && wget -q $(release-url)/$(release)/$(@F).tar.gz
-	cd $(@D) && tar xf $(@F).tar.gz
-
-#
-# R E L E A S E
-#
-##############################################################
-#
-# C L E A N
-#
-
-.PHONY: clean
-clean: all-clean gcc-clean github-clean
-
-%-clean:
-	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
-
-.PHONY: dist-clean
-dist-clean : clean
-	rm -rf downloads github-repo release
-
-.PHONY: bootstrap-clean
-bootstrap-clean: clean prefix-clean
-
-.PHONY: prefix-clean
-prefix-clean:
-	$(sudo) rm -rf $(prefix)/*
-	$(sudo) mkdir -p $(prefix)
-
-#
-# C L E A N
+# A L L
 #
 ##############################################################
 #
 # E X T E R N A L  B U I L D  D E P E N D E N C I E S
 #
-
-.PHONY: all-depends
-all-depends: base-depends
-all-depends: xmlada-depends
-all-depends: gprbuild-depends
-all-depends: gnatcoll-core-depends
-all-depends: gnatcoll-bindings-depends
-all-depends: gnatcoll-db-depends
-all-depends: libadalang-depends
-all-depends: gtkada-depends
-all-depends: gps-depends
-all-depends: spark2014-depends
-
-.PHONY: depends
-depends: base-depends
 
 .PHONY: base-depends
 base-depends: sudo
@@ -620,12 +558,95 @@ spark2014: spark2014-build
 
 .PHONY: spark2014-install
 spark2014-install:
-	make -C spark2014-build install-all
+	make -C spark2014-build
 	$(sudo) cp -a spark2014-build/install/* $(prefix)
 
 
 #
 # * - B U I L D / I N S T A L L
+#
+##############################################################
+#
+# B O O T S T R A P
+#
+
+.PHONY: gcc-bootstrap
+gcc-bootstrap: gcc-depends
+gcc-bootstrap: gcc gcc-install
+
+.PHONY: all-gnat-bootstrap
+all-gnat-bootstrap: all-gnat-depends
+all-gnat-bootstrap: gprbuild-bootstrap-install
+all-gnat-bootstrap: xmlada xmlada-install
+all-gnat-bootstrap: gprbuild gprbuild-install
+all-gnat-bootstrap: gnatcoll-core gnatcoll-core-install
+all-gnat-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
+all-gnat-bootstrap: gnatcoll-sql gnatcoll-sql-install
+all-gnat-bootstrap: gnatcoll-db-build
+all-gnat-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
+all-gnat-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
+all-gnat-bootstrap: gnatcoll-xref gnatcoll-xref-install
+all-gnat-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+all-gnat-bootstrap: libadalang libadalang-install
+all-gnat-bootstrap: gtkada gtkada-install
+all-gnat-bootstrap: gps gps-install
+all-gnat-bootstrap: spark2014 spark2014-install
+
+#
+# B O O T S T R A P
+#
+##############################################################
+#
+# R E L E A S E
+#
+
+.PHONY: $(release-name)
+$(release-name):
+	mkdir -p $(release-loc)
+	mkdir -p $(release-loc)/$@
+	cp -r $(prefix)/* $(release-loc)/$@
+	cd $(release-loc) && tar czf $@.tar.gz $@
+
+.PHONY: release-install
+release-install: $(release-loc)/$(release-name) all-depends
+	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
+
+$(release-loc)/$(release-name):
+	rm -rf $@ $@.tar.gz
+	mkdir -p $(@D)
+	cd $(@D) && wget -q $(release-url)/$(release)/$(@F).tar.gz
+	cd $(@D) && tar xf $(@F).tar.gz
+
+.PHONY: release-remove
+release-remove:
+	rm -rf $(release-loc)/$(release-name)
+	rm -rf $(release-loc)/$(release-name).tar.gz
+
+#
+# R E L E A S E
+#
+##############################################################
+#
+# C L E A N
+#
+
+%-clean:
+	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
+
+.PHONY: dist-clean
+dist-clean : clean
+	rm -rf downloads github-repo release
+
+.PHONY: bootstrap-clean
+bootstrap-clean: clean prefix-clean
+
+.PHONY: prefix-clean
+prefix-clean:
+	$(sudo) rm -rf $(prefix)/*
+	$(sudo) mkdir -p $(prefix)
+
+#
+# C L E A N
 #
 ##############################################################
 
