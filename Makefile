@@ -61,8 +61,39 @@ clean: all-clean
 # A L L
 #
 
-.PHONY: all-install
-all-install: gcc-install all-gnat-install
+.PHONY: all-depends
+all-depends: base-depends all-gnat-depends
+
+.PHONY: all-gnat-depends
+all-gnat-depends: base-depends
+all-gnat-depends: xmlada-depends
+all-gnat-depends: gprbuild-depends
+all-gnat-depends: gnatcoll-core-depends
+all-gnat-depends: gnatcoll-bindings-depends
+all-gnat-depends: gnatcoll-db-depends
+all-gnat-depends: libadalang-depends
+all-gnat-depends: gtkada-depends
+all-gnat-depends: gps-depends
+all-gnat-depends: spark2014-depends
+
+.PHONY: all-src
+all-src: gcc-src all-gnat-src
+
+.PHONY: all-gnat-src
+all-gnat-src: xmlada-src
+all-gnat-src: gprbuild-src
+all-gnat-src: gnatcoll-core-src
+all-gnat-src: gnatcoll-bindings-src
+all-gnat-src: gnatcoll-db-src
+all-gnat-src: libadalang-src
+all-gnat-src: langkit-src
+all-gnat-src: gtkada-src
+all-gnat-src: gps-src
+all-gnat-src: libadalang-tools-src
+all-gnat-src: ada_language_server-src
+all-gnat-src: spark2014-src
+all-gnat-src: gnat-src
+all-gnat-src: quex-src
 
 .PHONY: all-gnat
 all-gnat: xmlada
@@ -74,6 +105,9 @@ all-gnat: libadalang
 all-gnat: gtkada
 all-gnat: gps
 all-gnat: spark2014
+
+.PHONY: all-install
+all-install: gcc-install all-gnat-install
 
 .PHONY: all-gnat-install
 all-gnat-install: xmlada-install
@@ -114,40 +148,6 @@ all-gnat-clean: ada_language_server-clean
 all-gnat-clean: spark2014-clean
 all-gnat-clean: gnat-clean
 all-gnat-clean: quex-clean
-
-.PHONY: all-src
-all-src: gcc-src all-gnat-src
-
-.PHONY: all-gnat-src
-all-gnat-src: xmlada-src
-all-gnat-src: gprbuild-src
-all-gnat-src: gnatcoll-core-src
-all-gnat-src: gnatcoll-bindings-src
-all-gnat-src: gnatcoll-db-src
-all-gnat-src: libadalang-src
-all-gnat-src: langkit-src
-all-gnat-src: gtkada-src
-all-gnat-src: gps-src
-all-gnat-src: libadalang-tools-src
-all-gnat-src: ada_language_server-src
-all-gnat-src: spark2014-src
-all-gnat-src: gnat-src
-all-gnat-src: quex-src
-
-.PHONY: all-depends
-all-depends: base-depends all-gnat-depends
-
-.PHONY: all-gnat-depends
-all-gnat-depends: base-depends
-all-gnat-depends: xmlada-depends
-all-gnat-depends: gprbuild-depends
-all-gnat-depends: gnatcoll-core-depends
-all-gnat-depends: gnatcoll-bindings-depends
-all-gnat-depends: gnatcoll-db-depends
-all-gnat-depends: libadalang-depends
-all-gnat-depends: gtkada-depends
-all-gnat-depends: gps-depends
-all-gnat-depends: spark2014-depends
 
 #
 # A L L
@@ -233,8 +233,6 @@ spark2014-depends: base-depends
 # * - S R C
 #
 
-# most %-src are just symbolic links to their dependents
-
 %-src:
 	if [ "x$<" = "x" ]; then false; fi
 	ln -s $< $@
@@ -268,7 +266,7 @@ github-src/%/$(spark2014-version)  \
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
 
-# Clone github-repo/<account>/<repository> from github.com
+# clone github-repo/<account>/<repository> from github.com
 
 .PRECIOUS: github-repo/%
 github-repo/%:
