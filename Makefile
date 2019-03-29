@@ -2,7 +2,7 @@
 # gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local, /usr/local/gnat, /usr/gnat, etc.
 
-release ?= cs-20190326
+release ?= cs-20190328
 gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
