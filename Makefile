@@ -24,7 +24,8 @@ gcc-jobs ?= 8
 # gps warnings fail in default Debug build
 gnatcoll-env   = export GNATCOLL_ICONV_OPT=-lc
 libadalang-env = export QUEX_PATH=$(PWD)/quex-src
-gps-env        = export Build=Production
+#gps-env        = export Build=Production
+gps-env        = unset Build
 
 # release location and naming details
 #
