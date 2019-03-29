@@ -50,6 +50,9 @@ bootstrap: all-bootstrap
 .PHONY: release
 release: all-release
 
+.PHONY: build-release
+build-release: all prefix-clean all-install release
+
 .PHONY: bootstrap-release
 bootstrap-release: bootstrap release
 
@@ -121,7 +124,9 @@ all-gnat-install: gps-install
 all-gnat-install: spark2014-install
 
 .PHONY: all-bootstrap
-all-bootstrap: gcc-bootstrap all-gnat-bootstrap
+all-bootstrap: gcc-bootstrap
+all-bootstrap: gprbuild-bootstrap-install
+all-bootstrap: all-gnat-bootstrap
 
 .PHONY: all-release
 all-release: all-gnat gcc
@@ -247,7 +252,7 @@ gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(adacore-version)
 langkit-src: github-src/adacore/langkit/$(libadalang-version)
 libadalang-src: github-src/adacore/libadalang/$(libadalang-version)
 libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
-ada_language_server-src: github-src/adacore/ada_language_server/$(adacore-version)
+ada_language_server-src: github-src/adacore/ada_language_server/master
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
 gnat-src: github-src/steve-cs/gnat/master
@@ -574,7 +579,6 @@ gcc-bootstrap: gcc gcc-install
 
 .PHONY: all-gnat-bootstrap
 all-gnat-bootstrap: all-gnat-depends
-all-gnat-bootstrap: gprbuild-bootstrap-install
 all-gnat-bootstrap: xmlada xmlada-install
 all-gnat-bootstrap: gprbuild gprbuild-install
 all-gnat-bootstrap: gnatcoll-core gnatcoll-core-install
