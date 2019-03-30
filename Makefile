@@ -22,10 +22,12 @@ gcc-jobs ?= 8
 # gnatcoll can't find iconv in libc unless we tell it
 # libadalang requires quex support
 # gps warnings fail in default Debug build
-gnatcoll-env   = export GNATCOLL_ICONV_OPT=-lc
-libadalang-env = export QUEX_PATH=$(PWD)/quex-src
+#gnatcoll-env   = export GNATCOLL_ICONV_OPT=-lc
+#libadalang-env = export QUEX_PATH=$(PWD)/quex-src
 #gps-env        = export Build=Production
-gps-env        = unset Build
+gnatcoll-env   ?= true
+libadalang-env ?= true
+gps-env        ?= true
 
 # release location and naming details
 #
@@ -40,7 +42,7 @@ default: all
 depends: all-depends
 
 .PHONY: all
-all: gcc libiconv all-gnat
+all: libiconv gcc all-gnat
 
 .PHONY: install
 install: all-install
@@ -81,9 +83,10 @@ all-gnat-depends: gps-depends
 all-gnat-depends: spark2014-depends
 
 .PHONY: all-src
-all-src: gcc-src libiconv-src all-gnat-src
+all-src: libiconv-src gcc-src all-gnat-src
 
 .PHONY: all-gnat-src
+all-gnat-src: libiconv-src
 all-gnat-src: xmlada-src
 all-gnat-src: gprbuild-src
 all-gnat-src: gnatcoll-core-src
@@ -97,7 +100,6 @@ all-gnat-src: libadalang-tools-src
 all-gnat-src: ada_language_server-src
 all-gnat-src: spark2014-src
 all-gnat-src: gnat-src
-all-gnat-src: libiconv-src
 
 .PHONY: all-gnat
 all-gnat: xmlada
@@ -111,7 +113,7 @@ all-gnat: gps
 all-gnat: spark2014
 
 .PHONY: all-install
-all-install: gcc-install libiconv-install all-gnat-install
+all-install: libiconv-install gcc-install all-gnat-install
 
 .PHONY: all-gnat-install
 all-gnat-install: xmlada-install
@@ -130,13 +132,13 @@ all-bootstrap: gprbuild-bootstrap-install
 all-bootstrap: all-gnat-bootstrap
 
 .PHONY: all-release
-all-release: all-gnat gcc libiconv
-all-release: all-gnat-install gcc-install libiconv-install
+all-release: libiconv all-gnat gcc
+all-release: libiconv-install all-gnat-install gcc-install
 all-release: release-remove
 all-release: $(release-name)
 
 .PHONY: all-clean
-all-clean: gcc-clean libiconv-clean all-gnat-clean github-clean
+all-clean: libiconv-clean gcc-clean all-gnat-clean github-clean
 
 .PHONY: all-gnat-clean
 all-gnat-clean: gprbuild-bootstrap-clean
@@ -246,8 +248,8 @@ spark2014-depends: base-depends
 	if [ "x$<" = "x" ]; then false; fi
 	ln -s $< $@
 
-gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
 libiconv-src: github-src/steve-cs/libiconv/master
+gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
 xmlada-src: github-src/adacore/xmlada/$(adacore-version)
 gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
 gtkada-src: github-src/adacore/gtkada/$(adacore-version)
@@ -593,9 +595,8 @@ spark2014-install:
 #
 
 .PHONY: gcc-bootstrap
-gcc-bootstrap: gcc-depends
-gcc-bootstrap: gcc gcc-install
-gcc-bootstrap: libiconv libiconv-install
+gcc-bootstrap: libiconv-depends libiconv libiconv-install
+gcc-bootstrap: gcc-depends gcc gcc-install
 
 .PHONY: all-gnat-bootstrap
 all-gnat-bootstrap: all-gnat-depends
