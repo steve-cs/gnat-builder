@@ -134,8 +134,6 @@ all-bootstrap: gprbuild-bootstrap-install
 all-bootstrap: all-gnat-bootstrap
 
 .PHONY: all-release
-all-release: libiconv all-gnat gcc
-all-release: libiconv-install all-gnat-install gcc-install
 all-release: release-remove
 all-release: $(release-name)
 
