@@ -25,9 +25,11 @@ gcc-jobs ?= 8
 #gnatcoll-env   = export GNATCOLL_ICONV_OPT=-lc
 #libadalang-env = export QUEX_PATH=$(PWD)/quex-src
 #gps-env        = export Build=Production
+no-libiconv    ?= true
 gnatcoll-env   ?= true
 libadalang-env ?= true
 gps-env        ?= true
+
 
 # release location and naming details
 #
@@ -321,12 +323,12 @@ libiconv-build: libiconv-src
 
 .PHONY: libiconv
 libiconv: libiconv-build
-	make -C $<
+	$(no-libiconv) || make -C $<
 
 .PHONY: libiconv-install
 libiconv-install:
-	$(sudo) make -C libiconv-build install
-	$(sudo) ldconfig
+	$(no-libiconv) || $(sudo) make -C libiconv-build install
+	$(no-libiconv) || $(sudo) ldconfig
 
 #####
 
