@@ -25,7 +25,6 @@ gcc-jobs ?= 8
 #gnatcoll-env   = export GNATCOLL_ICONV_OPT=-lc
 #libadalang-env = export QUEX_PATH=$(PWD)/quex-src
 #gps-env        = export Build=Production
-no-libiconv    ?= true
 gnatcoll-env   ?= true
 libadalang-env ?= true
 gps-env        ?= true
@@ -44,7 +43,7 @@ default: all
 depends: all-depends
 
 .PHONY: all
-all: libiconv gcc all-gnat
+all: gcc all-gnat
 
 .PHONY: install
 install: all-install
@@ -85,10 +84,9 @@ all-gnat-depends: gps-depends
 all-gnat-depends: spark2014-depends
 
 .PHONY: all-src
-all-src: libiconv-src gcc-src all-gnat-src
+all-src: gcc-src all-gnat-src
 
 .PHONY: all-gnat-src
-all-gnat-src: libiconv-src
 all-gnat-src: xmlada-src
 all-gnat-src: gprbuild-src
 all-gnat-src: gnatcoll-core-src
@@ -115,7 +113,7 @@ all-gnat: gps
 all-gnat: spark2014
 
 .PHONY: all-install
-all-install: libiconv-install gcc-install all-gnat-install
+all-install: gcc-install all-gnat-install
 
 .PHONY: all-gnat-install
 all-gnat-install: xmlada-install
@@ -138,7 +136,7 @@ all-release: release-remove
 all-release: $(release-name)
 
 .PHONY: all-clean
-all-clean: libiconv-clean gcc-clean all-gnat-clean github-clean
+all-clean: gcc-clean all-gnat-clean github-clean
 
 .PHONY: all-gnat-clean
 all-gnat-clean: gprbuild-bootstrap-clean
@@ -180,9 +178,6 @@ sudo: /usr/bin/sudo
 gcc-depends: base-depends
 	$(sudo) apt-get -qq -y install \
 	    gnat gawk flex bison libc6-dev libc6-dev-i386
-
-.PHONY: libiconv-depends
-libiconv-depends: base-depends
 
 .PHONY: xmlada-depends
 xmlada-depends: base-depends
@@ -248,7 +243,6 @@ spark2014-depends: base-depends
 	if [ "x$<" = "x" ]; then false; fi
 	ln -s $< $@
 
-libiconv-src: github-src/steve-cs/libiconv/master
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
 xmlada-src: github-src/adacore/xmlada/$(adacore-version)
 gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
@@ -313,22 +307,6 @@ gcc-install:
 	$(sudo) make -C gcc-build install
 
 ####
-
-libiconv-build: libiconv-src
-	mkdir -p $@
-	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix)
-
-.PHONY: libiconv
-libiconv: libiconv-build
-	$(no-libiconv) || make -C $<
-
-.PHONY: libiconv-install
-libiconv-install:
-	$(no-libiconv) || $(sudo) make -C libiconv-build install
-	$(no-libiconv) || $(sudo) ldconfig
-
-#####
 
 .PHONY: gprbuild-bootstrap-install
 gprbuild-bootstrap-install: gprbuild-src xmlada-src
@@ -595,7 +573,6 @@ spark2014-install:
 #
 
 .PHONY: gcc-bootstrap
-gcc-bootstrap: libiconv-depends libiconv libiconv-install
 gcc-bootstrap: gcc-depends gcc gcc-install
 
 .PHONY: all-gnat-bootstrap
