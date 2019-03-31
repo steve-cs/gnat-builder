@@ -602,7 +602,7 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: $(release-loc)/$(release-name)
+release-install: $(release-loc)/$(release-name) all-depends
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 $(release-loc)/$(release-name):
