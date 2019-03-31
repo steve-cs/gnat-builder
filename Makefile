@@ -174,9 +174,6 @@ all-gnat-src: ada_language_server-src
 all-gnat-src: spark2014-src
 all-gnat-src: gnat-src
 
-.PHONY: all-all
-all-all: gcc all-gnat
-
 .PHONY: all-gnat
 all-gnat: xmlada
 all-gnat: gprbuild
