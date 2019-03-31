@@ -2,11 +2,11 @@
 # gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
 # prefix = /usr/local, /usr/local/gnat, /usr/gnat, etc.
 
-release ?= cs-20190328
-gcc-version ?= master
-adacore-version ?= master
-libadalang-version ?= stable
-spark2014-version ?= fsf
+release ?= cs-19.2.0-beta1
+gcc-version ?= gcc-8-branch
+adacore-version ?= 19.2
+libadalang-version ?= 19.2
+spark2014-version ?= 19.2
 
 prefix ?= /usr/local
 sudo ?= sudo
@@ -18,18 +18,18 @@ build ?= $(host)
 target ?= $(build)
 gcc-jobs ?= 8
 
-# 19.X builds need some environment help in places
-# gnatcoll can't find iconv in libc unless we tell it
-# libadalang requires quex support
-# gps warnings fail in default Debug build
-#gnatcoll-env   = export GNATCOLL_ICONV_OPT=-lc
-#libadalang-env = export QUEX_PATH=$(PWD)/quex-src
-#gps-env        = export Build=Production
-no-libiconv    ?= true
-gnatcoll-env   ?= true
-libadalang-env ?= true
-gps-env        ?= true
+# 19.2 gnatcoll-bindings needs source patching or else it
+# installs a gnatcoll_iconv.gpr that requires libiconv.
+# This has already been fixed in development.
+iconv_opt      = -lc
 
+# 19.2 build needs some environment help in places:
+# * gnatcoll can't find iconv in libc unless we tell it
+# * libadalang requires quex support
+# * gps warnings fail in default Debug build
+gnatcoll-env   = export GNATCOLL_ICONV_OPT=$(iconv_opt)
+libadalang-env = export QUEX_PATH=$(PWD)/quex-src
+gps-env        = export Build=Production
 
 # release location and naming details
 #
@@ -44,7 +44,7 @@ default: all
 depends: all-depends
 
 .PHONY: all
-all: libiconv gcc all-gnat
+all: gcc all-gnat
 
 .PHONY: install
 install: all-install
@@ -85,10 +85,9 @@ all-gnat-depends: gps-depends
 all-gnat-depends: spark2014-depends
 
 .PHONY: all-src
-all-src: libiconv-src gcc-src all-gnat-src
+all-src: gcc-src all-gnat-src
 
 .PHONY: all-gnat-src
-all-gnat-src: libiconv-src
 all-gnat-src: xmlada-src
 all-gnat-src: gprbuild-src
 all-gnat-src: gnatcoll-core-src
@@ -115,7 +114,7 @@ all-gnat: gps
 all-gnat: spark2014
 
 .PHONY: all-install
-all-install: libiconv-install gcc-install all-gnat-install
+all-install: gcc-install all-gnat-install
 
 .PHONY: all-gnat-install
 all-gnat-install: xmlada-install
@@ -133,14 +132,28 @@ all-bootstrap: gcc-bootstrap
 all-bootstrap: gprbuild-bootstrap-install
 all-bootstrap: all-gnat-bootstrap
 
+.PHONY: all-gnat-bootstrap
+all-gnat-bootstrap: xmlada xmlada-install
+all-gnat-bootstrap: gprbuild gprbuild-install
+all-gnat-bootstrap: gnatcoll-core gnatcoll-core-install
+all-gnat-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
+all-gnat-bootstrap: gnatcoll-sql gnatcoll-sql-install
+all-gnat-bootstrap: gnatcoll-db-build
+all-gnat-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
+all-gnat-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
+all-gnat-bootstrap: gnatcoll-xref gnatcoll-xref-install
+all-gnat-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+all-gnat-bootstrap: libadalang libadalang-install
+all-gnat-bootstrap: gtkada gtkada-install
+all-gnat-bootstrap: gps gps-install
+all-gnat-bootstrap: spark2014 spark2014-install
+
 .PHONY: all-release
-all-release: libiconv all-gnat gcc
-all-release: libiconv-install all-gnat-install gcc-install
 all-release: release-remove
 all-release: $(release-name)
 
 .PHONY: all-clean
-all-clean: libiconv-clean gcc-clean all-gnat-clean github-clean
+all-clean: gcc-clean all-gnat-clean github-clean
 
 .PHONY: all-gnat-clean
 all-gnat-clean: gprbuild-bootstrap-clean
@@ -182,9 +195,6 @@ sudo: /usr/bin/sudo
 gcc-depends: base-depends
 	$(sudo) apt-get -qq -y install \
 	    gnat gawk flex bison libc6-dev libc6-dev-i386
-
-.PHONY: libiconv-depends
-libiconv-depends: base-depends
 
 .PHONY: xmlada-depends
 xmlada-depends: base-depends
@@ -236,7 +246,7 @@ spark2014-depends: base-depends
 	    ocaml libocamlgraph-ocaml-dev \
 	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
 	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
-	    cvc4 z3 alt-ergo
+	    cvc4 z3 alt-ergo \
 
 #
 # E X T E R N A L  B U I L D  D E P E N D E N C I E S
@@ -250,7 +260,6 @@ spark2014-depends: base-depends
 	if [ "x$<" = "x" ]; then false; fi
 	ln -s $< $@
 
-libiconv-src: github-src/steve-cs/libiconv/master
 gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
 xmlada-src: github-src/adacore/xmlada/$(adacore-version)
 gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
@@ -297,6 +306,9 @@ github-repo/%:
 # * - B U I L D / I N S T A L L
 #
 
+.PHONY: gcc-bootstrap
+gcc-bootstrap: gcc gcc-install
+
 gcc-build: gcc-src
 	mkdir -p $@
 	rm -rf $@/*
@@ -315,22 +327,6 @@ gcc-install:
 	$(sudo) make -C gcc-build install
 
 ####
-
-libiconv-build: libiconv-src
-	mkdir -p $@
-	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix)
-
-.PHONY: libiconv
-libiconv: libiconv-build
-	$(no-libiconv) || make -C $<
-
-.PHONY: libiconv-install
-libiconv-install:
-	$(no-libiconv) || $(sudo) make -C libiconv-build install
-	$(no-libiconv) || $(sudo) ldconfig
-
-#####
 
 .PHONY: gprbuild-bootstrap-install
 gprbuild-bootstrap-install: gprbuild-src xmlada-src
@@ -393,11 +389,16 @@ gnatcoll-core-install:
 gnatcoll-bindings-build: gnatcoll-bindings-src
 	mkdir -p $@
 	cp -a $</* $@
+	#
+	# patch - force default for iconv_opt as export GNATCOLL_ICONV_OPT isn't working
+	#
+	sed -i 's/-liconv/$(iconv_opt)/g' $@/iconv/gnatcoll_iconv.gpr
+	#
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</gmp && ./setup.py build
-	cd $</iconv && ./setup.py build
+	$(gnatcoll-env) && cd $</iconv && ./setup.py build
 	cd $</python && ./setup.py build
 	cd $</readline && ./setup.py build --accept-gpl
 	cd $</syslog && ./setup.py build
@@ -405,7 +406,7 @@ gnatcoll-bindings: gnatcoll-bindings-build
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install:
 	cd gnatcoll-bindings-build/gmp && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd gnatcoll-bindings-build/iconv && $(sudo) ./setup.py install --prefix=$(prefix)
+	$(gnatcoll-env) && cd gnatcoll-bindings-build/iconv && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/python && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/readline && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/syslog && $(sudo) ./setup.py install --prefix=$(prefix)
@@ -576,49 +577,17 @@ spark2014-build: spark2014-src gnat-src
 	ln -s ../../gnat-src $@/gnat2why/gnat_src
 	make -C $@ setup
 
-
 .PHONY: spark2014
 spark2014: spark2014-build
 	make -C $<
 
-
 .PHONY: spark2014-install
 spark2014-install:
-	make -C spark2014-build
-	$(sudo) cp -a spark2014-build/install/* $(prefix)
-
+	make -C spark2014-build install-all
+	$(sudo) cp -r spark2014-build/install/* $(prefix)
 
 #
 # * - B U I L D / I N S T A L L
-#
-##############################################################
-#
-# B O O T S T R A P
-#
-
-.PHONY: gcc-bootstrap
-gcc-bootstrap: libiconv-depends libiconv libiconv-install
-gcc-bootstrap: gcc-depends gcc gcc-install
-
-.PHONY: all-gnat-bootstrap
-all-gnat-bootstrap: all-gnat-depends
-all-gnat-bootstrap: xmlada xmlada-install
-all-gnat-bootstrap: gprbuild gprbuild-install
-all-gnat-bootstrap: gnatcoll-core gnatcoll-core-install
-all-gnat-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
-all-gnat-bootstrap: gnatcoll-sql gnatcoll-sql-install
-all-gnat-bootstrap: gnatcoll-db-build
-all-gnat-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
-all-gnat-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
-all-gnat-bootstrap: gnatcoll-xref gnatcoll-xref-install
-all-gnat-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
-all-gnat-bootstrap: libadalang libadalang-install
-all-gnat-bootstrap: gtkada gtkada-install
-all-gnat-bootstrap: gps gps-install
-all-gnat-bootstrap: spark2014 spark2014-install
-
-#
-# B O O T S T R A P
 #
 ##############################################################
 #
@@ -633,7 +602,7 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: $(release-loc)/$(release-name) all-depends
+release-install: $(release-loc)/$(release-name)
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 $(release-loc)/$(release-name):
