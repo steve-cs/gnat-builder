@@ -50,7 +50,7 @@ all: gcc all-gnat
 install: all-install
 
 .PHONY: bootstrap
-bootstrap: all-bootstrap
+bootstrap: depends all-bootstrap
 
 .PHONY: release
 release: all-release
@@ -602,7 +602,7 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: release-install
-release-install: $(release-loc)/$(release-name) all-depends
+release-install: $(release-loc)/$(release-name) depends
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 $(release-loc)/$(release-name):
