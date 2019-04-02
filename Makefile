@@ -8,6 +8,7 @@ gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
 spark2014-version ?= fsf
+gnat-src-version ?= master
 
 prefix ?= /usr/local
 sudo ?= sudo
@@ -268,13 +269,14 @@ libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
 ada_language_server-src: github-src/adacore/ada_language_server/master
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
-gnat-src: github-src/steve-cs/gnat/master
+gnat-src: github-src/steve-cs/gnat/$(gnat-src-version)
 quex-src: github-src/steve-cs/quex/master
 
 # linking github-src/<account>/<repository>/<branch> from github
 
 github-src/%/master                \
 github-src/%/$(gcc-version)        \
+github-src/%/$(gnat-src-version)   \
 github-src/%/$(adacore-version)    \
 github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
