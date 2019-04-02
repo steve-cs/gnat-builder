@@ -10,6 +10,8 @@ libadalang-version ?= stable
 spark2014-version ?= fsf
 gnat-src-version ?= master
 
+os ?= debian
+
 prefix ?= /usr/local
 sudo ?= sudo
 
@@ -66,24 +68,10 @@ clean: all-clean
 # D E P E N D S
 #
 
+# all-* depends are os independent
+
 .PHONY: all-depends
 all-depends: base-depends gcc-depends all-gnat-depends
-
-.PHONY: base-depends
-base-depends: sudo
-	$(sudo) apt-get -qq -y install \
-	    make git wget build-essential
-
-.PHONY: sudo
-sudo: /usr/bin/sudo
-
-/usr/bin/sudo:
-	apt-get -qq -y install sudo
-
-.PHONY: gcc-depends
-gcc-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	    gnat gawk flex bison libc6-dev libc6-dev-i386
 
 .PHONY: all-gnat-depends
 all-gnat-depends: base-depends
@@ -97,35 +85,88 @@ all-gnat-depends: gtkada-depends
 all-gnat-depends: gps-depends
 all-gnat-depends: spark2014-depends
 
-.PHONY: xmlada-depends
-xmlada-depends: base-depends
+#  *-depends dispatch to os specific dependencies
 
-.PHONY: gprbuild-depends
-gprbuild-depends: base-depends
+.PHONY: base-depends
+base-depends: base-depends-$(os)
+
+.PHONY: gcc-depends
+gcc-depends: gcc-depends-$(os)
+
+.PHONY: xmlada-depends
+xmlada-depends: xmlada-depends-$(os)
+
+.PHONY: gprbuild-depend
+gprbuild-depends: gprbuild-depends-$(os)
 
 .PHONY: gnatcoll-core-depends
-gnatcoll-core-depends: base-depends
+gnatcoll-core-depends: gnatcoll-core-depends-$(os)
 
 .PHONY: gnatcoll-bindings-depends
-gnatcoll-bindings-depends: base-depends
+gnatcoll-bindings-depends: gnatcoll-bindings-depends-$(os)
+
+.PHONY: gnatcoll-db-depends
+gnatcoll-db-depends: gnatcoll-db-depends-$(os)
+
+.PHONY: libadalang-depends
+libadalang-depends: libadalang-depends-$(os)
+
+.PHONY: gtkada-depends
+gtkada-depends: gtkada-depends-$(os)
+
+.PHONY: gps-depends
+gps-depends: gps-depends-$(os)
+
+.PHONY: spark2014-depends
+spark2014-depends: spark2014-depends-$(os)
+
+##### os=debian dependency support
+
+.PHONY: sudo-debian
+sudo-debian:
+	if [ ! -f /usr/bin/sudo ]; then \
+	   apt-get -qq -y install sudo; \
+	fi
+
+.PHONY: base-depends-debian
+base-depends-debian: sudo-debian
+	$(sudo) apt-get -qq -y install \
+	    make git wget build-essential
+
+.PHONY: gcc-depends-debian
+gcc-depends-debian: base-depends-debian
+	$(sudo) apt-get -qq -y install \
+	    gnat gawk flex bison libc6-dev libc6-dev-i386
+
+.PHONY: xmlada-depends-debian
+xmlada-depend-debians: base-depends-debian
+
+.PHONY: gprbuild-depends-debian
+gprbuild-depends-debian: base-depends-debian
+
+.PHONY: gnatcoll-core-depends-debian
+gnatcoll-core-depends-debian: base-depends-debian
+
+.PHONY: gnatcoll-bindings-depends-debian
+gnatcoll-bindings-depends-debian: base-depends-debian
 	$(sudo) apt-get -qq -y install \
 	    python-dev libgmp-dev zlib1g-dev libreadline-dev
 
-.PHONY: gnatcoll-db-depends
-gnatcoll-db-depends: base-depends
+.PHONY: gnatcoll-db-depends-debian
+gnatcoll-db-depends-debian: base-depends-debian
 
-.PHONY: libadalang-depends
-libadalang-depends: base-depends
+.PHONY: libadalang-depends-debian
+libadalang-depends-debian: base-depends-debian
 	$(sudo) apt-get -qq -y install \
 	    virtualenv python-dev libgmp-dev
 
-.PHONY: gtkada-depends
-gtkada-depends: base-depends
+.PHONY: gtkada-depends-debian
+gtkada-depends-debian: base-depends-debian
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libgtk-3-dev
 
-.PHONY: gps-depends
-gps-depends: base-depends
+.PHONY: gps-depends-debian
+gps-depends-debian: base-depends-debian
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libglib2.0-dev libpango1.0-dev \
 	    libatk1.0-dev libgtk-3-dev \
@@ -141,13 +182,51 @@ gps-depends: base-depends
 	$(sudo) mkdir -p $(prefix)/lib/python2.7
 	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
 
-.PHONY: spark2014-depends
-spark2014-depends: base-depends
+.PHONY: spark2014-depends-debian
+spark2014-depends-debian: base-depends-debian
 	$(sudo) apt-get -qq -y install \
 	    ocaml libocamlgraph-ocaml-dev \
 	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
 	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
 	    cvc4 z3 alt-ergo
+
+#####  os=unknown dependency support (empty template)
+
+.PHONY: sudo-unknown
+sudo-unknown:
+
+.PHONY: base-depends-unknown
+base-depends-unknown: sudo-unknown
+
+.PHONY: gcc-depends-unknown
+gcc-depends-unknown: base-depends-unknown
+
+.PHONY: xmlada-depends-unknown
+xmlada-depend-unknowns: base-depends-unknown
+
+.PHONY: gprbuild-depends-unknown
+gprbuild-depends-unknown: base-depends-unknown
+
+.PHONY: gnatcoll-core-depends-unknown
+gnatcoll-core-depends-unknown: base-depends-unknown
+
+.PHONY: gnatcoll-bindings-depends-unknown
+gnatcoll-bindings-depends-unknown: base-depends-unknown
+
+.PHONY: gnatcoll-db-depends-unknown
+gnatcoll-db-depends-unknown: base-depends-unknown
+
+.PHONY: libadalang-depends-unknown
+libadalang-depends-unknown: base-depends-unknown
+
+.PHONY: gtkada-depends-unknown
+gtkada-depends-unknown: base-depends-unknown
+
+.PHONY: gps-depends-unknown
+gps-depends-unknown: base-depends-unknown
+
+.PHONY: spark2014-depends-unknown
+spark2014-depends-unknown: base-depends-unknown
 
 #
 # E N D   D E P E N D S
