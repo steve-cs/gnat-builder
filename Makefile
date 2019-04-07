@@ -360,7 +360,9 @@ github-src/%/$(adacore-version)    \
 github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
     : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) && git checkout $(@F)
+	cd github-repo/$(@D:github-src/%=%) \
+	&& git checkout $(@F) \
+	&& git pull
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
