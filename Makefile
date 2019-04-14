@@ -643,7 +643,7 @@ spark2014-build: spark2014-src gnat-src
 	mkdir -p $@
 	cp -a $</* $@
 	rm -rf $@/gnat2why/gnat_src
-	ln -s ../../gnat-src $@/gnat2why/gnat_src
+	ln -s ../../gnat-src/gcc/ada $@/gnat2why/gnat_src
 	make -C $@ setup
 
 
