@@ -1,42 +1,49 @@
-# adacore-version = master
-# gcc-version = master, trunk, gcc-8-branch gcc-7-branch, gcc-7_2_0-release
-# prefix = /usr/local, /usr/local/gnat, /usr/gnat, etc.
+##############################################################
+#
+# C O N F I G
+#
 
 release ?= cs-19.2.0-beta1
 gcc-version ?= gcc-8-branch
 adacore-version ?= 19.2
 libadalang-version ?= 19.2
 spark2014-version ?= 19.2
-gnat-src-version ?= gcc-8
+gnat-src-version ?= master
+
+os ?= debian
 
 prefix ?= /usr/local
 sudo ?= sudo
 
 # gcc configuration
-#
+
 host  ?= x86_64-linux-gnu
 build ?= $(host)
 target ?= $(build)
 gcc-jobs ?= 8
 
-# 19.2 gnatcoll-bindings needs source patching or else it
-# installs a gnatcoll_iconv.gpr that requires libiconv.
-# This has already been fixed in development.
-iconv_opt      = -lc
-
-# 19.2 build needs some environment help in places:
-# * gnatcoll can't find iconv in libc unless we tell it
-# * libadalang requires quex support
-# * gps warnings fail in default Debug build
-gnatcoll-env   = export GNATCOLL_ICONV_OPT=$(iconv_opt)
-libadalang-env = export QUEX_PATH=$(PWD)/quex-src
-gps-env        = export Build=Production
-
 # release location and naming details
-#
+
 release-loc = release
 release-url = https://github.com/steve-cs/gnat-builder/releases/download
 release-name = gnat-$(release)-$(host)
+
+# 19.2 patch summary (already fixed in development)
+#
+# *-src  - libadalang needs quex-src
+# xmlada - configure missing execute bits
+# gnatcoll-bindings - needs -lc instead of -liconv as default for iconv_opt
+# libadalang - needs quex-src support
+# gps - force Build=Production as default fails
+
+
+#
+# E N D   C O N F I G
+#
+##############################################################
+#
+# T O P   L E V E L
+#
 
 .PHONY: default
 default: all
@@ -45,33 +52,35 @@ default: all
 depends: all-depends
 
 .PHONY: all
-all: gcc all-gnat
+all: all-gnat
 
 .PHONY: install
-install: all-install
+install: all-gnat-install
 
 .PHONY: bootstrap
 bootstrap: depends all-bootstrap
 
 .PHONY: release
-release: all-release
+release: bootstrap-clean bootstrap all-release
 
-.PHONY: build-release
-build-release: all prefix-clean all-install release
-
-.PHONY: bootstrap-release
-bootstrap-release: bootstrap release
+.PHONY: release-install
+release-install: all-release-install depends
 
 .PHONY: clean
 clean: all-clean
 
+#
+# E N D   T O P   L E V E L
+#
 ##############################################################
 #
-# A L L
+# D E P E N D S
 #
 
+# all-* depends are os independent
+
 .PHONY: all-depends
-all-depends: base-depends all-gnat-depends
+all-depends: base-depends gcc-depends all-gnat-depends
 
 .PHONY: all-gnat-depends
 all-gnat-depends: base-depends
@@ -84,6 +93,157 @@ all-gnat-depends: libadalang-depends
 all-gnat-depends: gtkada-depends
 all-gnat-depends: gps-depends
 all-gnat-depends: spark2014-depends
+
+#  *-depends dispatch to os specific dependencies
+
+.PHONY: base-depends
+base-depends: base-depends-$(os)
+
+.PHONY: gcc-depends
+gcc-depends: gcc-depends-$(os)
+
+.PHONY: xmlada-depends
+xmlada-depends: xmlada-depends-$(os)
+
+.PHONY: gprbuild-depend
+gprbuild-depends: gprbuild-depends-$(os)
+
+.PHONY: gnatcoll-core-depends
+gnatcoll-core-depends: gnatcoll-core-depends-$(os)
+
+.PHONY: gnatcoll-bindings-depends
+gnatcoll-bindings-depends: gnatcoll-bindings-depends-$(os)
+
+.PHONY: gnatcoll-db-depends
+gnatcoll-db-depends: gnatcoll-db-depends-$(os)
+
+.PHONY: libadalang-depends
+libadalang-depends: libadalang-depends-$(os)
+
+.PHONY: gtkada-depends
+gtkada-depends: gtkada-depends-$(os)
+
+.PHONY: gps-depends
+gps-depends: gps-depends-$(os)
+
+.PHONY: spark2014-depends
+spark2014-depends: spark2014-depends-$(os)
+
+##### os=debian dependency support
+
+.PHONY: sudo-debian
+sudo-debian:
+	if [ ! -f /usr/bin/sudo ]; then \
+	   apt-get -qq -y install sudo; \
+	fi
+
+.PHONY: base-depends-debian
+base-depends-debian: sudo-debian
+	$(sudo) apt-get -qq -y install \
+	    make git wget build-essential
+
+.PHONY: gcc-depends-debian
+gcc-depends-debian: base-depends-debian
+	$(sudo) apt-get -qq -y install \
+	    gnat gawk flex bison libc6-dev libc6-dev-i386
+
+.PHONY: xmlada-depends-debian
+xmlada-depend-debians: base-depends-debian
+
+.PHONY: gprbuild-depends-debian
+gprbuild-depends-debian: base-depends-debian
+
+.PHONY: gnatcoll-core-depends-debian
+gnatcoll-core-depends-debian: base-depends-debian
+
+.PHONY: gnatcoll-bindings-depends-debian
+gnatcoll-bindings-depends-debian: base-depends-debian
+	$(sudo) apt-get -qq -y install \
+	    python-dev libgmp-dev zlib1g-dev libreadline-dev
+
+.PHONY: gnatcoll-db-depends-debian
+gnatcoll-db-depends-debian: base-depends-debian
+
+.PHONY: libadalang-depends-debian
+libadalang-depends-debian: base-depends-debian
+	$(sudo) apt-get -qq -y install \
+	    virtualenv python-dev libgmp-dev
+
+.PHONY: gtkada-depends-debian
+gtkada-depends-debian: base-depends-debian
+	$(sudo) apt-get -qq -y install \
+	    pkg-config libgtk-3-dev
+
+.PHONY: gps-depends-debian
+gps-depends-debian: base-depends-debian
+	$(sudo) apt-get -qq -y install \
+	    pkg-config libglib2.0-dev libpango1.0-dev \
+	    libatk1.0-dev libgtk-3-dev \
+	    python-dev python-gi-dev python-cairo-dev \
+	    libclang-dev libgmp-dev
+	#
+	# patch
+	# copy gps dependencies from /usr/lib to $(prefix)/lib
+	# so that gps can find them.
+	#
+	$(sudo) mkdir -p $(prefix)/lib
+	$(sudo) cp /usr/lib/llvm-*/lib/libclang.so $(prefix)/lib
+	$(sudo) mkdir -p $(prefix)/lib/python2.7
+	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
+
+.PHONY: spark2014-depends-debian
+spark2014-depends-debian: base-depends-debian
+	$(sudo) apt-get -qq -y install \
+	    ocaml libocamlgraph-ocaml-dev \
+	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
+	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
+	    cvc4 z3 alt-ergo
+
+#####  os=unknown dependency support (empty template)
+
+.PHONY: sudo-unknown
+sudo-unknown:
+
+.PHONY: base-depends-unknown
+base-depends-unknown: sudo-unknown
+
+.PHONY: gcc-depends-unknown
+gcc-depends-unknown: base-depends-unknown
+
+.PHONY: xmlada-depends-unknown
+xmlada-depend-unknowns: base-depends-unknown
+
+.PHONY: gprbuild-depends-unknown
+gprbuild-depends-unknown: base-depends-unknown
+
+.PHONY: gnatcoll-core-depends-unknown
+gnatcoll-core-depends-unknown: base-depends-unknown
+
+.PHONY: gnatcoll-bindings-depends-unknown
+gnatcoll-bindings-depends-unknown: base-depends-unknown
+
+.PHONY: gnatcoll-db-depends-unknown
+gnatcoll-db-depends-unknown: base-depends-unknown
+
+.PHONY: libadalang-depends-unknown
+libadalang-depends-unknown: base-depends-unknown
+
+.PHONY: gtkada-depends-unknown
+gtkada-depends-unknown: base-depends-unknown
+
+.PHONY: gps-depends-unknown
+gps-depends-unknown: base-depends-unknown
+
+.PHONY: spark2014-depends-unknown
+spark2014-depends-unknown: base-depends-unknown
+
+#
+# E N D   D E P E N D S
+#
+##############################################################
+#
+# A L L
+#
 
 .PHONY: all-src
 all-src: gcc-src all-gnat-src
@@ -150,7 +310,6 @@ all-gnat-bootstrap: gps gps-install
 all-gnat-bootstrap: spark2014 spark2014-install
 
 .PHONY: all-release
-all-release: release-remove
 all-release: $(release-name)
 
 .PHONY: all-clean
@@ -178,82 +337,6 @@ all-gnat-clean: quex-clean
 #
 ##############################################################
 #
-# E X T E R N A L  B U I L D  D E P E N D E N C I E S
-#
-
-.PHONY: base-depends
-base-depends: sudo
-	$(sudo) apt-get -qq -y install \
-	    make git wget build-essential
-
-.PHONY: sudo
-sudo: /usr/bin/sudo
-
-/usr/bin/sudo:
-	apt-get -qq -y install sudo
-
-.PHONY: gcc-depends
-gcc-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	    gnat gawk flex bison libc6-dev libc6-dev-i386
-
-.PHONY: xmlada-depends
-xmlada-depends: base-depends
-
-.PHONY: gprbuild-depends
-gprbuild-depends: base-depends
-
-.PHONY: gnatcoll-core-depends
-gnatcoll-core-depends: base-depends
-
-.PHONY: gnatcoll-bindings-depends
-gnatcoll-bindings-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	    python-dev libgmp-dev zlib1g-dev libreadline-dev
-
-.PHONY: gnatcoll-db-depends
-gnatcoll-db-depends: base-depends
-
-.PHONY: libadalang-depends
-libadalang-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	    virtualenv python-dev libgmp-dev
-
-.PHONY: gtkada-depends
-gtkada-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	    pkg-config libgtk-3-dev
-
-.PHONY: gps-depends
-gps-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	    pkg-config libglib2.0-dev libpango1.0-dev \
-	    libatk1.0-dev libgtk-3-dev \
-	    python-dev python-gi-dev python-cairo-dev \
-	    libclang-dev libgmp-dev
-	#
-	# patch
-	# copy gps dependencies from /usr/lib to $(prefix)/lib
-	# so that gps can find them.
-	#
-	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) cp /usr/lib/llvm-*/lib/libclang.so $(prefix)/lib
-	$(sudo) mkdir -p $(prefix)/lib/python2.7
-	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
-
-.PHONY: spark2014-depends
-spark2014-depends: base-depends
-	$(sudo) apt-get -qq -y install \
-	    ocaml libocamlgraph-ocaml-dev \
-	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
-	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
-	    cvc4 z3 alt-ergo \
-
-#
-# E X T E R N A L  B U I L D  D E P E N D E N C I E S
-#
-##############################################################
-#
 # * - S R C
 #
 
@@ -275,6 +358,8 @@ ada_language_server-src: github-src/adacore/ada_language_server/master
 gps-src: github-src/adacore/gps/$(adacore-version)
 spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
 gnat-src: github-src/steve-cs/gnat/$(gnat-src-version)
+#
+# patch 19.2 - libadalang build needs quex-src support
 quex-src: github-src/steve-cs/quex/master
 
 # linking github-src/<account>/<repository>/<branch> from github
@@ -286,7 +371,9 @@ github-src/%/$(adacore-version)    \
 github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
     : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) && git checkout $(@F)
+	cd github-repo/$(@D:github-src/%=%) \
+	&& git checkout $(@F) \
+	&& git pull
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
@@ -342,8 +429,10 @@ gprbuild-bootstrap-install: gprbuild-src xmlada-src
 xmlada-build: xmlada-src
 	mkdir -p $@
 	cp -a $</* $@
-	# 19.X releases might not have execute privileges
+	#
+	# patch 19.2 - configure missing execute bits
 	chmod 755 $@/configure
+	#
 	cd $@ && ./configure --prefix=$(prefix)
 
 .PHONY: xmlada
@@ -392,15 +481,13 @@ gnatcoll-bindings-build: gnatcoll-bindings-src
 	mkdir -p $@
 	cp -a $</* $@
 	#
-	# patch - force default for iconv_opt as export GNATCOLL_ICONV_OPT isn't working
-	#
-	sed -i 's/-liconv/$(iconv_opt)/g' $@/iconv/gnatcoll_iconv.gpr
-	#
+	# 19.2 patch - use libc instead of libiconv for default iconv_opt
+	sed -i 's/-liconv/-lc/g' $@/iconv/gnatcoll_iconv.gpr
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</gmp && ./setup.py build
-	$(gnatcoll-env) && cd $</iconv && ./setup.py build
+	cd $</iconv && ./setup.py build
 	cd $</python && ./setup.py build
 	cd $</readline && ./setup.py build --accept-gpl
 	cd $</syslog && ./setup.py build
@@ -408,7 +495,7 @@ gnatcoll-bindings: gnatcoll-bindings-build
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install:
 	cd gnatcoll-bindings-build/gmp && $(sudo) ./setup.py install --prefix=$(prefix)
-	$(gnatcoll-env) && cd gnatcoll-bindings-build/iconv && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd gnatcoll-bindings-build/iconv && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/python && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/readline && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/syslog && $(sudo) ./setup.py install --prefix=$(prefix)
@@ -480,6 +567,8 @@ gnatcoll-gnatinspect-install:
 
 #####
 
+# patch 19.2 - libadalang build needs quex-src support
+
 libadalang-build: libadalang-src langkit-src quex-src
 	mkdir -p $@
 	cp -a $</* $@
@@ -494,14 +583,14 @@ libadalang-build: libadalang-src langkit-src quex-src
 .PHONY: libadalang
 libadalang: libadalang-build quex-src
 	cd $< && . lal-venv/bin/activate \
-	    && $(libadalang-env) \
+	    && export QUEX_PATH=$(PWD)/quex-src \
 	    && ada/manage.py make \
 	    && deactivate
 
 .PHONY: libadalang-install
 libadalang-install: clean-libadalang-prefix
 	cd libadalang-build && $(sudo) sh -c ". lal-venv/bin/activate \
-	    && $(libadalang-env) \
+	    && export QUEX_PATH=$(PWD)/quex-src \
 	    && ada/manage.py install $(prefix) \
 	    && deactivate"
 	#
@@ -561,7 +650,11 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src
 
 .PHONY: gps
 gps: gps-build
-	$(gps-env) && make -C $< PROCESSORS=0
+	#
+	# patch 19.2 - force Build=Production as default fails
+	export Build=Production && \
+	#                       && \
+	make -C $< PROCESSORS=0
 
 
 .PHONY: gps-install
@@ -579,14 +672,16 @@ spark2014-build: spark2014-src gnat-src
 	ln -s ../../gnat-src $@/gnat2why/gnat_src
 	make -C $@ setup
 
+
 .PHONY: spark2014
 spark2014: spark2014-build
 	make -C $<
 
+
 .PHONY: spark2014-install
 spark2014-install:
 	make -C spark2014-build install-all
-	$(sudo) cp -r spark2014-build/install/* $(prefix)
+	$(sudo) cp -a spark2014-build/install/* $(prefix)
 
 #
 # * - B U I L D / I N S T A L L
@@ -598,13 +693,15 @@ spark2014-install:
 
 .PHONY: $(release-name)
 $(release-name):
+	rm -rf $(release-loc)/$@
+	rm -rf $(release-loc)/$@.tar.gz
 	mkdir -p $(release-loc)
 	mkdir -p $(release-loc)/$@
 	cp -r $(prefix)/* $(release-loc)/$@
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
-.PHONY: release-install
-release-install: $(release-loc)/$(release-name) depends
+.PHONY: all-release-install
+all-release-install: $(release-loc)/$(release-name)
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 $(release-loc)/$(release-name):
@@ -612,11 +709,6 @@ $(release-loc)/$(release-name):
 	mkdir -p $(@D)
 	cd $(@D) && wget -q $(release-url)/$(release)/$(@F).tar.gz
 	cd $(@D) && tar xf $(@F).tar.gz
-
-.PHONY: release-remove
-release-remove:
-	rm -rf $(release-loc)/$(release-name)
-	rm -rf $(release-loc)/$(release-name).tar.gz
 
 #
 # R E L E A S E
