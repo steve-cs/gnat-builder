@@ -3,12 +3,12 @@
 # C O N F I G
 #
 
-release ?= cs-19.2.0-beta1
-gcc-version ?= gcc-8-branch
+release ?= cs-19.2.0-beta2
+gcc-version ?= gcc-9-branch
 adacore-version ?= 19.2
 libadalang-version ?= 19.2
 spark2014-version ?= 19.2
-gnat-src-version ?= master
+gnat-src-version ?= gcc-9-branch
 
 os ?= debian
 
