@@ -1,2 +1,5 @@
-# ignore cache directories, e.g. github-cache download-cache
-*-cache/
+*-src
+*-build
+downloads
+github-repo
+release
