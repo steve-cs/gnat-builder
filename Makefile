@@ -410,7 +410,7 @@ gcc-install:
 gprbuild-bootstrap-install: gprbuild-src xmlada-src
 	mkdir -p gprbuild-bootstrap-build
 	cp -a gprbuild-src/* gprbuild-bootstrap-build
-	cd gprbuild-bootstrap-build && $(sudo) ./bootstrap.sh \
+	cd gprbuild-bootstrap-build && $(sudo) bash bootstrap.sh \
 	    --with-xmlada=../xmlada-src --prefix=$(prefix)
 
 ####
