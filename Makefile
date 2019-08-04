@@ -458,7 +458,7 @@ gnatcoll-core: gnatcoll-core-build
 
 .PHONY: gnatcoll-core-install
 gnatcoll-core-install:
-	$(sudo) make -C gnatcoll-core-build install
+	$(sudo) make -C gnatcoll-core-build install prefix=$(prefix)
 
 #####
 
