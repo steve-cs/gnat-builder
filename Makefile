@@ -460,7 +460,7 @@ gprbuild-install:
 gnatcoll-core-build: gnatcoll-core-src
 	mkdir -p $@
 	cp -a $</* $@
-	make -C $@ $(gnatcoll-core-options) setup
+	make -C $@ prefix=$(prefix) $(gnatcoll-core-options) setup
 
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build
@@ -468,7 +468,7 @@ gnatcoll-core: gnatcoll-core-build
 
 .PHONY: gnatcoll-core-install
 gnatcoll-core-install:
-	$(sudo) make -C gnatcoll-core-build install prefix=$(prefix)
+	$(sudo) make -C gnatcoll-core-build install
 
 #####
 
