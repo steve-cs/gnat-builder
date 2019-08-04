@@ -38,6 +38,10 @@ gnatcoll-db-options ?=
 
 gtkada-options ?=
 
+# gps configuration
+
+gps-options ?=
+
 #
 # E N D   C O N F I G
 #
@@ -634,7 +638,7 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src
 	cp -a libadalang-tools-src/* $@/laltools
 	mkdir -p $@/ada_language_server
 	cp -a ada_language_server-src/* $@/ada_language_server
-	cd $@ && ./configure --prefix=$(prefix)
+	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
 
 .PHONY: gps
 gps: gps-build
