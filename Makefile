@@ -464,7 +464,7 @@ gnatcoll-core-build: gnatcoll-core-src
 
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build
-	make -C $<
+	make -C $< $(gnatcoll-core-options)
 
 .PHONY: gnatcoll-core-install
 gnatcoll-core-install:
