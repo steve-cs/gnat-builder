@@ -1,5 +1,5 @@
 ##############################################################
-# 
+#
 # C O N F I G
 #
 
@@ -27,6 +27,16 @@ gcc-jobs ?= 8
 release-loc = release
 release-url = https://github.com/steve-cs/gnat-builder/releases/download
 release-name = gnat-$(release)-$(host)
+
+# gnatcoll configuration
+
+gnatcoll-core-options ?=
+gnatcoll-bindings-options ?=
+gnatcoll-db-options ?=
+
+# gtkada configuration
+
+gtkada-options ?=
 
 #
 # E N D   C O N F I G
@@ -450,7 +460,7 @@ gprbuild-install:
 gnatcoll-core-build: gnatcoll-core-src
 	mkdir -p $@
 	cp -a $</* $@
-	make -C $@ setup
+	make -C $@ $(gnatcoll-core-options) setup
 
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build
@@ -468,11 +478,11 @@ gnatcoll-bindings-build: gnatcoll-bindings-src
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
-	cd $</gmp && ./setup.py build
-	cd $</iconv && ./setup.py build
-	cd $</python && ./setup.py build
-	cd $</readline && ./setup.py build --accept-gpl
-	cd $</syslog && ./setup.py build
+	cd $</gmp && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</iconv && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</python && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</readline && ./setup.py build --accept-gpl $(gnatcoll-bindings-options)
+	cd $</syslog && ./setup.py build $(gnatcoll-bindings-options)
 
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install:
@@ -487,11 +497,11 @@ gnatcoll-bindings-install:
 gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
 	cp -a $</* $@
-	make -C $</sql prefix=$(prefix) setup
-	make -C $</gnatcoll_db2ada prefix=$(prefix) setup
-	make -C $</sqlite prefix=$(prefix) setup
-	make -C $</xref prefix=$(prefix) setup
-	make -C $</gnatinspect prefix=$(prefix) setup
+	make -C $</sql prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $</gnatcoll_db2ada prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $</sqlite prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $</xref prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $</gnatinspect prefix=$(prefix) $(gnatcoll-db-options) setup
 
 .PHONY: gnatcoll-db
 gnatcoll-db: gnatcoll-sql
@@ -606,7 +616,7 @@ clean-libadalang-prefix:
 gtkada-build: gtkada-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix)
+	cd $@ && ./configure --prefix=$(prefix) $(gtkada-options)
 
 .PHONY: gtkada
 gtkada: gtkada-build
