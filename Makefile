@@ -450,7 +450,7 @@ gprbuild-install:
 gnatcoll-core-build: gnatcoll-core-src
 	mkdir -p $@
 	cp -a $</* $@
-	make -C $@ setup
+	make -C $@ prefix=$(prefix) setup
 
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build
