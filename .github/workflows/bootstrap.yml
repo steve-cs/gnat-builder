@@ -22,6 +22,6 @@ jobs:
         sudo apt-get install -y python-gi-dev
         sudo apt-get install -y python-cairo-dev
         echo do not install: sudo apt-get install -y libclang-dev
-        echo do not install: sudo apt-get install -y libgmp-dev
+        sudo apt-get install -y libgmp-dev
 
 
