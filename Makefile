@@ -40,7 +40,7 @@ release-name = gnat-$(release)-$(host)
 default: all
 
 .PHONY: depends
-depends: base-depends
+depends: all-depends
 
 .PHONY: all
 all: all-gnat
@@ -49,13 +49,13 @@ all: all-gnat
 install: all-gnat-install
 
 .PHONY: bootstrap
-bootstrap: depends all-bootstrap
+bootstrap: all-depends all-bootstrap
 
 .PHONY: release
-release: bootstrap-clean bootstrap all-release
+release: bootstrap-clean all-depends all-bootstrap all-release
 
 .PHONY: release-install
-release-install: all-release-install all-depends
+release-install: base-depends all-release-install all-depends
 
 .PHONY: clean
 clean: all-clean
@@ -387,7 +387,7 @@ github-repo/%:
 .PHONY: gcc-bootstrap
 gcc-bootstrap: gcc gcc-install
 
-gcc-build: gcc-src gcc-depends
+gcc-build: gcc-src
 	mkdir -p $@
 	rm -rf $@/*
 	cd $< && ./contrib/download_prerequisites
@@ -415,7 +415,7 @@ gprbuild-bootstrap-install: gprbuild-src xmlada-src
 
 ####
 
-xmlada-build: xmlada-src xmlada-depends
+xmlada-build: xmlada-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && ./configure --prefix=$(prefix)
@@ -430,7 +430,7 @@ xmlada-install:
 
 ####
 
-gprbuild-build: gprbuild-src gprbuild-depends
+gprbuild-build: gprbuild-src
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $@ prefix=$(prefix) setup
@@ -447,7 +447,7 @@ gprbuild-install:
 
 #####
 
-gnatcoll-core-build: gnatcoll-core-src gnatcoll-core-depends
+gnatcoll-core-build: gnatcoll-core-src
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $@ prefix=$(prefix) setup
@@ -462,7 +462,7 @@ gnatcoll-core-install:
 
 #####
 
-gnatcoll-bindings-build: gnatcoll-bindings-src gnatcoll-bindings-depends
+gnatcoll-bindings-build: gnatcoll-bindings-src
 	mkdir -p $@
 	cp -a $</* $@
 
@@ -484,7 +484,7 @@ gnatcoll-bindings-install:
 
 #####
 
-gnatcoll-db-build: gnatcoll-db-src gnatcoll-db-depends
+gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
 	cp -a $</* $@
 	make -C $</sql prefix=$(prefix) setup
@@ -549,7 +549,7 @@ gnatcoll-gnatinspect-install:
 
 #####
 
-libadalang-build: libadalang-src langkit-src quex-src libadalang-depends
+libadalang-build: libadalang-src langkit-src quex-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && virtualenv lal-venv
@@ -603,7 +603,7 @@ clean-libadalang-prefix:
 
 #####
 
-gtkada-build: gtkada-src gtkada-depends
+gtkada-build: gtkada-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && ./configure --prefix=$(prefix)
@@ -618,7 +618,7 @@ gtkada-install:
 
 #####
 
-gps-build: gps-src libadalang-tools-src ada_language_server-src gps-depends
+gps-build: gps-src libadalang-tools-src ada_language_server-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -637,7 +637,7 @@ gps-install:
 
 #####
 
-spark2014-build: spark2014-src gnat-src spark2014-depends
+spark2014-build: spark2014-src gnat-src
 	cd $< && git submodule init
 	cd $< && git submodule update
 	mkdir -p $@
