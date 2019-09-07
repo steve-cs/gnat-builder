@@ -171,14 +171,14 @@ gps-depends-debian: base-depends-debian
 	    pkg-config libglib2.0-dev libpango1.0-dev \
 	    libatk1.0-dev libgtk-3-dev \
 	    python-dev python-gi-dev python-cairo-dev \
-	    libclang-dev libgmp-dev
+	    libgmp-dev libclang1
 	#
 	# patch
 	# copy gps dependencies from /usr/lib to $(prefix)/lib
 	# so that gps can find them.
 	#
 	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) cp /usr/lib/llvm-*/lib/libclang.so $(prefix)/lib
+	$(sudo) cp /usr/lib/*/libclang*.so.1 $(prefix)/lib
 	$(sudo) mkdir -p $(prefix)/lib/python2.7
 	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
 
