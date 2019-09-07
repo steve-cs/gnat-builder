@@ -12,4 +12,6 @@ jobs:
     - name: Hello World
       run: echo Hello World
     - name: Another Step
-      run: echo Another Step
+      run: | 
+        echo Line 1
+        echo Line 2
