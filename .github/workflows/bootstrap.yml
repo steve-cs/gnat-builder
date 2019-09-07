@@ -13,6 +13,4 @@ jobs:
       run: echo Hello World
     - name: Depends
       run: | 
-        sudo apt-get update
-        sudo apt-get dist-upgrade
-        make depends
+        export DEBIAN_FRONTEND=noninteractive && make depends
