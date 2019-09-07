@@ -12,17 +12,11 @@ jobs:
     - name: Hello World
       run: echo Hello World
     - name: Depends
-      run: | 
-        echo do not install: sudo apt-get install -y pkg-config
-        echo do not install: sudo apt-get install -y libglib2.0-dev
-        echo do not install: sudo apt-get install -y libpango1.0-dev
-        echo do not install: sudo apt-get install -y libatk1.0-dev
-        echo do not install: sudo apt-get install -y libgtk-3-dev
-        echo do not install: sudo apt-get install -y python-dev
-        echo do not install: sudo apt-get install -y python-gi-dev
-        echo do not install: sudo apt-get install -y python-cairo-dev
-        echo do not install: sudo apt-get install -y libgmp-dev
-        sudo apt-get -y install libclang1
-        sudo apt-get -y install libclang-dev
-
+      run: make depends
+    - name: Release Install
+      run: make release-install
+    - name: All
+      run: make all
+    - name: Release
+      run: make release
 
