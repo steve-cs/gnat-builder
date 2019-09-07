@@ -13,15 +13,15 @@ jobs:
       run: echo Hello World
     - name: Depends
       run: | 
-        sudo apt-get install -y pkg-config
-        sudo apt-get install -y libglib2.0-dev
-        sudo apt-get install -y libpango1.0-dev
-        sudo apt-get install -y libatk1.0-dev
-        sudo apt-get install -y libgtk-3-dev
-        sudo apt-get install -y python-dev
-        sudo apt-get install -y python-gi-dev
-        sudo apt-get install -y python-cairo-dev
-        echo do not install: sudo apt-get install -y libclang-dev
-        sudo apt-get install -y libgmp-dev
+        echo do not install: sudo apt-get install -y pkg-config
+        echo do not install: sudo apt-get install -y libglib2.0-dev
+        echo do not install: sudo apt-get install -y libpango1.0-dev
+        echo do not install: sudo apt-get install -y libatk1.0-dev
+        echo do not install: sudo apt-get install -y libgtk-3-dev
+        echo do not install: sudo apt-get install -y python-dev
+        echo do not install: sudo apt-get install -y python-gi-dev
+        echo do not install: sudo apt-get install -y python-cairo-dev
+        echo do not install: sudo apt-get install -y libgmp-dev
+        sudo apt-get install -y libclang-dev
 
 
