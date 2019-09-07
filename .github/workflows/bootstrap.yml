@@ -11,7 +11,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: Hello World
       run: echo Hello World
-    - name: Another Step
+    - name: Release Install
       run: | 
-        echo Line 1
-        echo Line 2
+        pwd
+        ls -l
+        make release-install
