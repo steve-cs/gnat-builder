@@ -20,7 +20,7 @@ jobs:
         sudo apt-get install -y libgtk-3-dev
         sudo apt-get install -y python-dev
         sudo apt-get install -y python-gi-dev
-        echo do not install: sudo apt-get install -y python-cairo-dev
+        sudo apt-get install -y python-cairo-dev
         echo do not install: sudo apt-get install -y libclang-dev
         echo do not install: sudo apt-get install -y libgmp-dev
 
