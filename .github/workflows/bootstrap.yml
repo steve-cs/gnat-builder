@@ -1,0 +1,21 @@
+name: GNAT Bootstrap CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+    
+    steps:
+    - uses: actions/checkout@v1
+    -name: Hello World
+    -run: echo Hello World
+      && export DEBIAN_FRONTEND=noninteractive
+      && mkdir -p $HOME
+      && cd $HOME
+      && apt-get update
+      && apt-get -qq -y install git make
+      && git clone https://github.com/steve-cs/gnat-builder.git
+      && cd gnat-builder
+      && make prefix=/usr/local release-install
