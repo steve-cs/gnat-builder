@@ -11,12 +11,9 @@ jobs:
     - uses: actions/checkout@v1
     - name: Hello World
       run: echo Hello World
-    - name: Release Install
-      run: make release-install
-    - name: GtkAda
-      run: make gtkada
-    - name: Clean
-      run: make clean
-    - name: All
-      run: make all
-
+    - name: Release
+      run: mkdir -p release && touch release/bozo && touch release1 & touch release2
+    - uses: actions/upload-artifact@master
+      with:
+        name: release
+        path: release
