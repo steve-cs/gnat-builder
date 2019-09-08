@@ -178,7 +178,8 @@ gps-depends-debian: base-depends-debian
 	# so that gps can find them.
 	#
 	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) cp /usr/lib/*/libclang*.so.1 $(prefix)/lib
+	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
+	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
 	$(sudo) mkdir -p $(prefix)/lib/python2.7
 	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
 
