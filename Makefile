@@ -606,7 +606,7 @@ clean-libadalang-prefix:
 gtkada-build: gtkada-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix)
+	cd $@ && ./configure --prefix=$(prefix) --with-GL=no
 
 .PHONY: gtkada
 gtkada: gtkada-build
