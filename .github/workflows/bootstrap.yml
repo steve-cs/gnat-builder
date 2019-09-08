@@ -12,7 +12,7 @@ jobs:
     - name: Hello World
       run: echo Hello World
     - name: Release
-      run: mkdir -p release && touch release/bozo && touch release1 & touch release2
+      run: make release
     - uses: actions/upload-artifact@master
       with:
         name: release
