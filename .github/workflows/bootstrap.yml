@@ -12,8 +12,13 @@ jobs:
     - name: Hello World
       run: echo Hello World
     - name: Release
-      run: make release
+      run: make release-install
+    - name: Artifacts
+      run: |
+        rm -rf artifacts
+        mkdir -p artifacts
+        mv release/*.tar.gz artifacts
     - uses: actions/upload-artifact@master
       with:
-        name: release
-        path: release
+        name: artifacts
+        path: artifacts
