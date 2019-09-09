@@ -9,16 +9,42 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Hello World
-      run: echo Hello World
-    - name: Release
-      run: make release-install
-    - name: Artifacts
+
+    - name: Depends
+      run: make depends
+
+    - name: GCC
+      run: make gcc gcc-install
+
+    - name: GPRbuild bootstrap
+      run: make gprbuild-bootstrap-install 
+
+    - name: XML/Ada
+      run: make xmlada xmlada-install
+
+    - name: GPRBUILD
+      run: make gprbuild gprbuild-install
+
+    - name: GNATColl
       run: |
-        rm -rf artifacts
-        mkdir -p artifacts
-        mv release/*.tar.gz artifacts
-    - uses: actions/upload-artifact@master
-      with:
-        name: artifacts
-        path: artifacts
+        make gnatcoll-core gnatcoll-core-install
+        make gnatcoll-bindings gnatcoll-bindings-install
+        make gnatcoll-sql gnatcoll-sql-install
+        make gnatcoll-db-build
+        make gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
+        make gnatcoll-sqlite gnatcoll-sqlite-install
+        make gnatcoll-xref gnatcoll-xref-install
+        make gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+
+    - name: LibAdaLang
+      run: make libadalang libadalang-install
+
+    - name: GTKAda
+      run: make gtkada gtkada-install
+
+    - name: GPS
+      run: make gps gps-install
+
+    - name: SPARK 2014
+      run: make spark2014 spark2014-install
+
