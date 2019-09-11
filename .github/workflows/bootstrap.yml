@@ -2,7 +2,7 @@ name: GNAT Bootstrap CI
 
 on:
   schedule:
-    - cron:  '0 8 * * *'
+    - cron:  '0 6 * * *'
 jobs:
   build:
 
