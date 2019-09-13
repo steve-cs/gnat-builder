@@ -3,6 +3,9 @@ Makefile for downloading and building gnat from github source.
 
 |Repository|Build Status|
 |:-----|:-----:|
+Github Actions: |  
+bootstrap | [![Build Status](https://github.com/steve-cs/gnat-builder/workflows/GNAT%20Bootstrap%20CI/badge.svg)](https://github.com/steve-cs/gnat-builder/tree/master/.github/workflows)
+Travis CI: | 
 gnat-builder | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=master)](https://travis-ci.org/steve-cs/travis-test/branches) 
 xmlada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=xmlada)](https://travis-ci.org/steve-cs/travis-test/branches) 
 gprbuild | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gprbuild)](https://travis-ci.org/steve-cs/travis-test/branches) 
