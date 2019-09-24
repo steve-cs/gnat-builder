@@ -3,12 +3,12 @@
 # C O N F I G
 #
 
-release ?= cs-20190912
+release ?= cs-20190923
 gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
-spark2014-version ?= fsf
-gnat-src-version ?= f306a898b3a8015c4204cc9f1f131a8cc5dae668
+spark2014-version ?= master
+gnat-src-version ?= master
 
 os ?= debian
 
@@ -356,6 +356,7 @@ quex-src: github-src/steve-cs/quex/master
 
 github-src/%/master                \
 github-src/%/$(gcc-version)        \
+github-src/%/$(gnat-src-version)   \
 github-src/%/$(adacore-version)    \
 github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
@@ -363,16 +364,6 @@ github-src/%/$(spark2014-version)  \
 	cd github-repo/$(@D:github-src/%=%) \
 	&& git checkout $(@F) \
 	&& git pull
-	rm -rf $(@D)/*
-	mkdir -p $(@D)
-	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
-
-# linking github-src/<account>/<repository>/<tag> from github (don't pull)
-
-github-src/%/$(gnat-src-version)   \
-    : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) \
-	&& git checkout $(@F)
 	rm -rf $(@D)/*
 	mkdir -p $(@D)
 	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
