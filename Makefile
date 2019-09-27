@@ -52,7 +52,7 @@ install: all-gnat-install
 bootstrap: all-depends all-bootstrap
 
 .PHONY: release
-release: bootstrap-clean all-depends all-bootstrap all-release
+release: base-depends bootstrap-clean all-depends all-bootstrap all-release
 
 .PHONY: release-install
 release-install: base-depends all-release-install all-depends
