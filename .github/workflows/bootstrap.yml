@@ -12,7 +12,7 @@ jobs:
     steps:
     - name: Makefile
       run: |
-        apt-get update
+        apt-get -qq -y update
         apt-get -qq -y install git make
         git clone https://github.com/steve-cs/gnat-builder.git
         cp gnat-builder/Makefile .
