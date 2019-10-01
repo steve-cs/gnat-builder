@@ -3,18 +3,17 @@ on:
   schedule:
     - cron:  '0 6 * * *'
 jobs:
-  build:
+  release:
     runs-on: ubuntu-18.04
+    container: 
+      image: docker://ubuntu:18.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
     steps:
-    - name: 
-      uses: docker://ubuntu:18.04
-      with:
-        entrypoint: bash
-        args: -c "
-              export DEBIAN_FRONTEND=noninteractive
-              && apt-get update
-              && apt-get -qq -y install git make
-              && git clone https://github.com/steve-cs/gnat-builder.git
-              && cd gnat-builder
-              && make prefix=/usr/local base-depends release
-              "
+    - name: Makefile
+      run: |
+        apt-get -qq -y update
+        apt-get -qq -y install git make
+        git clone https://github.com/steve-cs/gnat-builder.git
+        cp gnat-builder/Makefile .
+    - run: make release
