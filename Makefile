@@ -362,6 +362,7 @@ github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
     : github-repo/%
 	cd github-repo/$(@D:github-src/%=%) \
+	&& git fetch \
 	&& git checkout $(@F) \
 	&& git pull
 	rm -rf $(@D)/*
