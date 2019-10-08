@@ -3,11 +3,11 @@
 # C O N F I G
 #
 
-release ?= cs-20191001
+release ?= cs-20.0.0
 gcc-version ?= master
-adacore-version ?= master
-libadalang-version ?= stable
-spark2014-version ?= master
+adacore-version ?= 20.0
+libadalang-version ?= 20.0
+spark2014-version ?= 20.0
 gnat-src-version ?= master
 
 os ?= debian
@@ -362,6 +362,7 @@ github-src/%/$(libadalang-version) \
 github-src/%/$(spark2014-version)  \
     : github-repo/%
 	cd github-repo/$(@D:github-src/%=%) \
+	&& git fetch \
 	&& git checkout $(@F) \
 	&& git pull
 	rm -rf $(@D)/*
