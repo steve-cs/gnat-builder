@@ -7,7 +7,7 @@ release ?= cs-20191001
 gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
-spark2014-version ?= master
+spark2014-version ?= fsf
 gnat-src-version ?= master
 
 os ?= debian
