@@ -3,11 +3,11 @@
 # C O N F I G
 #
 
-release ?= cs-20.0.0
+release ?= cs-20.1.0
 gcc-version ?= master
-adacore-version ?= 20.0
-libadalang-version ?= 20.0
-spark2014-version ?= 20.0
+adacore-version ?= 20.1
+libadalang-version ?= 20.1
+spark2014-version ?= 20.1
 gnat-src-version ?= master
 
 os ?= debian
