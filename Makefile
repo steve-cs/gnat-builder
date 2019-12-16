@@ -3,7 +3,7 @@
 # C O N F I G
 #
 
-release ?= cs-20191204
+release ?= cs-20191215
 gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
