@@ -20,7 +20,7 @@ sudo ?= sudo
 host  ?= x86_64-linux-gnu
 build ?= $(host)
 target ?= $(build)
-gcc-jobs ?= 8
+gcc-jobs ?= 4
 
 # release location and naming details
 
@@ -332,51 +332,95 @@ all-gnat-clean: quex-clean
 # * - S R C
 #
 
-%-src:
-	if [ "x$<" = "x" ]; then false; fi
-	ln -s $< $@
-
-gcc-src: github-src/gcc-mirror/gcc/$(gcc-version)
-xmlada-src: github-src/adacore/xmlada/$(adacore-version)
-gprbuild-src: github-src/adacore/gprbuild/$(adacore-version)
-gtkada-src: github-src/adacore/gtkada/$(adacore-version)
-gnatcoll-core-src: github-src/adacore/gnatcoll-core/$(adacore-version)
-gnatcoll-bindings-src: github-src/adacore/gnatcoll-bindings/$(adacore-version)
-gnatcoll-db-src: github-src/adacore/gnatcoll-db/$(adacore-version)
-langkit-src: github-src/adacore/langkit/$(libadalang-version)
-libadalang-src: github-src/adacore/libadalang/$(libadalang-version)
-libadalang-tools-src: github-src/adacore/libadalang-tools/$(adacore-version)
-ada_language_server-src: github-src/adacore/ada_language_server/master
-gps-src: github-src/adacore/gps/$(adacore-version)
-spark2014-src: github-src/adacore/spark2014/$(spark2014-version)
-gnat-src: github-src/steve-cs/gnat/$(gnat-src-version)
-quex-src: github-src/steve-cs/quex/master
-
-# linking github-src/<account>/<repository>/<branch> from github
-
-github-src/%/master                \
-github-src/%/$(gcc-version)        \
-github-src/%/$(gnat-src-version)   \
-github-src/%/$(adacore-version)    \
-github-src/%/$(libadalang-version) \
-github-src/%/$(spark2014-version)  \
-    : github-repo/%
-	cd github-repo/$(@D:github-src/%=%) \
-	&& git fetch \
-	&& git checkout $(@F) \
-	&& git pull
-	rm -rf $(@D)/*
-	mkdir -p $(@D)
-	ln -sf $(PWD)/github-repo/$(@D:github-src/%=%) $@
-
-# clone github-repo/<account>/<repository> from github.com
-
-.PRECIOUS: github-repo/%
-github-repo/%:
+gcc-src:
 	rm -rf $@
-	mkdir -p $(@D)
-	cd $(@D) && git clone https://github.com/$(@:github-repo/%=%).git
-	touch $@
+	git clone --depth=1 \
+	https://github.com/gcc-mirror/gcc -b $(gcc-version) $@
+	rm -rf $@/.git
+
+xmlada-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/xmlada -b $(adacore-version) $@
+	rm -rf $@/.git
+
+gprbuild-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/gprbuild -b $(adacore-version) $@
+	rm -rf $@/.git
+
+gtkada-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/gtkada -b $(adacore-version) $@
+	rm -rf $@/.git
+
+gnatcoll-core-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/gnatcoll-core -b $(adacore-version) $@
+	rm -rf $@/.git
+
+gnatcoll-bindings-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/gnatcoll-bindings -b $(adacore-version) $@
+	rm -rf $@/.git
+
+gnatcoll-db-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/gnatcoll-db -b $(adacore-version) $@
+	rm -rf $@/.git
+
+langkit-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/langkit -b $(adacore-version) $@
+	rm -rf $@/.git
+
+libadalang-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/libadalang -b $(libadalang-version) $@
+	rm -rf $@/.git
+
+libadalang-tools-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/libadalang-tools -b $(adacore-version) $@
+	rm -rf $@/.git
+
+ada_language_server-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/ada_language_server -b $(adacore-version) $@
+	rm -rf $@/.git
+
+gps-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/gps -b $(adacore-version) $@
+	rm -rf $@/.git
+
+spark2014-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
+	# rm -rf $@/.git
+
+gnat-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/steve-cs/gnat -b $(gnat-src-version) $@
+	rm -rf $@/.git
+
+quex-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/steve-cs/quex -b master $@
+	rm -rf $@/.git
 
 #
 # * - S R C
