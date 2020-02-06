@@ -1,7 +1,8 @@
 name: GNAT Bootstrap CI
 on:
+  push:
   schedule:
-    - cron:  '0 6 * * *'
+    - cron:  '0 12 * * *'
 jobs:
   release:
     runs-on: ubuntu-18.04
