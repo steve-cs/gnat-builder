@@ -52,7 +52,7 @@ install: all-gnat-install
 bootstrap: all-depends all-bootstrap
 
 .PHONY: release
-release: base-depends bootstrap-clean all-depends all-bootstrap all-release
+release: base-depends all-depends all-bootstrap all-release
 
 .PHONY: release-install
 release-install: base-depends all-release-install all-depends
@@ -282,24 +282,33 @@ all-gnat-install: spark2014-install
 
 .PHONY: all-bootstrap
 all-bootstrap: gcc-bootstrap
+all-bootstrap: gcc-clean
 all-bootstrap: gprbuild-bootstrap-install
 all-bootstrap: all-gnat-bootstrap
 
 .PHONY: all-gnat-bootstrap
 all-gnat-bootstrap: xmlada xmlada-install
+all-gnat-bootstrap: xmlada-clean
 all-gnat-bootstrap: gprbuild gprbuild-install
+all-gnat-bootstrap: gprbuild-clean
 all-gnat-bootstrap: gnatcoll-core gnatcoll-core-install
+all-gnat-bootstrap: gnatcoll-core-clean
 all-gnat-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
+all-gnat-bootstrap: gnatcoll-bindings-clean
 all-gnat-bootstrap: gnatcoll-sql gnatcoll-sql-install
-all-gnat-bootstrap: gnatcoll-db-build
 all-gnat-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
 all-gnat-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
 all-gnat-bootstrap: gnatcoll-xref gnatcoll-xref-install
 all-gnat-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+all-gnat-bootstrap: gnatcoll-db-clean
 all-gnat-bootstrap: libadalang libadalang-install
+all-gnat-bootstrap: libadalang-clean langkit-clean
 all-gnat-bootstrap: gtkada gtkada-install
+all-gnat-bootstrap: gtkada-clean
 all-gnat-bootstrap: gps gps-install
+all-gnat-bootstrap: gps-clean libadalang-tools-clean ada_language_server-clean
 all-gnat-bootstrap: spark2014 spark2014-install
+all-gnat-bootstrap: spark2014-clean
 
 .PHONY: all-release
 all-release: $(release-name)
@@ -408,6 +417,7 @@ spark2014-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
+	# having trouble with git sub-modules building, so don't remove .git
 	# rm -rf $@/.git
 
 gnat-src:
@@ -458,6 +468,7 @@ gprbuild-bootstrap-install: gprbuild-src xmlada-src
 	cp -a gprbuild-src/* gprbuild-bootstrap-build
 	cd gprbuild-bootstrap-build && $(sudo) bash bootstrap.sh \
 	    --with-xmlada=../xmlada-src --prefix=$(prefix)
+	rm -rf gprbuild-bootstrap-build
 
 ####
 
