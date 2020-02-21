@@ -706,16 +706,11 @@ spark2014-build: spark2014-src gnat-src
 
 .PHONY: spark2014
 spark2014: spark2014-build
-	make -C $<
+	unset prefix && make -C $<
 
 
 .PHONY: spark2014-install
 spark2014-install:
-#
-#	patch - install-all needs install/libexec/spark/bin directory
-#	but doesn't create it in all cases and so builds can fail.
-	mkdir -p spark2014-build/install/libexec/spark/bin
-#
 	make -C spark2014-build install-all
 	$(sudo) cp -a spark2014-build/install/* $(prefix)
 
