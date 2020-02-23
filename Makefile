@@ -12,7 +12,8 @@ gnat-src-version ?= master
 
 os ?= debian
 
-prefix ?= /usr/local
+gnat-prefix ?= /usr/local
+prefix ?= $(gnat-prefix)
 sudo ?= sudo
 
 # gcc configuration
