@@ -23,6 +23,10 @@ build ?= $(host)
 target ?= $(build)
 gcc-jobs ?= 4
 
+# gtkada configuration
+
+gtkada-options ?=
+
 # release location and naming details
 
 release-loc = release
@@ -664,7 +668,7 @@ clean-libadalang-prefix:
 gtkada-build: gtkada-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix) --with-GL=no
+	cd $@ && ./configure --prefix=$(prefix) --with-GL=no $(gtkada-options)
 
 .PHONY: gtkada
 gtkada: gtkada-build
