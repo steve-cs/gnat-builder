@@ -27,6 +27,10 @@ gcc-jobs ?= 4
 
 gtkada-options ?=
 
+# gnatcoll configuration
+
+gnatcoll-bindings-options ?=
+
 # release location and naming details
 
 release-loc = release
@@ -530,11 +534,11 @@ gnatcoll-bindings-build: gnatcoll-bindings-src
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
-	cd $</gmp && ./setup.py build
-	cd $</iconv && ./setup.py build
-	cd $</python && ./setup.py build
-	cd $</readline && ./setup.py build --accept-gpl
-	cd $</syslog && ./setup.py build
+	cd $</gmp && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</iconv && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</python && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</readline && ./setup.py build --accept-gpl $(gnatcoll-bindings-options)
+	cd $</syslog && ./setup.py build $(gnatcoll-bindings-options)
 
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install:
