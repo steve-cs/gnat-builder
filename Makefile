@@ -8,7 +8,6 @@ gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
 spark2014-version ?= fsf
-gnat-src-version ?= master
 
 os ?= debian
 
@@ -22,6 +21,19 @@ host  ?= x86_64-linux-gnu
 build ?= $(host)
 target ?= $(build)
 gcc-jobs ?= 4
+
+# extra configure/setup build options
+
+gcc-options ?=
+xmlada-options ?=
+gprbuild-options ?=
+gnatcoll-core-options ?=
+gnatcoll-bindings-options ?=
+gnatcoll-db-options ?=
+libadalang-options ?=
+gtkada-options ?=
+gps-options ?=
+spark2014-options ?=
 
 # release location and naming details
 
@@ -254,7 +266,6 @@ all-gnat-src: gps-src
 all-gnat-src: libadalang-tools-src
 all-gnat-src: ada_language_server-src
 all-gnat-src: spark2014-src
-all-gnat-src: gnat-src
 
 .PHONY: all-gnat
 all-gnat: xmlada
@@ -283,7 +294,7 @@ all-gnat-install: spark2014-install
 
 .PHONY: all-bootstrap
 all-bootstrap: gcc-bootstrap
-all-bootstrap: gcc-clean
+all-bootstrap: gcc-build-clean
 all-bootstrap: gprbuild-bootstrap-install
 all-bootstrap: all-gnat-bootstrap
 
@@ -421,18 +432,6 @@ spark2014-src:
 	# having trouble with git sub-modules building, so don't remove .git
 	# rm -rf $@/.git
 
-gnat-src:
-	rm -rf $@
-	git clone --depth=1 \
-	https://github.com/steve-cs/gnat -b $(gnat-src-version) $@
-	rm -rf $@/.git
-
-quex-src:
-	rm -rf $@
-	git clone --depth=1 \
-	https://github.com/steve-cs/quex -b master $@
-	rm -rf $@/.git
-
 #
 # * - S R C
 #
@@ -451,7 +450,8 @@ gcc-build: gcc-src
 	cd $@ && ../$</configure \
 	    --prefix=$(prefix) \
 	    --host=$(host) --build=$(build) --target=$(target) \
-	    --enable-languages=c,c++,ada
+	    --enable-languages=c,c++,ada \
+	    $(gcc-options)
 
 .PHONY: gcc
 gcc: gcc-build
@@ -476,7 +476,7 @@ gprbuild-bootstrap-install: gprbuild-src xmlada-src
 xmlada-build: xmlada-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix)
+	cd $@ && ./configure --prefix=$(prefix) $(xmlada-options)
 
 .PHONY: xmlada
 xmlada: xmlada-build
@@ -491,7 +491,7 @@ xmlada-install:
 gprbuild-build: gprbuild-src
 	mkdir -p $@
 	cp -a $</* $@
-	make -C $@ prefix=$(prefix) setup
+	make -C $@ prefix=$(prefix) $(gprbuild-options) setup
 
 .PHONY: gprbuild
 gprbuild: gprbuild-build
@@ -508,7 +508,7 @@ gprbuild-install:
 gnatcoll-core-build: gnatcoll-core-src
 	mkdir -p $@
 	cp -a $</* $@
-	make -C $@ prefix=$(prefix) setup
+	make -C $@ prefix=$(prefix) $(gnatcoll-core-options) setup
 
 .PHONY: gnatcoll-core
 gnatcoll-core: gnatcoll-core-build
@@ -526,11 +526,11 @@ gnatcoll-bindings-build: gnatcoll-bindings-src
 
 .PHONY: gnatcoll-bindings
 gnatcoll-bindings: gnatcoll-bindings-build
-	cd $</gmp && ./setup.py build
-	cd $</iconv && ./setup.py build
-	cd $</python && ./setup.py build
-	cd $</readline && ./setup.py build --accept-gpl
-	cd $</syslog && ./setup.py build
+	cd $</gmp && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</iconv && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</python && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</readline && ./setup.py build --accept-gpl $(gnatcoll-bindings-options)
+	cd $</syslog && ./setup.py build $(gnatcoll-bindings-options)
 
 .PHONY: gnatcoll-bindings-install
 gnatcoll-bindings-install:
@@ -545,11 +545,11 @@ gnatcoll-bindings-install:
 gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
 	cp -a $</* $@
-	make -C $</sql prefix=$(prefix) setup
-	make -C $</gnatcoll_db2ada prefix=$(prefix) setup
-	make -C $</sqlite prefix=$(prefix) setup
-	make -C $</xref prefix=$(prefix) setup
-	make -C $</gnatinspect prefix=$(prefix) setup
+	make -C $</sql prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $</gnatcoll_db2ada prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $</sqlite prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $</xref prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $</gnatinspect prefix=$(prefix) $(gnatcoll-db-options) setup
 
 .PHONY: gnatcoll-db
 gnatcoll-db: gnatcoll-sql
@@ -607,7 +607,7 @@ gnatcoll-gnatinspect-install:
 
 #####
 
-libadalang-build: libadalang-src langkit-src quex-src
+libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ && virtualenv lal-venv
@@ -619,9 +619,9 @@ libadalang-build: libadalang-src langkit-src quex-src
 	    && deactivate
 
 .PHONY: libadalang
-libadalang: libadalang-build quex-src
+libadalang: libadalang-build
 	cd $< && . lal-venv/bin/activate \
-	    && ada/manage.py make \
+	    && ada/manage.py make $(libadalang-options) \
 	    && deactivate
 
 .PHONY: libadalang-install
@@ -664,7 +664,7 @@ clean-libadalang-prefix:
 gtkada-build: gtkada-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ && ./configure --prefix=$(prefix) --with-GL=no
+	cd $@ && ./configure --prefix=$(prefix) --with-GL=no $(gtkada-options)
 
 .PHONY: gtkada
 gtkada: gtkada-build
@@ -682,7 +682,7 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src
 	cp -a libadalang-tools-src/* $@/laltools
 	mkdir -p $@/ada_language_server
 	cp -a ada_language_server-src/* $@/ada_language_server
-	cd $@ && ./configure --prefix=$(prefix)
+	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
 
 .PHONY: gps
 gps: gps-build
@@ -695,14 +695,14 @@ gps-install:
 
 #####
 
-spark2014-build: spark2014-src gnat-src
+spark2014-build: spark2014-src gcc-src
 	cd $< && git submodule init
 	cd $< && git submodule update
 	mkdir -p $@
 	cp -a $</* $@
 	rm -rf $@/gnat2why/gnat_src
-	ln -s ../../gnat-src/gcc/ada $@/gnat2why/gnat_src
-	make -C $@ setup
+	ln -s ../../gcc-src/gcc/ada $@/gnat2why/gnat_src
+	make -C $@ $(spark2014-options) setup
 
 
 .PHONY: spark2014
@@ -751,7 +751,7 @@ $(release-loc)/$(release-name):
 #
 
 %-clean:
-	rm -rf $(@:%-clean=%)-src $(@:%-clean=%)-build
+	rm -rf $(@:%-clean=%) $(@:%-clean=%)-src $(@:%-clean=%)-build
 
 .PHONY: dist-clean
 dist-clean : clean
