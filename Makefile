@@ -429,8 +429,9 @@ spark2014-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
-	# having trouble with git sub-modules building, so don't remove .git
-	# rm -rf $@/.git
+	cd $@ && git submodule init
+	cd $@ && git submodule update
+	rm -rf $@/.git
 
 #
 # * - S R C
@@ -688,7 +689,6 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src
 gps: gps-build
 	make -C $< PROCESSORS=0
 
-
 .PHONY: gps-install
 gps-install:
 	$(sudo) make -C gps-build install
@@ -696,24 +696,91 @@ gps-install:
 #####
 
 spark2014-build: spark2014-src gcc-src
-	cd $< && git submodule init
-	cd $< && git submodule update
 	mkdir -p $@
 	cp -a $</* $@
 	rm -rf $@/gnat2why/gnat_src
 	ln -s ../../gcc-src/gcc/ada $@/gnat2why/gnat_src
 	make -C $@ $(spark2014-options) setup
 
-
 .PHONY: spark2014
 spark2014: spark2014-build
 	unset prefix && make -C $<
-
 
 .PHONY: spark2014-install
 spark2014-install:
 	make -C spark2014-build install-all
 	$(sudo) cp -a spark2014-build/install/* $(prefix)
+
+#####
+
+# Keep all the stuff for spark2014 provers together until it basically works
+
+.PHONY: spark2014-provers-depends
+spark2014-provers-depends: spark2014-provers-depends-$(os)
+
+.PHONY: spark2014-provers-depends-debian
+spark2014-provers-depends-debian: spark2014-depends-debian
+	$(sudo) apt-get -qq -y install \
+	    dune cmake antlr3
+
+.PHONY: spark2014-provers-depends-unknown
+spark2014-provers-depends-unknown:
+
+#####
+
+.PHONY: spark2014-provers
+spark2014-provers: alt-ergo cvc4 z3
+
+.PHONY: spark2014-provers-install
+spark2014-provers-install: alt-ergo-install cvc4-install z3-install
+
+.PHONY: spark2014-provers-clean
+spark2014-provers-clean: alt-ergo-clean cvc4-clean z3-clean
+
+#####
+
+alt-ergo-build: spark2014-src
+	mkdir -p $@
+	cp -a $</alt-ergo/sources/* $@
+	cd $@ && ./configure alt-ergo --prefix=$(prefix)
+
+.PHONY: alt-ergo
+alt-ergo: alt-ergo-build
+	make -C alt-ergo-build alt-ergo
+
+.PHONY: alt-ergo-install
+alt-ergo-install:
+	make -C alt-ergo-build install-bin
+
+#####
+
+cvc4-build: spark2014-src
+	mkdir -p $@
+	cp -a $</cvc4/* $@
+	cd $@ && ./configure.sh --prefix=$(prefix) --name=_build
+
+.PHONY: cvc4
+cvc4: cvc4-build
+	make -C cvc4-build/_build
+
+.PHONY: cvc4-install
+cvc4-install:
+	make -C cvc4-build/_build install
+
+#####
+
+z3-build: spark2014-src
+	mkdir -p $@
+	cp -a $</z3/* $@
+	cd $@ && python scripts/mk_make.py --prefix=$(prefix)
+
+.PHONY: z3
+z3: z3-build
+	make -C z3-build/build
+
+.PHONY: z3-install
+z3-install:
+	make -C z3-build/build install
 
 #
 # * - B U I L D / I N S T A L L
