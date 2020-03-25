@@ -149,7 +149,7 @@ base-depends-debian: sudo-debian
 .PHONY: gcc-depends-debian
 gcc-depends-debian: base-depends-debian
 	$(sudo) apt-get -qq -y install \
-	    gnat gawk flex bison libc6-dev libc6-dev-i386
+	    gnat gawk flex bison libc6-dev libc6-dev-i386 libzstd-dev
 
 .PHONY: xmlada-depends-debian
 xmlada-depends-debian: base-depends-debian
