@@ -398,7 +398,7 @@ gnatcoll-db-src:
 langkit-src:
 	rm -rf $@
 	git clone --depth=1 \
-	https://github.com/adacore/langkit -b $(adacore-version) $@
+	https://github.com/adacore/langkit -b $(libadalang-version) $@
 	rm -rf $@/.git
 
 libadalang-src:
