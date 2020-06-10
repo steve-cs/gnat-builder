@@ -432,6 +432,11 @@ spark2014-src:
 	cd $@ && git submodule init
 	cd $@ && git submodule update
 	rm -rf $@/.git
+	#
+	# temporarily patch out some broken code
+	# https://github.com/AdaCore/spark2014/issues/22
+	#
+	cd $@ && patch -p0 -i ../spark2014-1.diff
 
 #
 # * - S R C
