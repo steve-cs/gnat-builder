@@ -203,6 +203,7 @@ spark2014-depends-debian: base-depends-debian
 	    ocaml libocamlgraph-ocaml-dev \
 	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
 	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
+	    libyojson-ocaml-dev \
 	    cvc4 z3 alt-ergo
 
 #####  os=unknown dependency support (empty template)
