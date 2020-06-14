@@ -693,9 +693,14 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src
 	cp -a ada_language_server-src/* $@/ada_language_server
 	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
 
+# gps subprojects that need to be declared in GPR_PROJECT_PATH now
+sub1 = ../laltools/src
+sub2 = ../ada_language_server/gnat
+
 .PHONY: gps
 gps: gps-build
-	make -C $< PROCESSORS=0
+	export GPR_PROJECT_PATH=$(sub1):$(sub2) \
+	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
 gps-install:
