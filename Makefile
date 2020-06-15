@@ -267,6 +267,7 @@ all-gnat-src: gtkada-src
 all-gnat-src: gps-src
 all-gnat-src: libadalang-tools-src
 all-gnat-src: ada_language_server-src
+all-gnat-src: vss-src
 all-gnat-src: spark2014-src
 
 .PHONY: all-gnat
@@ -320,7 +321,7 @@ all-gnat-bootstrap: libadalang-clean langkit-clean
 all-gnat-bootstrap: gtkada gtkada-install
 all-gnat-bootstrap: gtkada-clean
 all-gnat-bootstrap: gps gps-install
-all-gnat-bootstrap: gps-clean libadalang-tools-clean ada_language_server-clean
+all-gnat-bootstrap: gps-clean libadalang-tools-clean ada_language_server-clean vss-clean
 all-gnat-bootstrap: spark2014 spark2014-install
 all-gnat-bootstrap: spark2014-clean
 
@@ -343,6 +344,7 @@ all-gnat-clean: gtkada-clean
 all-gnat-clean: gps-clean
 all-gnat-clean: libadalang-tools-clean
 all-gnat-clean: ada_language_server-clean
+all-gnat-clean: vss-clean
 all-gnat-clean: spark2014-clean
 all-gnat-clean: gnat-clean
 all-gnat-clean: quex-clean
@@ -419,6 +421,12 @@ ada_language_server-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/ada_language_server -b $(adacore-version) $@
+	rm -rf $@/.git
+
+vss-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/vss -b $(adacore-version) $@
 	rm -rf $@/.git
 
 gps-src:
@@ -691,15 +699,18 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src
 	cp -a libadalang-tools-src/* $@/laltools
 	mkdir -p $@/ada_language_server
 	cp -a ada_language_server-src/* $@/ada_language_server
+	mkdir -p $@/vss
+	cp -a vss-src/* $@/vss
 	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
 
 # gps subprojects that need to be declared in GPR_PROJECT_PATH now
 sub1 = ../laltools/src
 sub2 = ../ada_language_server/gnat
+sub3 = ../vss/gnat
 
 .PHONY: gps
 gps: gps-build
-	export GPR_PROJECT_PATH=$(sub1):$(sub2) \
+	export GPR_PROJECT_PATH=$(sub1):$(sub2):$(sub3) \
 	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
