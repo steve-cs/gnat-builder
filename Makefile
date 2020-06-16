@@ -705,6 +705,7 @@ sub3 = ../vss/gnat
 
 .PHONY: gps
 gps: gps-build
+	cd $< && patch -p0 -i ../gps-1.diff
 	export GPR_PROJECT_PATH=$(sub1):$(sub2):$(sub3) \
 	&& make -C $< PROCESSORS=0
 
