@@ -691,6 +691,7 @@ gtkada-install:
 gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
+	cd $@ &&  patch -f -p0 -i ../gps-patch.diff
 	cp -a libadalang-tools-src/* $@/laltools
 	mkdir -p $@/ada_language_server
 	cp -a ada_language_server-src/* $@/ada_language_server
