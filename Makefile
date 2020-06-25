@@ -258,6 +258,7 @@ all-src: gcc-src all-gnat-src
 .PHONY: all-gnat-src
 all-gnat-src: xmlada-src
 all-gnat-src: gprbuild-src
+all-gnat-src: gprconfig_kb-src
 all-gnat-src: gnatcoll-core-src
 all-gnat-src: gnatcoll-bindings-src
 all-gnat-src: gnatcoll-db-src
@@ -299,6 +300,7 @@ all-gnat-install: spark2014-install
 all-bootstrap: gcc-bootstrap
 all-bootstrap: gcc-build-clean
 all-bootstrap: gprbuild-bootstrap-install
+all-bootstrap: gprconfig_kb-clean
 all-bootstrap: all-gnat-bootstrap
 
 .PHONY: all-gnat-bootstrap
@@ -333,6 +335,7 @@ all-clean: gcc-clean all-gnat-clean github-clean
 
 .PHONY: all-gnat-clean
 all-gnat-clean: gprbuild-bootstrap-clean
+all-gnat-clean: gprconfig_kb-clean
 all-gnat-clean: xmlada-clean
 all-gnat-clean: gprbuild-clean
 all-gnat-clean: gnatcoll-core-clean
@@ -373,6 +376,12 @@ gprbuild-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gprbuild -b $(adacore-version) $@
+	rm -rf $@/.git
+
+gprconfig_kb-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/steve-cs/gprconfig_kb -b master $@
 	rm -rf $@/.git
 
 gtkada-src:
@@ -476,12 +485,14 @@ gcc-install:
 ####
 
 .PHONY: gprbuild-bootstrap-install
-gprbuild-bootstrap-install: gprbuild-src xmlada-src
+gprbuild-bootstrap-install: gprbuild-src xmlada-src gprconfig_kb-src
 	mkdir -p gprbuild-bootstrap-build
 	cp -a gprbuild-src/* gprbuild-bootstrap-build
 	cd gprbuild-bootstrap-build && $(sudo) bash bootstrap.sh \
-	    --with-xmlada=../xmlada-src --prefix=$(prefix)
-	rm -rf gprbuild-bootstrap-build
+	    --with-xmlada=../xmlada-src \
+            --with-kb=../gprconfig_kb-src \
+            --prefix=$(prefix)
+	$(sudo) rm -rf gprbuild-bootstrap-build
 
 ####
 
