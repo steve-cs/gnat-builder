@@ -14,6 +14,7 @@ os ?= debian
 gnat-prefix ?= /usr/local
 prefix ?= $(gnat-prefix)
 sudo ?= sudo
+rm-git-db ?= rm -rf $@/.git
 
 # gcc configuration
 
@@ -364,85 +365,85 @@ gcc-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/gcc-mirror/gcc -b $(gcc-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 xmlada-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/xmlada -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 gprbuild-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gprbuild -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 gprconfig_kb-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/steve-cs/gprconfig_kb -b master $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 gtkada-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gtkada -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 gnatcoll-core-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-core -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 gnatcoll-bindings-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-bindings -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 gnatcoll-db-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-db -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 langkit-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/langkit -b $(libadalang-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 libadalang-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/libadalang -b $(libadalang-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 libadalang-tools-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/libadalang-tools -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 ada_language_server-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/ada_language_server -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 vss-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/vss -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 gps-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gps -b $(adacore-version) $@
-	rm -rf $@/.git
+	$(rm-git-db)
 
 spark2014-src:
 	rm -rf $@
@@ -450,7 +451,7 @@ spark2014-src:
 	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
 	cd $@ && git submodule init
 	cd $@ && git submodule update
-	rm -rf $@/.git
+	$(rm-git-db)
 
 #
 # * - S R C
