@@ -35,6 +35,7 @@ libadalang-options ?=
 gtkada-options ?=
 gps-options ?=
 spark2014-options ?=
+templates-parser-options ?=
 
 # release location and naming details
 
@@ -133,6 +134,9 @@ gps-depends: gps-depends-$(os)
 
 .PHONY: spark2014-depends
 spark2014-depends: spark2014-depends-$(os)
+
+.PHONY: templates-parser-depends
+templates-parser-depends: templates-parser-depends-$(os)
 
 ##### os=debian dependency support
 
@@ -245,6 +249,9 @@ gps-depends-unknown: base-depends-unknown
 .PHONY: spark2014-depends-unknown
 spark2014-depends-unknown: base-depends-unknown
 
+.PHONY: templates-parser-depends-unknown
+templates-parser-depend-unknowns: base-depends-unknown
+
 #
 # E N D   D E P E N D S
 #
@@ -271,6 +278,7 @@ all-gnat-src: libadalang-tools-src
 all-gnat-src: ada_language_server-src
 all-gnat-src: vss-src
 all-gnat-src: spark2014-src
+all-gnat-src: templates-parser-src
 
 .PHONY: all-gnat
 all-gnat: xmlada
@@ -282,6 +290,7 @@ all-gnat: libadalang
 all-gnat: gtkada
 all-gnat: gps
 all-gnat: spark2014
+all-gnat: templates-parser
 
 .PHONY: all-install
 all-install: gcc-install all-gnat-install
@@ -296,6 +305,7 @@ all-gnat-install: libadalang-install
 all-gnat-install: gtkada-install
 all-gnat-install: gps-install
 all-gnat-install: spark2014-install
+all-gnat-install: templates-parser-install
 
 .PHONY: all-bootstrap
 all-bootstrap: gcc-bootstrap
@@ -327,6 +337,8 @@ all-gnat-bootstrap: gps gps-install
 all-gnat-bootstrap: gps-clean libadalang-tools-clean ada_language_server-clean vss-clean
 all-gnat-bootstrap: spark2014 spark2014-install
 all-gnat-bootstrap: spark2014-clean
+all-gnat-bootstrap: templates-parser templates-parser-install
+all-gnat-bootstrap: templates-parser-clean
 
 .PHONY: all-release
 all-release: $(release-name)
@@ -352,6 +364,7 @@ all-gnat-clean: vss-clean
 all-gnat-clean: spark2014-clean
 all-gnat-clean: gnat-clean
 all-gnat-clean: quex-clean
+all-gnat-clean: templates-parser-clean
 
 #
 # A L L
@@ -451,6 +464,12 @@ spark2014-src:
 	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
 	cd $@ && git submodule init
 	cd $@ && git submodule update
+	$(rm-git-db)
+
+templates-parser-src:
+	rm -rf $@
+	git clone --depth=1 \
+	https://github.com/adacore/templates-parser -b $(adacore-version) $@
 	$(rm-git-db)
 
 #
@@ -741,6 +760,21 @@ spark2014: spark2014-build
 spark2014-install:
 	make -C spark2014-build install-all
 	$(sudo) cp -a spark2014-build/install/* $(prefix)
+
+####
+
+templates-parser-build: templates-parser-src
+	mkdir -p $@
+	cp -a $</* $@
+	make -C $@ $(templates-parser-options) setup
+
+.PHONY: templates-parser
+templates-parser: templates-parser-build
+	make -C $< build
+
+.PHONY: templates-parser-install
+templates-parser-install:
+	$(sudo) make -C templates-parser-build install
 
 #####
 
