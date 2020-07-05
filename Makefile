@@ -395,7 +395,7 @@ gprbuild-src:
 gprconfig_kb-src:
 	rm -rf $@
 	git clone --depth=1 \
-	https://github.com/steve-cs/gprconfig_kb -b master $@
+	https://github.com/adacore/gprconfig_kb -b master $@
 	$(rm-git-db)
 
 gtkada-src:
