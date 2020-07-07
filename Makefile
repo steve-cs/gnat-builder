@@ -364,85 +364,71 @@ gcc-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/gcc-mirror/gcc -b $(gcc-version) $@
-	rm -rf $@/.git
 
 xmlada-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/xmlada -b $(adacore-version) $@
-	rm -rf $@/.git
 
 gprbuild-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gprbuild -b $(adacore-version) $@
-	rm -rf $@/.git
 
 gprconfig_kb-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gprconfig_kb -b master $@
-	rm -rf $@/.git
 
 gtkada-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gtkada -b $(adacore-version) $@
-	rm -rf $@/.git
 
 gnatcoll-core-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-core -b $(adacore-version) $@
-	rm -rf $@/.git
 
 gnatcoll-bindings-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-bindings -b $(adacore-version) $@
-	rm -rf $@/.git
 
 gnatcoll-db-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-db -b $(adacore-version) $@
-	rm -rf $@/.git
 
 langkit-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/langkit -b $(libadalang-version) $@
-	rm -rf $@/.git
 
 libadalang-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/libadalang -b $(libadalang-version) $@
-	rm -rf $@/.git
 
 libadalang-tools-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/libadalang-tools -b $(adacore-version) $@
-	rm -rf $@/.git
 
 ada_language_server-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/ada_language_server -b $(adacore-version) $@
-	rm -rf $@/.git
 
 vss-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/vss -b $(adacore-version) $@
-	rm -rf $@/.git
 
 gps-src:
 	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gps -b $(adacore-version) $@
-	rm -rf $@/.git
 
 spark2014-src:
 	rm -rf $@
@@ -450,7 +436,6 @@ spark2014-src:
 	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
 	cd $@ && git submodule init
 	cd $@ && git submodule update
-	rm -rf $@/.git
 
 #
 # * - S R C
