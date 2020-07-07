@@ -65,7 +65,7 @@ install: all-gnat-install
 bootstrap: all-depends all-bootstrap
 
 .PHONY: release
-release: base-depends all-depends all-bootstrap all-release
+release: bootstrap all-release
 
 .PHONY: release-install
 release-install: base-depends all-release-install all-depends
