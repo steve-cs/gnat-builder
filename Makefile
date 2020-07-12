@@ -436,6 +436,7 @@ spark2014-src:
 	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
 	cd $@ && git submodule init
 	cd $@ && git submodule update
+	cd $@ && patch -f -p1 -i ../spark2014-patch.diff
 
 #
 # * - S R C
