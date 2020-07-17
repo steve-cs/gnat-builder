@@ -172,7 +172,7 @@ gnatcoll-db-depends-debian: base-depends-debian
 libadalang-depends-debian: base-depends-debian
 	$(sudo) apt-get -qq -y install \
 	    virtualenv python-dev libgmp-dev \
-	    python3.7 python3.7-venv python3.7-dev 
+	    python3.8 python3.8-venv python3.8-dev 
 
 .PHONY: gtkada-depends-debian
 gtkada-depends-debian: base-depends-debian
@@ -619,7 +619,7 @@ gnatcoll-gnatinspect-install:
 libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ && python3.7 -m venv lal-venv
+	cd $@ && python3.8 -m venv lal-venv
 	cd $@ && . lal-venv/bin/activate \
 	    && pip install -r REQUIREMENTS.dev \
 	    && mkdir -p lal-venv/src/langkit \
