@@ -11,18 +11,21 @@ index 862e6e7c..393d5037 100644
                 | E_Return_Statement
                 | E_Subprogram_Body
 diff --git a/src/spark/spark_definition.adb b/src/spark/spark_definition.adb
-index bc537906..fafe7936 100644
+index bc537906..d3cf67d7 100644
 --- a/src/spark/spark_definition.adb
 +++ b/src/spark/spark_definition.adb
-@@ -2394,6 +2394,7 @@ procedure Check_Raise_Context (Expr : Node_Id) is
-             | N_Unused_At_End
-             | N_Unused_At_Start
-             | N_Variant
-+            | N_Iterated_Element_Association
-          =>
-             raise Program_Error;
-       end case;
-@@ -6165,7 +6166,6 @@ procedure Mark_Identifier_Or_Expanded_Name (N : Node_Id) is
+@@ -1474,6 +1474,10 @@ function Is_Special_Multidim_Update_Aggr
+                Mark_List (Expressions (N));
+             end if;
+ 
++         when N_Iterated_Element_Association =>
++
++            Mark_Unsupported ("iterated element association", N);
++
+          when N_Iterator_Specification =>
+ 
+             --  Retrieve Iterable aspect specification if any
+@@ -6165,7 +6169,6 @@ procedure Mark_Identifier_Or_Expanded_Name (N : Node_Id) is
              | E_Block
              | E_Operator
              | E_Package_Body
