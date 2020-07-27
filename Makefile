@@ -325,7 +325,7 @@ all-gnat-bootstrap: gtkada-clean
 all-gnat-bootstrap: gps gps-install
 all-gnat-bootstrap: gps-clean libadalang-tools-clean ada_language_server-clean vss-clean
 all-gnat-bootstrap: spark2014 spark2014-install
-all-gnat-bootstrap: spark2014-clean
+all-gnat-bootstrap: spark2014-clean gcc-clean
 
 .PHONY: all-release
 all-release: $(release-name)
