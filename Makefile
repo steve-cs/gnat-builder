@@ -3,7 +3,7 @@
 # C O N F I G
 #
 
-release ?= cs-20200721
+release ?= cs-20200820
 gcc-version ?= master
 adacore-version ?= master
 libadalang-version ?= stable
@@ -201,6 +201,7 @@ gps-depends-debian: base-depends-debian
 .PHONY: spark2014-depends-debian
 spark2014-depends-debian: base-depends-debian
 	$(sudo) apt-get -qq -y install \
+	    libnum-ocaml-dev \
 	    ocaml libocamlgraph-ocaml-dev \
 	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
 	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
