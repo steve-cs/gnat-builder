@@ -813,7 +813,7 @@ $(release-name):
 	rm -rf $(release-loc)/$@.tar.gz
 	mkdir -p $(release-loc)
 	mkdir -p $(release-loc)/$@
-	cp -r $(prefix)/* $(release-loc)/$@
+	cp -a $(prefix)/* $(release-loc)/$@
 	cd $(release-loc) && tar czf $@.tar.gz $@
 
 .PHONY: all-release-install
