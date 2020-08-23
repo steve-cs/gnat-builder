@@ -68,7 +68,7 @@ bootstrap: all-depends all-bootstrap
 release: bootstrap all-release
 
 .PHONY: release-install
-release-install: base-depends all-release-install all-depends
+release-install: all-release-install all-depends
 
 .PHONY: clean
 clean: all-clean
@@ -732,7 +732,7 @@ $(release-name):
 all-release-install: $(release-loc)/$(release-name)
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
-$(release-loc)/$(release-name):
+$(release-loc)/$(release-name): base-depends-$(os)
 	rm -rf $@ $@.tar.gz
 	mkdir -p $(@D)
 	cd $(@D) && wget -q $(release-url)/$(release)/$(@F).tar.gz
