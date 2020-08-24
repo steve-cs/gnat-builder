@@ -275,77 +275,62 @@ all-gnat-clean: quex-clean
 #
 
 gcc-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/gcc-mirror/gcc -b $(gcc-version) $@
 
 xmlada-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/xmlada -b $(adacore-version) $@
 
 gprbuild-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gprbuild -b $(adacore-version) $@
 
 gprconfig_kb-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gprconfig_kb -b master $@
 
 gtkada-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gtkada -b $(adacore-version) $@
 
 gnatcoll-core-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-core -b $(adacore-version) $@
 
 gnatcoll-bindings-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-bindings -b $(adacore-version) $@
 
 gnatcoll-db-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gnatcoll-db -b $(adacore-version) $@
 
 langkit-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/langkit -b $(libadalang-version) $@
 
 libadalang-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/libadalang -b $(libadalang-version) $@
 
 libadalang-tools-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/libadalang-tools -b $(adacore-version) $@
 
 ada_language_server-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/ada_language_server -b $(adacore-version) $@
 
 vss-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/vss -b $(adacore-version) $@
 
 gps-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/gps -b $(adacore-version) $@
 
 spark2014-src:
-	rm -rf $@
 	git clone --depth=1 \
 	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
 	cd $@ && git submodule init
@@ -364,7 +349,6 @@ gcc-bootstrap: gcc gcc-install
 
 gcc-build: gcc-src
 	mkdir -p $@
-	rm -rf $@/*
 	cd $< && ./contrib/download_prerequisites
 	cd $@ && ../$</configure \
 	    --prefix=$(prefix) \
@@ -733,7 +717,7 @@ all-release-install: $(release-loc)/$(release-name)
 	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
 
 $(release-loc)/$(release-name): base-depends-$(os)
-	rm -rf $@ $@.tar.gz
+	rm -rf $@.tar.gz
 	mkdir -p $(@D)
 	cd $(@D) && wget -q $(release-url)/$(release)/$(@F).tar.gz
 	cd $(@D) && tar xf $(@F).tar.gz
