@@ -38,7 +38,7 @@ spark2014-options ?=
 # release location and naming details
 
 release-loc = release
-release-url = https://github.com/steve-cs/gnat-builder/releases/download
+release-url = https://github.com/steve-cs/gnat-builder/releases/download/$(release)
 release-name = gnat-$(release)-$(host)
 
 #
@@ -705,22 +705,22 @@ z3-install:
 
 .PHONY: $(release-name)
 $(release-name):
-	rm -rf $(release-loc)/$@
-	rm -rf $(release-loc)/$@.tar.gz
-	mkdir -p $(release-loc)
+	rm -rf $(release-loc)/$@ $(release-loc)/$@.tar.gz
 	mkdir -p $(release-loc)/$@
 	cp -a $(prefix)/* $(release-loc)/$@
 	cd $(release-loc) && tar czf $@.tar.gz $@
+	rm -rf $(release-loc)/$@
 
 .PHONY: all-release-install
-all-release-install: $(release-loc)/$(release-name)
-	$(sudo) cp -a $(release-loc)/$(release-name)/* $(prefix)/
+all-release-install: $(release-loc)/$(release-name).tar.gz
+	mkdir -p $(prefix)
+	cd $(prefix) && $(sudo) tar -x --strip-components 1 -f $(PWD)/$<
 
-$(release-loc)/$(release-name): base-depends-$(os)
-	rm -rf $@.tar.gz
-	mkdir -p $(@D)
-	cd $(@D) && wget -q $(release-url)/$(release)/$(@F).tar.gz
-	cd $(@D) && tar xf $(@F).tar.gz
+$(release-loc)/$(release-name).tar.gz: base-depends-$(os)
+	if [ ! -f $@ ]; then \
+	   mkdir -p $(@D); \
+	   cd $(@D) && wget -q $(release-url)/$(@F); \
+	fi
 
 #
 # R E L E A S E
