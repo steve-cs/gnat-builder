@@ -56,10 +56,10 @@ default: all
 depends: all-depends
 
 .PHONY: all
-all: all-gnat
+all: all-all
 
 .PHONY: install
-install: all-gnat-install
+install: all-install
 
 .PHONY: bootstrap
 bootstrap: all-depends all-bootstrap
@@ -167,104 +167,96 @@ spark2014-depends-debian:
 #
 
 .PHONY: all-src
-all-src: gcc-src all-gnat-src
+all-src: gcc-src
+all-src: xmlada-src
+all-src: gprbuild-src
+all-src: gprconfig_kb-src
+all-src: gnatcoll-core-src
+all-src: gnatcoll-bindings-src
+all-src: gnatcoll-db-src
+all-src: libadalang-src
+all-src: langkit-src
+all-src: gtkada-src
+all-src: gps-src
+all-src: libadalang-tools-src
+all-src: ada_language_server-src
+all-src: vss-src
+all-src: spark2014-src
 
-.PHONY: all-gnat-src
-all-gnat-src: xmlada-src
-all-gnat-src: gprbuild-src
-all-gnat-src: gprconfig_kb-src
-all-gnat-src: gnatcoll-core-src
-all-gnat-src: gnatcoll-bindings-src
-all-gnat-src: gnatcoll-db-src
-all-gnat-src: libadalang-src
-all-gnat-src: langkit-src
-all-gnat-src: gtkada-src
-all-gnat-src: gps-src
-all-gnat-src: libadalang-tools-src
-all-gnat-src: ada_language_server-src
-all-gnat-src: vss-src
-all-gnat-src: spark2014-src
-
-.PHONY: all-gnat
-all-gnat: xmlada
-all-gnat: gprbuild
-all-gnat: gnatcoll-core
-all-gnat: gnatcoll-bindings
-all-gnat: gnatcoll-db
-all-gnat: libadalang
-all-gnat: gtkada
-all-gnat: gps
-all-gnat: spark2014
+.PHONY: all-all
+all-all: gcc
+all-all: xmlada
+all-all: gprbuild
+all-all: gnatcoll-core
+all-all: gnatcoll-bindings
+all-all: gnatcoll-db
+all-all: libadalang
+all-all: gtkada
+all-all: gps
+all-all: spark2014
 
 .PHONY: all-install
-all-install: gcc-install all-gnat-install
-
-.PHONY: all-gnat-install
-all-gnat-install: xmlada-install
-all-gnat-install: gprbuild-install
-all-gnat-install: gnatcoll-core-install
-all-gnat-install: gnatcoll-bindings-install
-all-gnat-install: gnatcoll-db-install
-all-gnat-install: libadalang-install
-all-gnat-install: gtkada-install
-all-gnat-install: gps-install
-all-gnat-install: spark2014-install
+all-install: gcc-install
+all-install: xmlada-install
+all-install: gprbuild-install
+all-install: gnatcoll-core-install
+all-install: gnatcoll-bindings-install
+all-install: gnatcoll-db-install
+all-install: libadalang-install
+all-install: gtkada-install
+all-install: gps-install
+all-install: spark2014-install
 
 .PHONY: all-bootstrap
 all-bootstrap: gcc-bootstrap
 all-bootstrap: gcc-build-clean
 all-bootstrap: gprbuild-bootstrap-install
 all-bootstrap: gprconfig_kb-clean
-all-bootstrap: all-gnat-bootstrap
-
-.PHONY: all-gnat-bootstrap
-all-gnat-bootstrap: xmlada xmlada-install
-all-gnat-bootstrap: xmlada-clean
-all-gnat-bootstrap: gprbuild gprbuild-install
-all-gnat-bootstrap: gprbuild-clean
-all-gnat-bootstrap: gnatcoll-core gnatcoll-core-install
-all-gnat-bootstrap: gnatcoll-core-clean
-all-gnat-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
-all-gnat-bootstrap: gnatcoll-bindings-clean
-all-gnat-bootstrap: gnatcoll-sql gnatcoll-sql-install
-all-gnat-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
-all-gnat-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
-all-gnat-bootstrap: gnatcoll-xref gnatcoll-xref-install
-all-gnat-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
-all-gnat-bootstrap: gnatcoll-db-clean
-all-gnat-bootstrap: libadalang libadalang-install
-all-gnat-bootstrap: libadalang-clean langkit-clean
-all-gnat-bootstrap: gtkada gtkada-install
-all-gnat-bootstrap: gtkada-clean
-all-gnat-bootstrap: gps gps-install
-all-gnat-bootstrap: gps-clean libadalang-tools-clean ada_language_server-clean vss-clean
-all-gnat-bootstrap: spark2014 spark2014-install
-all-gnat-bootstrap: spark2014-clean gcc-clean
+all-bootstrap: xmlada xmlada-install
+all-bootstrap: xmlada-clean
+all-bootstrap: gprbuild gprbuild-install
+all-bootstrap: gprbuild-clean
+all-bootstrap: gnatcoll-core gnatcoll-core-install
+all-bootstrap: gnatcoll-core-clean
+all-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
+all-bootstrap: gnatcoll-bindings-clean
+all-bootstrap: gnatcoll-sql gnatcoll-sql-install
+all-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
+all-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
+all-bootstrap: gnatcoll-xref gnatcoll-xref-install
+all-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
+all-bootstrap: gnatcoll-db-clean
+all-bootstrap: libadalang libadalang-install
+all-bootstrap: libadalang-clean langkit-clean
+all-bootstrap: gtkada gtkada-install
+all-bootstrap: gtkada-clean
+all-bootstrap: gps gps-install
+all-bootstrap: gps-clean libadalang-tools-clean ada_language_server-clean vss-clean
+all-bootstrap: spark2014 spark2014-install
+all-bootstrap: spark2014-clean gcc-clean
 
 .PHONY: all-release
 all-release: $(release-name)
 
 .PHONY: all-clean
-all-clean: gcc-clean all-gnat-clean github-clean
-
-.PHONY: all-gnat-clean
-all-gnat-clean: gprbuild-bootstrap-clean
-all-gnat-clean: gprconfig_kb-clean
-all-gnat-clean: xmlada-clean
-all-gnat-clean: gprbuild-clean
-all-gnat-clean: gnatcoll-core-clean
-all-gnat-clean: gnatcoll-bindings-clean
-all-gnat-clean: gnatcoll-db-clean
-all-gnat-clean: libadalang-clean
-all-gnat-clean: langkit-clean
-all-gnat-clean: gtkada-clean
-all-gnat-clean: gps-clean
-all-gnat-clean: libadalang-tools-clean
-all-gnat-clean: ada_language_server-clean
-all-gnat-clean: vss-clean
-all-gnat-clean: spark2014-clean
-all-gnat-clean: gnat-clean
-all-gnat-clean: quex-clean
+all-clean: gcc-clean
+all-clean: gprbuild-bootstrap-clean
+all-clean: gprconfig_kb-clean
+all-clean: xmlada-clean
+all-clean: gprbuild-clean
+all-clean: gnatcoll-core-clean
+all-clean: gnatcoll-bindings-clean
+all-clean: gnatcoll-db-clean
+all-clean: libadalang-clean
+all-clean: langkit-clean
+all-clean: gtkada-clean
+all-clean: gps-clean
+all-clean: libadalang-tools-clean
+all-clean: ada_language_server-clean
+all-clean: vss-clean
+all-clean: spark2014-clean
+all-clean: gnat-clean
+all-clean: quex-clean
 
 #
 # A L L
