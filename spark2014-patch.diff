@@ -1,0 +1,12 @@
+diff --git a/src/spark/spark_definition.adb b/src/spark/spark_definition.adb
+index 562e8e9a..f6d386e4 100644
+--- a/src/spark/spark_definition.adb
++++ b/src/spark/spark_definition.adb
+@@ -7319,6 +7319,7 @@ procedure Insert_All_And_SPARK (E : Entity_Id) is
+          S_Integer             => True,
+          S_Long_Integer        => True,
+          S_Long_Long_Integer   => True,
++         S_Long_Long_Long_Integer   => True,
+ 
+          S_Natural             => True,
+          S_Positive            => True,
