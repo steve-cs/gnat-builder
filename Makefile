@@ -443,11 +443,11 @@ gnatcoll-bindings-install:
 gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
 	cp -a $</* $@
-	make -C $</sql prefix=$(prefix) $(gnatcoll-db-options) setup
-	make -C $</gnatcoll_db2ada prefix=$(prefix) $(gnatcoll-db-options) setup
-	make -C $</sqlite prefix=$(prefix) $(gnatcoll-db-options) setup
-	make -C $</xref prefix=$(prefix) $(gnatcoll-db-options) setup
-	make -C $</gnatinspect prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $@/sql prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $@/gnatcoll_db2ada prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $@/sqlite prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $@/xref prefix=$(prefix) $(gnatcoll-db-options) setup
+	make -C $@/gnatinspect prefix=$(prefix) $(gnatcoll-db-options) setup
 
 .PHONY: gnatcoll-db
 gnatcoll-db: gnatcoll-sql
