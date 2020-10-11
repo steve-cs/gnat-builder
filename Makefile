@@ -5,6 +5,7 @@
 
 release ?= cs-20200922
 gcc-version ?= master
+adacore-repos ?= adacore
 adacore-version ?= master
 libadalang-version ?= stable
 spark2014-version ?= fsf
@@ -272,59 +273,59 @@ gcc-src:
 
 xmlada-src:
 	git clone --depth=1 \
-	https://github.com/adacore/xmlada -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/xmlada -b $(adacore-version) $@
 
 gprbuild-src:
 	git clone --depth=1 \
-	https://github.com/adacore/gprbuild -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gprbuild -b $(adacore-version) $@
 
 gprconfig_kb-src:
 	git clone --depth=1 \
-	https://github.com/adacore/gprconfig_kb -b master $@
+	https://github.com/$(adacore-repos)/gprconfig_kb -b master $@
 
 gtkada-src:
 	git clone --depth=1 \
-	https://github.com/adacore/gtkada -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gtkada -b $(adacore-version) $@
 
 gnatcoll-core-src:
 	git clone --depth=1 \
-	https://github.com/adacore/gnatcoll-core -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gnatcoll-core -b $(adacore-version) $@
 
 gnatcoll-bindings-src:
 	git clone --depth=1 \
-	https://github.com/adacore/gnatcoll-bindings -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gnatcoll-bindings -b $(adacore-version) $@
 
 gnatcoll-db-src:
 	git clone --depth=1 \
-	https://github.com/adacore/gnatcoll-db -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gnatcoll-db -b $(adacore-version) $@
 
 langkit-src:
 	git clone --depth=1 \
-	https://github.com/adacore/langkit -b $(libadalang-version) $@
+	https://github.com/$(adacore-repos)/langkit -b $(libadalang-version) $@
 
 libadalang-src:
 	git clone --depth=1 \
-	https://github.com/adacore/libadalang -b $(libadalang-version) $@
+	https://github.com/$(adacore-repos)/libadalang -b $(libadalang-version) $@
 
 libadalang-tools-src:
 	git clone --depth=1 \
-	https://github.com/adacore/libadalang-tools -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/libadalang-tools -b $(adacore-version) $@
 
 ada_language_server-src:
 	git clone --depth=1 \
-	https://github.com/adacore/ada_language_server -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/ada_language_server -b $(adacore-version) $@
 
 vss-src:
 	git clone --depth=1 \
-	https://github.com/adacore/vss -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/vss -b $(adacore-version) $@
 
 gps-src:
 	git clone --depth=1 \
-	https://github.com/adacore/gps -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gps -b $(adacore-version) $@
 
 spark2014-src:
 	git clone --depth=1 \
-	https://github.com/adacore/spark2014 -b $(spark2014-version) $@
+	https://github.com/$(adacore-repos)/spark2014 -b $(spark2014-version) $@
 	cd $@ && git submodule init
 	cd $@ && git submodule update
 
