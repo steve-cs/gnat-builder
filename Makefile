@@ -608,9 +608,6 @@ spark2014-build: spark2014-src gcc-src
 	rm -rf $@/gnat2why/gnat_src
 	ln -s ../../gcc-src/gcc/ada $@/gnat2why/gnat_src
 	make -C $@ $(spark2014-options) setup
-	#
-	# patch
-	cd $@ && patch -f -p1 -i ../spark2014-patch.diff
 
 .PHONY: spark2014
 spark2014: spark2014-build
