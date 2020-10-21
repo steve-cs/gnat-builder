@@ -551,6 +551,7 @@ clean-libadalang-prefix:
 	$(sudo) rm -rf $(prefix)/share/gpr/libadalang*
 	$(sudo) rm -rf $(prefix)/share/gpr/manifests/libadalang*
 	$(sudo) rm -rf $(prefix)/python/libadalang*
+	$(sudo) rm -rf $(prefix)/bin/lal_parse
 	# clean up old Mains project if there
 	$(sudo) rm -rf $(prefix)/share/gpr/manifests/mains
 	$(sudo) rm -rf $(prefix)/bin/parse
