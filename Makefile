@@ -18,7 +18,7 @@ sudo ?= sudo
 
 # gcc configuration
 
-host  ?= x86_64-linux-gnu
+host  ?= x86_64-pc-linux-gnu
 build ?= $(host)
 target ?= $(build)
 gcc-jobs ?= 4
