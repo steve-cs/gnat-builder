@@ -112,7 +112,8 @@ base-depends-debian:
 .PHONY: gcc-depends-debian
 gcc-depends-debian:
 	$(sudo) apt-get -qq -y install \
-	    gnat gawk flex bison libc6-dev libc6-dev-i386 libzstd-dev
+	    gnat gawk flex bison libc6-dev libc6-dev-i386 libzstd-dev \
+	    libgmp-dev libmpfr-dev libmpc-dev libisl-dev
 
 .PHONY: gnatcoll-bindings-depends-debian
 gnatcoll-bindings-depends-debian:
@@ -342,7 +343,6 @@ gcc-bootstrap: gcc gcc-install
 
 gcc-build: gcc-src
 	mkdir -p $@
-	cd $< && ./contrib/download_prerequisites
 	cd $@ && ../$</configure \
 	    --prefix=$(prefix) \
 	    --host=$(host) --build=$(build) --target=$(target) \
