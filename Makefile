@@ -511,22 +511,32 @@ libadalang-build: libadalang-src langkit-src
 	cp -a $</* $@
 	cd $@ && python3.8 -m venv lal-venv
 	cd $@ && . lal-venv/bin/activate \
+	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
-	    && mkdir -p lal-venv/src/langkit \
-	    && rm -rf lal-venv/src/langkit/* \
-	    && cp -a ../langkit-src/* lal-venv/src/langkit \
+	    && mkdir -p langkit \
+	    && rm -rf langkit/* \
+	    && cp -a ../langkit-src/* langkit \
+	    && pip install ./langkit \
 	    && deactivate
 
 .PHONY: libadalang
-libadalang: libadalang-build
+libadalang: libadalang-build clean-libadalang-prefix
 	cd $< && . lal-venv/bin/activate \
-	    && ada/manage.py make $(libadalang-options) \
+	    && cd langkit \
+	    && ./manage.py build-langkit-support \
+	    && deactivate
+	cd $< && $(sudo) sh -c ". lal-venv/bin/activate \
+	    && cd langkit \
+	    && ./manage.py install-langkit-support $(prefix) \
+	    && deactivate"
+	cd $< && . lal-venv/bin/activate \
+	    && ./manage.py make $(libadalang-options) \
 	    && deactivate
 
 .PHONY: libadalang-install
-libadalang-install: clean-libadalang-prefix
+libadalang-install:
 	cd libadalang-build && $(sudo) sh -c ". lal-venv/bin/activate \
-	    && ada/manage.py install $(prefix) \
+	    && ./manage.py install $(prefix) \
 	    && deactivate"
 	#
 	# patch
