@@ -12,6 +12,7 @@ gprbuild | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branc
 gnatcoll-core | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-core)](https://travis-ci.org/steve-cs/travis-test/branches) 
 gnatcoll-bindings | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-bindings)](https://travis-ci.org/steve-cs/travis-test/branches) 
 gnatcoll-db | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gnatcoll-db)](https://travis-ci.org/steve-cs/travis-test/branches) 
+langkit | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=langkit)](https://travis-ci.org/steve-cs/travis-test/branches) 
 libadalang | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=libadalang)](https://travis-ci.org/steve-cs/travis-test/branches) 
 gtkada | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gtkada)](https://travis-ci.org/steve-cs/travis-test/branches) 
 gps | [![Build Status](https://travis-ci.org/steve-cs/travis-test.svg?branch=gps)](https://travis-ci.org/steve-cs/travis-test/branches)
