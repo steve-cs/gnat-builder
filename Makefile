@@ -521,8 +521,9 @@ gnatcoll-gnatinspect-install:
 langkit-build: langkit-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ && python3.8 -m venv lal-venv
-	cd $@ && . lal-venv/bin/activate \
+	cd $@ \
+	    && python3.8 -mvenv env \
+	    && . env/bin/activate \
 	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
 	    && pip install . \
@@ -530,38 +531,50 @@ langkit-build: langkit-src
 
 .PHONY: langkit
 langkit: langkit-build
-	cd $< && . lal-venv/bin/activate \
-	    && ./manage.py build-langkit-support $(langkit-options) \
+	cd $< \
+	    && . env/bin/activate \
+	    && python manage.py build-langkit-support $(langkit-options) \
 	    && deactivate
 
 .PHONY: langkit-install
 langkit-install: clean-langkit-prefix
-	cd langkit-build && $(sudo) sh -c ". lal-venv/bin/activate \
-	    && ./manage.py install-langkit-support $(prefix) \
+	cd langkit-build \
+	    && $(sudo) sh -c ". env/bin/activate \
+	    && python manage.py install-langkit-support $(prefix) \
 	    && deactivate"
+
+.PHONY: clean-langkit-prefix
+clean-langkit-prefix:
+	# clean up old langkit install if there
+	$(sudo) rm -rf $(prefix)/include/langkit*
+	$(sudo) rm -rf $(prefix)/lib/langkit*
+	$(sudo) rm -rf $(prefix)/share/gpr/langkit*
+	$(sudo) rm -rf $(prefix)/share/gpr/manifests/langkit*
 
 libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ && python3.8 -m venv lal-venv
-	cd $@ && . lal-venv/bin/activate \
+	cd $@ \
+	    && python3.8 -mvenv env \
+	    && . env/bin/activate \
 	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
 	    && mkdir -p langkit \
-	    && rm -rf langkit/* \
 	    && cp -a ../langkit-src/* langkit \
 	    && deactivate
 
 .PHONY: libadalang
-libadalang: libadalang-build clean-libadalang-prefix
-	cd $< && . lal-venv/bin/activate \
-	    && ./manage.py make $(libadalang-options) \
+libadalang: libadalang-build
+	cd $< \
+	    && . env/bin/activate \
+	    && python manage.py make $(libadalang-options) \
 	    && deactivate
 
 .PHONY: libadalang-install
-libadalang-install:
-	cd libadalang-build && $(sudo) sh -c ". lal-venv/bin/activate \
-	    && ./manage.py install $(prefix) \
+libadalang-install: clean-libadalang-prefix
+	cd libadalang-build \
+	    && $(sudo) sh -c ". env/bin/activate \
+	    && python manage.py install $(prefix) \
 	    && deactivate"
 	#
 	# patch
@@ -573,15 +586,7 @@ libadalang-install:
 	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
 	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
 
-.PHONY: clean-langkit-prefix
-clean-langkit-prefix:
-	# clean up old langkit install if there
-	$(sudo) rm -rf $(prefix)/include/langkit*
-	$(sudo) rm -rf $(prefix)/lib/langkit*
-	$(sudo) rm -rf $(prefix)/share/gpr/langkit*
-	$(sudo) rm -rf $(prefix)/share/gpr/manifests/langkit*
-
-.PHONY: clean-libadalang-prefix
+PHONY: clean-libadalang-prefix
 clean-libadalang-prefix:
 	# clean up old libadalang install if there
 	$(sudo) rm -rf $(prefix)/include/libadalang*
