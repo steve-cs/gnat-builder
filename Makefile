@@ -109,7 +109,10 @@ base-depends-debian:
 	   apt-get -qq -y install sudo; \
 	fi
 	$(sudo) apt-get -qq -y install \
-	    make git wget build-essential
+	    make git wget build-essential \
+	    python-is-python2 \
+	    python2-dev \
+	    python3-dev python3-venv
 
 .PHONY: gcc-depends-debian
 gcc-depends-debian:
@@ -120,19 +123,17 @@ gcc-depends-debian:
 .PHONY: gnatcoll-bindings-depends-debian
 gnatcoll-bindings-depends-debian:
 	$(sudo) apt-get -qq -y install \
-	    python-dev libgmp-dev zlib1g-dev libreadline-dev
+	    libgmp-dev zlib1g-dev libreadline-dev
 
 .PHONY: langkit-depends-debian
 langkit-depends-debian:
 	$(sudo) apt-get -qq -y install \
-	    virtualenv python-dev libgmp-dev \
-	    python3.8 python3.8-venv python3.8-dev 
+	    libgmp-dev
 
 .PHONY: libadalang-depends-debian
 libadalang-depends-debian:
 	$(sudo) apt-get -qq -y install \
-	    virtualenv python-dev libgmp-dev \
-	    python3.8 python3.8-venv python3.8-dev 
+	    libgmp-dev
 
 .PHONY: gtkada-depends-debian
 gtkada-depends-debian:
@@ -144,7 +145,7 @@ gps-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libglib2.0-dev libpango1.0-dev \
 	    libatk1.0-dev libgtk-3-dev \
-	    python-dev python-gi-dev python-cairo-dev \
+	    python-gi-dev python-cairo-dev \
 	    libgmp-dev libclang1
 	#
 	# patch
@@ -522,7 +523,7 @@ langkit-build: langkit-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ \
-	    && python3.8 -mvenv env \
+	    && python3 -mvenv env \
 	    && . env/bin/activate \
 	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
@@ -555,7 +556,7 @@ libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ \
-	    && python3.8 -mvenv env \
+	    && python3 -mvenv env \
 	    && . env/bin/activate \
 	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
