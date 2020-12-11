@@ -145,7 +145,7 @@ gps-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libglib2.0-dev libpango1.0-dev \
 	    libatk1.0-dev libgtk-3-dev \
-	    python-gi-dev python-cairo-dev \
+	    python-gi-dev python-cairo-dev python3-cairo-dev \
 	    libgmp-dev libclang1
 	#
 	# patch
@@ -158,6 +158,8 @@ gps-depends-debian:
 	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
 	$(sudo) mkdir -p $(prefix)/lib/python2.7
 	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
+	$(sudo) mkdir -p $(prefix)/lib/python3.8
+	$(sudo) cp -a /usr/lib/python3.8/* $(prefix)/lib/python3.8
 
 .PHONY: spark2014-depends-debian
 spark2014-depends-debian:
@@ -581,11 +583,14 @@ libadalang-install: clean-libadalang-prefix
 	# patch
 	# libadalang install is leaving some bits in $(prefix)/python/
 	# put them in $(prefix)/lib/python2.7/ where they will be found
-	# by gps at run (or build?) time
+	# by gps at run (or build?) time. Put them in python3.8/ too.
 	#
 	$(sudo) mkdir -p $(prefix)/lib/python2.7
 	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
 	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
+	$(sudo) mkdir -p $(prefix)/lib/python3.8
+	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python3.8
+	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python3.8/libadalang
 
 PHONY: clean-libadalang-prefix
 clean-libadalang-prefix:
