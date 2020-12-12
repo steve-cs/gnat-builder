@@ -145,7 +145,8 @@ gps-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libglib2.0-dev libpango1.0-dev \
 	    libatk1.0-dev libgtk-3-dev \
-	    python-gi-dev python-cairo-dev python3-cairo-dev \
+	    python-gi  python-cairo-dev \
+	    python-gi-dev python3-cairo-dev \
 	    libgmp-dev libclang1
 	#
 	# patch
