@@ -285,7 +285,7 @@ all-clean: quex-clean
 #
 
 gcc-src:
-	git clone --depth=1000 \
+	git clone --shallow-since=2020-12-31 \
 	https://github.com/gcc-mirror/gcc -b $(gcc-version) $@
 	cd gcc-src && git checkout b6dd195
 
