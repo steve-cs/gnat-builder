@@ -642,10 +642,6 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src
 	# spawn-processes__glib.adb:341:07: warning: if statement has no effect
 	#
 	cd gps-build/ada_language_server && patch -f -p1 -i ../../ada_language_server-patch.diff
-	#
-	# patch out unused "with GNAT.Case_Util;"
-	#
-	cd gps-build && patch -f -p1 -i ../gps-patch.diff
 
 # gps subprojects that need to be declared in GPR_PROJECT_PATH now
 sub1 = ../laltools/src
