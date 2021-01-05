@@ -198,8 +198,8 @@ all-src: vss-src
 all-src: spark2014-src
 
 .PHONY: all-all
-all-all: gcc
-all-all: xmlada
+# all-all: gcc
+# all-all: xmlada
 all-all: gprbuild
 all-all: gnatcoll-core
 all-all: gnatcoll-bindings
@@ -636,12 +636,6 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src
 	mkdir -p $@/vss
 	cp -a vss-src/* $@/vss
 	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
-	#
-	# patch out inactive code in ada_language_server so that
-	# gps builds.  This resolves the following error:
-	# spawn-processes__glib.adb:341:07: warning: if statement has no effect
-	#
-	cd gps-build/ada_language_server && patch -f -p1 -i ../../ada_language_server-patch.diff
 
 # gps subprojects that need to be declared in GPR_PROJECT_PATH now
 sub1 = ../laltools/src
