@@ -627,6 +627,20 @@ gtkada-install:
 
 #####
 
+libadalang-tools-build: libadalang-tools-src
+	mkdir -p $@
+	cp -a $</* $@
+
+.PHONY: libadalang-tools
+libadalang-tools: libadalang-tools-build
+	make -C $<
+
+.PHONY: libadalang-tools-install
+libadalang-tools-install:
+	$(sudo) make -C libadalang-tools-build install
+
+#####
+
 gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
