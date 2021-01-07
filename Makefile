@@ -641,6 +641,22 @@ libadalang-tools-install:
 
 #####
 
+ada_language_server-build: ada_language_server-src vss-src
+	mkdir -p $@
+	cp -a $</* $@
+	mkdir -p $@/vss
+	cp -a vss-src/* $@/vss
+
+.PHONY: ada_language_server
+ada_language_server: ada_language_server-build
+	make -C $<
+
+.PHONY: ada_language_server-install
+ada_language_server-install:
+	$(sudo) make -C ada_language_server-build install
+
+#####
+
 gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
