@@ -664,6 +664,16 @@ gps: gps-build
 .PHONY: gps-install
 gps-install:
 	$(sudo) make -C gps-build install
+	#
+	# PATCH - copy shared libraries for ada_language_server and laltools
+	#         so that gnatstudio will startup.  This will eventually be
+	#         fixed when ada_language_server and laltools get built and
+	#         installed separately as libraries.
+	#
+	$(sudo) mkdir -p $(prefix)/lib
+	$(sudo) cp -a gps-build/ada_language_server/.libs/spawn_glib/relocatable/libspawn_glib.so $(prefix)/lib
+	$(sudo) cp -a gps-build/laltools/lib.relocatable/liblal_tools.so $(prefix)/lib
+	#
 
 #####
 
