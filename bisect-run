@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+make clean
+make gcc-depends-debian
+make gcc-src
+cd gcc-src
+git bisect start 3335c9f b6dd195 --
+git bisect run bash ../bisect-test
+git bisect reset
+cd ..

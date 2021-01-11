@@ -75,6 +75,16 @@ release-install: all-release-install all-depends
 .PHONY: clean
 clean: all-clean
 
+.PHONY: bisect-test-clean
+bisect-test-clean: prefix-clean
+	rm -rf *-build
+
+.PHONY: bisect-test
+bisect-test: bisect-test-clean
+bisect-test: gcc gcc-install
+bisect-test: gprbuild-bootstrap-install
+bisect-test: xmlada
+
 #
 # E N D   T O P   L E V E L
 #
@@ -198,8 +208,8 @@ all-src: vss-src
 all-src: spark2014-src
 
 .PHONY: all-all
-# all-all: gcc
-# all-all: xmlada
+all-all: gcc
+all-all: xmlada
 all-all: gprbuild
 all-all: gnatcoll-core
 all-all: gnatcoll-bindings
@@ -287,7 +297,7 @@ all-clean: quex-clean
 gcc-src:
 	git clone --shallow-since=2020-12-31 \
 	https://github.com/gcc-mirror/gcc -b $(gcc-version) $@
-	cd gcc-src && git checkout b6dd195
+	cd gcc-src && git checkout c304a68
 
 xmlada-src:
 	git clone --depth=1 \
@@ -364,7 +374,7 @@ gcc-build: gcc-src
 	    --prefix=$(prefix) \
 	    --host=$(host) --build=$(build) --target=$(target) \
 	    --enable-languages=c,c++,ada \
-	    --enable-bootstrap \
+	    --disable-bootstrap \
 	    $(gcc-options)
 
 .PHONY: gcc
