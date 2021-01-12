@@ -295,9 +295,9 @@ all-clean: quex-clean
 #
 
 gcc-src:
-	git clone --shallow-since=2020-12-31 \
+	git clone --depth=1 \
 	https://github.com/gcc-mirror/gcc -b $(gcc-version) $@
-	cd gcc-src && git checkout c304a68
+	cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 xmlada-src:
 	git clone --depth=1 \
