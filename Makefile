@@ -283,8 +283,6 @@ all-clean: libadalang-tools-clean
 all-clean: ada_language_server-clean
 all-clean: vss-clean
 all-clean: spark2014-clean
-all-clean: gnat-clean
-all-clean: quex-clean
 
 #
 # A L L
