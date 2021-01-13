@@ -348,7 +348,6 @@ vss-src:
 gps-src:
 	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/gps -b $(adacore-version) $@
-	cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 spark2014-src:
 	git clone --depth=1 \
