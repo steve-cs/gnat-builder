@@ -338,8 +338,9 @@ libadalang-tools-src:
 	https://github.com/$(adacore-repos)/libadalang-tools -b $(adacore-version) $@
 
 ada_language_server-src:
-	git clone --depth=1 \
+	git clone --shallow-since=2021-01-11 \
 	https://github.com/$(adacore-repos)/ada_language_server -b $(adacore-version) $@
+	cd $@ && git checkout 1943cfc
 
 vss-src:
 	git clone --depth=1 \
