@@ -6,8 +6,8 @@
 release ?= cs-20210112
 gcc-version ?= master
 adacore-repos ?= adacore
-adacore-version ?= master
-libadalang-version ?= stable
+adacore-version ?= 21.1
+libadalang-version ?= 21.1
 spark2014-version ?= fsf
 
 os ?= debian
@@ -31,7 +31,6 @@ gprbuild-options ?=
 gnatcoll-core-options ?=
 gnatcoll-bindings-options ?=
 gnatcoll-db-options ?=
-langkit-options ?=
 libadalang-options ?=
 gtkada-options ?=
 gps-options ?=
@@ -101,7 +100,6 @@ all-depends: gprbuild-depends-$(os)
 all-depends: gnatcoll-core-depends-$(os)
 all-depends: gnatcoll-bindings-depends-$(os)
 all-depends: gnatcoll-db-depends-$(os)
-all-depends: langkit-depends-$(os)
 all-depends: libadalang-depends-$(os)
 all-depends: gtkada-depends-$(os)
 all-depends: gps-depends-$(os)
@@ -134,11 +132,6 @@ gcc-depends-debian:
 gnatcoll-bindings-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    libgmp-dev zlib1g-dev libreadline-dev
-
-.PHONY: langkit-depends-debian
-langkit-depends-debian:
-	$(sudo) apt-get -qq -y install \
-	    libgmp-dev
 
 .PHONY: libadalang-depends-debian
 libadalang-depends-debian:
@@ -214,7 +207,6 @@ all-all: gprbuild
 all-all: gnatcoll-core
 all-all: gnatcoll-bindings
 all-all: gnatcoll-db
-all-all: langkit
 all-all: libadalang
 all-all: gtkada
 all-all: gps
@@ -227,7 +219,6 @@ all-install: gprbuild-install
 all-install: gnatcoll-core-install
 all-install: gnatcoll-bindings-install
 all-install: gnatcoll-db-install
-all-install: langkit-install
 all-install: libadalang-install
 all-install: gtkada-install
 all-install: gps-install
@@ -252,7 +243,6 @@ all-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
 all-bootstrap: gnatcoll-xref gnatcoll-xref-install
 all-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
 all-bootstrap: gnatcoll-db-clean
-all-bootstrap: langkit langkit-install
 all-bootstrap: libadalang libadalang-install
 all-bootstrap: libadalang-clean langkit-clean
 all-bootstrap: gtkada gtkada-install
@@ -276,7 +266,6 @@ all-clean: gnatcoll-bindings-clean
 all-clean: gnatcoll-db-clean
 all-clean: langkit-clean
 all-clean: libadalang-clean
-all-clean: langkit-clean
 all-clean: gtkada-clean
 all-clean: gps-clean
 all-clean: libadalang-tools-clean
@@ -338,9 +327,8 @@ libadalang-tools-src:
 	https://github.com/$(adacore-repos)/libadalang-tools -b $(adacore-version) $@
 
 ada_language_server-src:
-	git clone --shallow-since=2021-01-11 \
+	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/ada_language_server -b $(adacore-version) $@
-	cd $@ && git checkout 1943cfc
 
 vss-src:
 	git clone --depth=1 \
@@ -532,79 +520,45 @@ gnatcoll-gnatinspect-install:
 
 #####
 
-langkit-build: langkit-src
-	mkdir -p $@
-	cp -a $</* $@
-	cd $@ \
-	    && python3 -mvenv env \
-	    && . env/bin/activate \
-	    && pip install wheel \
-	    && pip install -r REQUIREMENTS.dev \
-	    && pip install . \
-	    && deactivate
-
-.PHONY: langkit
-langkit: langkit-build
-	cd $< \
-	    && . env/bin/activate \
-	    && python manage.py build-langkit-support $(langkit-options) \
-	    && deactivate
-
-.PHONY: langkit-install
-langkit-install: clean-langkit-prefix
-	cd langkit-build \
-	    && $(sudo) sh -c ". env/bin/activate \
-	    && python manage.py install-langkit-support $(prefix) \
-	    && deactivate"
-
-.PHONY: clean-langkit-prefix
-clean-langkit-prefix:
-	# clean up old langkit install if there
-	$(sudo) rm -rf $(prefix)/include/langkit*
-	$(sudo) rm -rf $(prefix)/lib/langkit*
-	$(sudo) rm -rf $(prefix)/share/gpr/langkit*
-	$(sudo) rm -rf $(prefix)/share/gpr/manifests/langkit*
-
 libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
 	cp -a $</* $@
-	cd $@ \
-	    && python3 -mvenv env \
-	    && . env/bin/activate \
-	    && pip install wheel \
+	cd $@ && python3.8 -m venv lal-venv
+	cd $@ && . lal-venv/bin/activate \
 	    && pip install -r REQUIREMENTS.dev \
-	    && mkdir -p langkit \
-	    && cp -a ../langkit-src/* langkit \
+	    && mkdir -p lal-venv/src/langkit \
+	    && rm -rf lal-venv/src/langkit/* \
+	    && cp -a ../langkit-src/* lal-venv/src/langkit \
 	    && deactivate
 
 .PHONY: libadalang
 libadalang: libadalang-build
-	cd $< \
-	    && . env/bin/activate \
-	    && python manage.py make $(libadalang-options) \
+	cd $< && . lal-venv/bin/activate \
+	    && ada/manage.py make $(libadalang-options) \
 	    && deactivate
 
 .PHONY: libadalang-install
 libadalang-install: clean-libadalang-prefix
-	cd libadalang-build \
-	    && $(sudo) sh -c ". env/bin/activate \
-	    && python manage.py install $(prefix) \
+	cd libadalang-build && $(sudo) sh -c ". lal-venv/bin/activate \
+	    && ada/manage.py install $(prefix) \
 	    && deactivate"
 	#
 	# patch
 	# libadalang install is leaving some bits in $(prefix)/python/
 	# put them in $(prefix)/lib/python2.7/ where they will be found
-	# by gps at run (or build?) time. Put them in python3.8/ too.
+	# by gps at run (or build?) time
 	#
 	$(sudo) mkdir -p $(prefix)/lib/python2.7
 	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
 	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
-	$(sudo) mkdir -p $(prefix)/lib/python3.8
-	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python3.8
-	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python3.8/libadalang
 
-PHONY: clean-libadalang-prefix
+.PHONY: clean-libadalang-prefix
 clean-libadalang-prefix:
+	# clean up old langkit install if there
+	$(sudo) rm -rf $(prefix)/include/langkit*
+	$(sudo) rm -rf $(prefix)/lib/langkit*
+	$(sudo) rm -rf $(prefix)/share/gpr/langkit*
+	$(sudo) rm -rf $(prefix)/share/gpr/manifests/langkit*
 	# clean up old libadalang install if there
 	$(sudo) rm -rf $(prefix)/include/libadalang*
 	$(sudo) rm -rf $(prefix)/lib/libadalang*
@@ -618,7 +572,6 @@ clean-libadalang-prefix:
 	$(sudo) rm -rf $(prefix)/bin/navigate
 	$(sudo) rm -rf $(prefix)/bin/gnat_compare
 	$(sudo) rm -rf $(prefix)/bin/nameres
-
 #####
 
 gtkada-build: gtkada-src
@@ -689,16 +642,6 @@ gps: gps-build
 .PHONY: gps-install
 gps-install:
 	$(sudo) make -C gps-build install
-	#
-	# PATCH - copy shared libraries for ada_language_server and laltools
-	#         so that gnatstudio will startup.  This will eventually be
-	#         fixed when ada_language_server and laltools get built and
-	#         installed separately as libraries.
-	#
-	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) cp -a gps-build/ada_language_server/.libs/spawn_glib/relocatable/libspawn_glib.so $(prefix)/lib
-	$(sudo) cp -a gps-build/laltools/lib.relocatable/liblal_tools.so $(prefix)/lib
-	#
 
 #####
 
