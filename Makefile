@@ -295,7 +295,6 @@ all-clean: spark2014-clean
 gcc-src:
 	git clone --depth=1 \
 	https://github.com/gcc-mirror/gcc -b $(gcc-version) $@
-	cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 xmlada-src:
 	git clone --depth=1 \
