@@ -649,19 +649,25 @@ libadalang-tools-install:
 
 #####
 
-ada_language_server-build: ada_language_server-src vss-src
+ada_language_server-build: ada_language_server-src vss-src libadalang-tools-src
 	mkdir -p $@
 	cp -a $</* $@
 	mkdir -p $@/vss
 	cp -a vss-src/* $@/vss
+	mkdir -p $@  $@/laltools
+	cp -a libadalang-tools-src/* $@/laltools
 
 .PHONY: ada_language_server
 ada_language_server: ada_language_server-build
-	make -C $<
+	export GPR_PROJECT_PATH=./vss/gnat:./laltools/src:./subprojects/stubs/ \
+	&& make -C $<
 
 .PHONY: ada_language_server-install
 ada_language_server-install:
-	$(sudo) make -C ada_language_server-build install
+	$(sudo) sh -c " \
+	export GPR_PROJECT_PATH=./vss/gnat:./laltools/src:./subprojects/stubs/ \
+	&& make -C ada_language_server-build install \
+	"
 
 #####
 
