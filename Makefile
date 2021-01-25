@@ -767,7 +767,7 @@ $(release-name):
 	rm -rf $(release-loc)/$@
 
 .PHONY: release-install
-release-install: $(release-loc)/$(release-name).tar.gz
+release-install: $(release-loc)/$(release-name).tar.gz depends
 	mkdir -p $(prefix)
 	cd $(prefix) && $(sudo) tar -x --strip-components 1 -f $(PWD)/$<
 
