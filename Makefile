@@ -55,25 +55,18 @@ release-name = gnat-$(release)-$(host)
 default: all
 
 .PHONY: depends
-depends: all-depends
 
 .PHONY: all
-all: all-all
 
 .PHONY: install
-install: all-install
 
 .PHONY: bootstrap
-bootstrap: all-depends all-bootstrap
 
 .PHONY: release
-release: bootstrap all-release
 
 .PHONY: release-install
-release-install: all-release-install all-depends
 
 .PHONY: clean
-clean: all-clean
 
 .PHONY: bisect-test-clean
 bisect-test-clean: prefix-clean
@@ -93,19 +86,18 @@ bisect-test: xmlada
 # D E P E N D S
 #
 
-.PHONY: all-depends
-all-depends: base-depends-$(os)
-all-depends: gcc-depends-$(os)
-all-depends: xmlada-depends-$(os)
-all-depends: gprbuild-depends-$(os)
-all-depends: gnatcoll-core-depends-$(os)
-all-depends: gnatcoll-bindings-depends-$(os)
-all-depends: gnatcoll-db-depends-$(os)
-all-depends: langkit-depends-$(os)
-all-depends: libadalang-depends-$(os)
-all-depends: gtkada-depends-$(os)
-all-depends: gps-depends-$(os)
-all-depends: spark2014-depends-$(os)
+depends: base-depends-$(os)
+depends: gcc-depends-$(os)
+depends: xmlada-depends-$(os)
+depends: gprbuild-depends-$(os)
+depends: gnatcoll-core-depends-$(os)
+depends: gnatcoll-bindings-depends-$(os)
+depends: gnatcoll-db-depends-$(os)
+depends: langkit-depends-$(os)
+depends: libadalang-depends-$(os)
+depends: gtkada-depends-$(os)
+depends: gps-depends-$(os)
+depends: spark2014-depends-$(os)
 
 #### default additional dependencies for each component is empty
 
@@ -158,19 +150,6 @@ gps-depends-debian:
 	    python-gi  python-cairo-dev \
 	    python-gi-dev python3-cairo-dev \
 	    libgmp-dev libclang1
-	#
-	# patch
-	# copy gps dependencies from /usr/lib to $(prefix)/lib
-	# so that gps can find them.
-	#
-	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) rm -rf $(prefix)/lib/libclang*
-	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
-	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
-	$(sudo) mkdir -p $(prefix)/lib/python2.7
-	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
-	$(sudo) mkdir -p $(prefix)/lib/python3.8
-	$(sudo) cp -a /usr/lib/python3.8/* $(prefix)/lib/python3.8
 
 .PHONY: spark2014-depends-debian
 spark2014-depends-debian:
@@ -184,108 +163,6 @@ spark2014-depends-debian:
 
 #
 # E N D   D E P E N D S
-#
-##############################################################
-#
-# A L L
-#
-
-.PHONY: all-src
-all-src: gcc-src
-all-src: xmlada-src
-all-src: gprbuild-src
-all-src: gprconfig_kb-src
-all-src: gnatcoll-core-src
-all-src: gnatcoll-bindings-src
-all-src: gnatcoll-db-src
-all-src: libadalang-src
-all-src: langkit-src
-all-src: gtkada-src
-all-src: gps-src
-all-src: libadalang-tools-src
-all-src: ada_language_server-src
-all-src: vss-src
-all-src: spark2014-src
-
-.PHONY: all-all
-all-all: gcc
-all-all: xmlada
-all-all: gprbuild
-all-all: gnatcoll-core
-all-all: gnatcoll-bindings
-all-all: gnatcoll-db
-all-all: langkit
-all-all: libadalang
-all-all: gtkada
-all-all: gps
-all-all: spark2014
-
-.PHONY: all-install
-all-install: gcc-install
-all-install: xmlada-install
-all-install: gprbuild-install
-all-install: gnatcoll-core-install
-all-install: gnatcoll-bindings-install
-all-install: gnatcoll-db-install
-all-install: langkit-install
-all-install: libadalang-install
-all-install: gtkada-install
-all-install: gps-install
-all-install: spark2014-install
-
-.PHONY: all-bootstrap
-all-bootstrap: gcc-bootstrap
-all-bootstrap: gcc-build-clean
-all-bootstrap: gprbuild-bootstrap-install
-all-bootstrap: gprconfig_kb-clean
-all-bootstrap: xmlada xmlada-install
-all-bootstrap: xmlada-clean
-all-bootstrap: gprbuild gprbuild-install
-all-bootstrap: gprbuild-clean
-all-bootstrap: gnatcoll-core gnatcoll-core-install
-all-bootstrap: gnatcoll-core-clean
-all-bootstrap: gnatcoll-bindings gnatcoll-bindings-install
-all-bootstrap: gnatcoll-bindings-clean
-all-bootstrap: gnatcoll-sql gnatcoll-sql-install
-all-bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
-all-bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
-all-bootstrap: gnatcoll-xref gnatcoll-xref-install
-all-bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
-all-bootstrap: gnatcoll-db-clean
-all-bootstrap: langkit langkit-install
-all-bootstrap: libadalang libadalang-install
-all-bootstrap: libadalang-clean langkit-clean
-all-bootstrap: gtkada gtkada-install
-all-bootstrap: gtkada-clean
-all-bootstrap: gps gps-install
-all-bootstrap: gps-clean libadalang-tools-clean ada_language_server-clean vss-clean
-all-bootstrap: spark2014 spark2014-install
-all-bootstrap: spark2014-clean gcc-clean
-
-.PHONY: all-release
-all-release: $(release-name)
-
-.PHONY: all-clean
-all-clean: gcc-clean
-all-clean: gprbuild-bootstrap-clean
-all-clean: gprconfig_kb-clean
-all-clean: xmlada-clean
-all-clean: gprbuild-clean
-all-clean: gnatcoll-core-clean
-all-clean: gnatcoll-bindings-clean
-all-clean: gnatcoll-db-clean
-all-clean: langkit-clean
-all-clean: libadalang-clean
-all-clean: langkit-clean
-all-clean: gtkada-clean
-all-clean: gps-clean
-all-clean: libadalang-tools-clean
-all-clean: ada_language_server-clean
-all-clean: vss-clean
-all-clean: spark2014-clean
-
-#
-# A L L
 #
 ##############################################################
 #
@@ -363,8 +240,9 @@ spark2014-src:
 # * - B U I L D / I N S T A L L
 #
 
-.PHONY: gcc-bootstrap
-gcc-bootstrap: gcc gcc-install
+all: gcc
+install: gcc-install
+bootstrap: gcc gcc-install
 
 gcc-build: gcc-src
 	mkdir -p $@
@@ -385,6 +263,8 @@ gcc-install:
 
 ####
 
+bootstrap: gprbuild-bootstrap-install
+
 .PHONY: gprbuild-bootstrap-install
 gprbuild-bootstrap-install: gprbuild-src xmlada-src gprconfig_kb-src
 	mkdir -p gprbuild-bootstrap-build
@@ -396,6 +276,10 @@ gprbuild-bootstrap-install: gprbuild-src xmlada-src gprconfig_kb-src
 	$(sudo) rm -rf gprbuild-bootstrap-build
 
 ####
+
+all: xmlada
+install: xmlada-install
+bootstrap: xmlada xmlada-install
 
 xmlada-build: xmlada-src
 	mkdir -p $@
@@ -411,6 +295,10 @@ xmlada-install:
 	$(sudo) make -C xmlada-build install
 
 ####
+
+all: gprbuild
+install: gprbuild-install
+bootstrap: gprbuild gprbuild-install
 
 gprbuild-build: gprbuild-src
 	mkdir -p $@
@@ -429,6 +317,10 @@ gprbuild-install:
 
 #####
 
+all: gnatcoll-core
+install: gnatcoll-core-install
+bootstrap: gnatcoll-core gnatcoll-core-install
+
 gnatcoll-core-build: gnatcoll-core-src
 	mkdir -p $@
 	cp -a $</* $@
@@ -443,6 +335,10 @@ gnatcoll-core-install:
 	$(sudo) make -C gnatcoll-core-build install
 
 #####
+
+all: gnatcoll-bindings
+install: gnatcoll-bindings-install
+bootstrap: gnatcoll-bindings gnatcoll-bindings-install
 
 gnatcoll-bindings-build: gnatcoll-bindings-src
 	mkdir -p $@
@@ -465,6 +361,14 @@ gnatcoll-bindings-install:
 	cd gnatcoll-bindings-build/syslog && $(sudo) ./setup.py install --prefix=$(prefix)
 
 #####
+
+all: gnatcoll-db
+install: gnatcoll-db-install
+bootstrap: gnatcoll-sql gnatcoll-sql-install
+bootstrap: gnatcoll-gnatcoll_db2ada gnatcoll-gnatcoll_db2ada-install
+bootstrap: gnatcoll-sqlite gnatcoll-sqlite-install
+bootstrap: gnatcoll-xref gnatcoll-xref-install
+bootstrap: gnatcoll-gnatinspect gnatcoll-gnatinspect-install
 
 gnatcoll-db-build: gnatcoll-db-src
 	mkdir -p $@
@@ -531,6 +435,10 @@ gnatcoll-gnatinspect-install:
 
 #####
 
+all: langkit libadalang
+install: langkit-install libadalang-install
+bootstrap: langkit langkit-install libadalang libadalang-install
+
 langkit-build: langkit-src
 	mkdir -p $@
 	cp -a $</* $@
@@ -589,18 +497,6 @@ libadalang-install: clean-libadalang-prefix
 	    && $(sudo) sh -c ". env/bin/activate \
 	    && python manage.py install $(prefix) \
 	    && deactivate"
-	#
-	# patch
-	# libadalang install is leaving some bits in $(prefix)/python/
-	# put them in $(prefix)/lib/python2.7/ where they will be found
-	# by gps at run (or build?) time. Put them in python3.8/ too.
-	#
-	$(sudo) mkdir -p $(prefix)/lib/python2.7
-	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
-	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
-	$(sudo) mkdir -p $(prefix)/lib/python3.8
-	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python3.8
-	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python3.8/libadalang
 
 PHONY: clean-libadalang-prefix
 clean-libadalang-prefix:
@@ -620,6 +516,10 @@ clean-libadalang-prefix:
 
 #####
 
+all: gtkada
+install: gtkada-install
+bootstrap: gtkada gtkada-install
+
 gtkada-build: gtkada-src
 	mkdir -p $@
 	cp -a $</* $@
@@ -635,6 +535,11 @@ gtkada-install:
 
 #####
 
+# libadalang-tools still part of gps build
+#all: libadalang-tools
+#install: libadalang-tools-install
+#bootstrap: libadalang-tools libadalang-tools-install
+
 libadalang-tools-build: libadalang-tools-src
 	mkdir -p $@
 	cp -a $</* $@
@@ -648,6 +553,11 @@ libadalang-tools-install:
 	$(sudo) make -C libadalang-tools-build install
 
 #####
+
+# ada_language_server still part of gps build
+#all: ada_language_server
+#install: ada_language_server-install
+#bootstrap: ada_language_server ada_language_server-install
 
 ada_language_server-build: ada_language_server-src vss-src libadalang-tools-src
 	mkdir -p $@
@@ -671,7 +581,12 @@ ada_language_server-install:
 
 #####
 
-gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src
+all: gps
+install: gps-install
+bootstrap: gps gps-install
+
+gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src \
+	gps-prefix-patch1 gps-prefix-patch2
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -692,20 +607,59 @@ gps: gps-build
 	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
-gps-install:
+gps-install: gps-prefix-patch3
 	$(sudo) make -C gps-build install
+
+.PHONY: gps-prefix-patch1
+gps-prefix-patch1:
+	#
+	# patch
+	# copy gps dependencies from /usr/lib to $(prefix)/lib
+	# so that gps can find them.
+	#
+	$(sudo) mkdir -p $(prefix)/lib
+	$(sudo) rm -rf $(prefix)/lib/libclang*
+	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
+	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
+	$(sudo) mkdir -p $(prefix)/lib/python2.7
+	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
+	$(sudo) mkdir -p $(prefix)/lib/python3.8
+	$(sudo) cp -a /usr/lib/python3.8/* $(prefix)/lib/python3.8
+
+.PHONY: gps-prefix-patch2
+gps-prefix-patch2:
+	#
+	# patch
+	# libadalang install is leaving some bits in $(prefix)/python/
+	# put them in $(prefix)/lib/python2.7/ where they will be found
+	# by gps at run (or build?) time. Put them in python3.8/ too.
+	#
+	$(sudo) mkdir -p $(prefix)/lib/python2.7
+	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
+	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
+	$(sudo) mkdir -p $(prefix)/lib/python3.8
+	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python3.8
+	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python3.8/libadalang
+
+.PHONY: gps-prefix-patch3
+gps-prefix-patch3:
 	#
 	# PATCH - copy shared libraries for ada_language_server and laltools
 	#         so that gnatstudio will startup.  This will eventually be
 	#         fixed when ada_language_server and laltools get built and
 	#         installed separately as libraries.
 	#
-	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) cp -a gps-build/ada_language_server/.libs/spawn_glib/relocatable/libspawn_glib.so $(prefix)/lib
-	$(sudo) cp -a gps-build/laltools/lib.relocatable/liblal_tools.so $(prefix)/lib
-	#
+	$(sudo) mkdir -p $(prefix)/lib/
+	cd gps-build/ada_language_server/.libs/spawn_glib/relocatable \
+	   && $(sudo) cp -a libspawn_glib.so $(prefix)/lib
+	cd gps-build/laltools/lib.relocatable \
+	   && $(sudo) cp -a liblal_tools.so $(prefix)/lib
 
 #####
+
+all: spark2014
+install: spark2014-install
+bootstrap: spark2014 spark2014-install
 
 spark2014-build: spark2014-src gcc-src
 	mkdir -p $@
@@ -802,6 +756,8 @@ z3-install:
 # R E L E A S E
 #
 
+release: bootstrap $(release-name)
+
 .PHONY: $(release-name)
 $(release-name):
 	rm -rf $(release-loc)/$@ $(release-loc)/$@.tar.gz
@@ -810,8 +766,8 @@ $(release-name):
 	cd $(release-loc) && tar czf $@.tar.gz $@
 	rm -rf $(release-loc)/$@
 
-.PHONY: all-release-install
-all-release-install: $(release-loc)/$(release-name).tar.gz
+.PHONY: release-install
+release-install: $(release-loc)/$(release-name).tar.gz
 	mkdir -p $(prefix)
 	cd $(prefix) && $(sudo) tar -x --strip-components 1 -f $(PWD)/$<
 
@@ -829,15 +785,11 @@ $(release-loc)/$(release-name).tar.gz: base-depends-$(os)
 # C L E A N
 #
 
+clean:
+	rm -rf *-src *-build
+
 %-clean:
 	rm -rf $(@:%-clean=%) $(@:%-clean=%)-src $(@:%-clean=%)-build
-
-.PHONY: dist-clean
-dist-clean : clean
-	rm -rf downloads github-repo release
-
-.PHONY: bootstrap-clean
-bootstrap-clean: clean prefix-clean
 
 .PHONY: prefix-clean
 prefix-clean:
