@@ -212,7 +212,6 @@ libadalang-src:
 libadalang-tools-src:
 	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/libadalang-tools -b $(adacore-version) $@
-	cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 ada_language_server-src:
 	git clone --shallow-since=2021-01-11 \
