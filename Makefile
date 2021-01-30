@@ -214,13 +214,16 @@ libadalang-tools-src:
 	https://github.com/$(adacore-repos)/libadalang-tools -b $(adacore-version) $@
 
 ada_language_server-src:
-	git clone --shallow-since=2021-01-11 \
+	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/ada_language_server -b $(adacore-version) $@
-	cd $@ && git checkout 1943cfc
 
 vss-src:
 	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/vss -b $(adacore-version) $@
+
+spawn-src:
+	git clone --depth=1 \
+	https://github.com/$(adacore-repos)/spawn -b $(adacore-version) $@
 
 gps-src:
 	git clone --depth=1 \
@@ -559,23 +562,25 @@ libadalang-tools-install:
 #install: ada_language_server-install
 #bootstrap: ada_language_server ada_language_server-install
 
-ada_language_server-build: ada_language_server-src vss-src libadalang-tools-src
+ada_language_server-build: ada_language_server-src vss-src libadalang-tools-src spawn-src
 	mkdir -p $@
 	cp -a $</* $@
 	mkdir -p $@/vss
 	cp -a vss-src/* $@/vss
+	mkdir -p $@/spawn
+	cp -a spawn-src/* $@/spawn
 	mkdir -p $@  $@/laltools
 	cp -a libadalang-tools-src/* $@/laltools
 
 .PHONY: ada_language_server
 ada_language_server: ada_language_server-build
-	export GPR_PROJECT_PATH=./vss/gnat:./laltools/src:./subprojects/stubs/ \
+	export GPR_PROJECT_PATH=./vss/gnat:./laltools/src:./spawn/gnat:./subprojects/stubs/ \
 	&& make -C $<
 
 .PHONY: ada_language_server-install
 ada_language_server-install:
 	$(sudo) sh -c " \
-	export GPR_PROJECT_PATH=./vss/gnat:./laltools/src:./subprojects/stubs/ \
+	export GPR_PROJECT_PATH=./vss/gnat:./laltools/src:./spawn/gnat:./subprojects/stubs/ \
 	&& make -C ada_language_server-build install \
 	"
 
@@ -585,7 +590,8 @@ all: gps
 install: gps-install
 bootstrap: gps gps-install
 
-gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src \
+gps-build: gps-src libadalang-tools-src \
+	ada_language_server-src vss-src spawn-src \
 	gps-prefix-patch1 gps-prefix-patch2
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
@@ -594,16 +600,19 @@ gps-build: gps-src libadalang-tools-src ada_language_server-src vss-src \
 	cp -a ada_language_server-src/* $@/ada_language_server
 	mkdir -p $@/vss
 	cp -a vss-src/* $@/vss
+	mkdir -p $@/spawn
+	cp -a spawn-src/* $@/spawn
 	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
 
 # gps subprojects that need to be declared in GPR_PROJECT_PATH now
 sub1 = ../laltools/src
 sub2 = ../ada_language_server/gnat
 sub3 = ../vss/gnat
+sub4 = ../spawn/gnat
 
 .PHONY: gps
 gps: gps-build
-	export GPR_PROJECT_PATH=$(sub1):$(sub2):$(sub3) \
+	export GPR_PROJECT_PATH=$(sub1):$(sub2):$(sub3):$(sub4) \
 	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
@@ -650,7 +659,7 @@ gps-prefix-patch3:
 	#         installed separately as libraries.
 	#
 	$(sudo) mkdir -p $(prefix)/lib/
-	cd gps-build/ada_language_server/.libs/spawn_glib/relocatable \
+	cd gps-build/spawn/.libs/spawn_glib/relocatable \
 	   && $(sudo) cp -a libspawn_glib.so $(prefix)/lib
 	cd gps-build/laltools/lib.relocatable \
 	   && $(sudo) cp -a liblal_tools.so $(prefix)/lib
