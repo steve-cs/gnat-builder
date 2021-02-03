@@ -6,8 +6,8 @@
 release ?= cs-20210112
 gcc-version ?= master
 adacore-repos ?= adacore
-adacore-version ?= 21.1
-libadalang-version ?= 21.1
+adacore-version ?= 21.2
+libadalang-version ?= 21.2
 spark2014-version ?= fsf
 
 os ?= debian
