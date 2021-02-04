@@ -114,28 +114,19 @@ base-depends-debian:
 	    make git wget build-essential \
 	    python-is-python2 \
 	    python2-dev \
-	    python3-dev python3-venv
+	    python3-dev python3-venv \
+	    libgmp-dev
 
 .PHONY: gcc-depends-debian
 gcc-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    gnat gawk flex bison libc6-dev libc6-dev-i386 libzstd-dev \
-	    libgmp-dev libmpfr-dev libmpc-dev libisl-dev
+	    libmpfr-dev libmpc-dev libisl-dev
 
 .PHONY: gnatcoll-bindings-depends-debian
 gnatcoll-bindings-depends-debian:
 	$(sudo) apt-get -qq -y install \
-	    libgmp-dev zlib1g-dev libreadline-dev
-
-.PHONY: langkit-depends-debian
-langkit-depends-debian:
-	$(sudo) apt-get -qq -y install \
-	    libgmp-dev
-
-.PHONY: libadalang-depends-debian
-libadalang-depends-debian:
-	$(sudo) apt-get -qq -y install \
-	    libgmp-dev
+	    zlib1g-dev libreadline-dev
 
 .PHONY: gtkada-depends-debian
 gtkada-depends-debian:
@@ -149,7 +140,7 @@ gps-depends-debian:
 	    libatk1.0-dev libgtk-3-dev \
 	    python-gi  python-cairo-dev \
 	    python-gi-dev python3-cairo-dev \
-	    libgmp-dev libclang1
+	    libclang1
 
 .PHONY: spark2014-depends-debian
 spark2014-depends-debian:
