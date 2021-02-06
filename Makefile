@@ -63,6 +63,7 @@ default: all
 .PHONY: bootstrap
 
 .PHONY: release
+release: clean prefix-clean depends bootstrap release-cut
 
 .PHONY: release-install
 
@@ -756,7 +757,8 @@ z3-install:
 # R E L E A S E
 #
 
-release: bootstrap $(release-name)
+.PHONY: release-cut
+release-cut: $(release-name)
 
 .PHONY: $(release-name)
 $(release-name):
