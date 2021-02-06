@@ -151,6 +151,7 @@ spark2014-depends-debian:
 	    menhir libmenhir-ocaml-dev libzarith-ocaml-dev \
 	    libzip-ocaml-dev ocplib-simplex-ocaml-dev \
 	    libyojson-ocaml-dev \
+	    ocaml-findlib \
 	    cvc4 z3 alt-ergo
 
 #
