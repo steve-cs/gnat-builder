@@ -431,9 +431,9 @@ gnatcoll-gnatinspect-install:
 
 #####
 
-all: langkit libadalang
-install: langkit-install libadalang-install
-bootstrap: langkit langkit-install libadalang libadalang-install
+all: langkit
+install: langkit-install
+bootstrap: langkit langkit-install
 
 langkit-build: langkit-src
 	mkdir -p $@
@@ -467,6 +467,12 @@ clean-langkit-prefix:
 	$(sudo) rm -rf $(prefix)/lib/langkit*
 	$(sudo) rm -rf $(prefix)/share/gpr/langkit*
 	$(sudo) rm -rf $(prefix)/share/gpr/manifests/langkit*
+
+#####
+
+all: libadalang
+install: libadalang-install
+bootstrap: libadalang libadalang-install
 
 libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
