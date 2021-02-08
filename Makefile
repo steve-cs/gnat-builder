@@ -612,7 +612,7 @@ gps-prefix-patch3:
 	$(sudo) mkdir -p $(prefix)/lib/
 	cd gps-build/spawn/.libs/spawn_glib/relocatable \
 	   && $(sudo) cp -a libspawn_glib.so $(prefix)/lib
-	cd gps-build/laltools/lib.relocatable \
+	cd gps-build/laltools/lib \
 	   && $(sudo) cp -a liblal_tools.so $(prefix)/lib
 
 #####
