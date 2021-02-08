@@ -537,54 +537,6 @@ gtkada-install:
 
 #####
 
-# libadalang-tools still part of gps build
-#all: libadalang-tools
-#install: libadalang-tools-install
-#bootstrap: libadalang-tools libadalang-tools-install
-
-libadalang-tools-build: libadalang-tools-src
-	mkdir -p $@
-	cp -a $</* $@
-
-.PHONY: libadalang-tools
-libadalang-tools: libadalang-tools-build
-	make -C $<
-
-.PHONY: libadalang-tools-install
-libadalang-tools-install:
-	$(sudo) make -C libadalang-tools-build install
-
-#####
-
-# ada_language_server still part of gps build
-#all: ada_language_server
-#install: ada_language_server-install
-#bootstrap: ada_language_server ada_language_server-install
-
-ada_language_server-build: ada_language_server-src vss-src libadalang-tools-src spawn-src
-	mkdir -p $@
-	cp -a $</* $@
-	mkdir -p $@/vss
-	cp -a vss-src/* $@/vss
-	mkdir -p $@/spawn
-	cp -a spawn-src/* $@/spawn
-	mkdir -p $@  $@/laltools
-	cp -a libadalang-tools-src/* $@/laltools
-
-.PHONY: ada_language_server
-ada_language_server: ada_language_server-build
-	export GPR_PROJECT_PATH=./vss/gnat:./laltools/src:./spawn/gnat:./subprojects/stubs/ \
-	&& make -C $<
-
-.PHONY: ada_language_server-install
-ada_language_server-install:
-	$(sudo) sh -c " \
-	export GPR_PROJECT_PATH=./vss/gnat:./laltools/src:./spawn/gnat:./subprojects/stubs/ \
-	&& make -C ada_language_server-build install \
-	"
-
-#####
-
 all: gps
 install: gps-install
 bootstrap: gps gps-install
