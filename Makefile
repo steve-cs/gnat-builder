@@ -113,8 +113,7 @@ base-depends-debian:
 	fi
 	$(sudo) apt-get -qq -y install \
 	    make git wget build-essential \
-	    python-is-python2 \
-	    python2-dev \
+	    python-is-python3 \
 	    python3-dev python3-venv \
 	    libgmp-dev
 
@@ -139,7 +138,6 @@ gps-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libglib2.0-dev libpango1.0-dev \
 	    libatk1.0-dev libgtk-3-dev \
-	    python-gi  python-cairo-dev \
 	    python-gi-dev python3-cairo-dev \
 	    libclang1
 
@@ -344,7 +342,7 @@ gnatcoll-bindings-build: gnatcoll-bindings-src
 gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</gmp && ./setup.py build $(gnatcoll-bindings-options)
 	cd $</iconv && ./setup.py build $(gnatcoll-bindings-options)
-	cd $</python && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</python3 && ./setup.py build $(gnatcoll-bindings-options)
 	cd $</readline && ./setup.py build --accept-gpl $(gnatcoll-bindings-options)
 	cd $</syslog && ./setup.py build $(gnatcoll-bindings-options)
 
@@ -352,7 +350,7 @@ gnatcoll-bindings: gnatcoll-bindings-build
 gnatcoll-bindings-install:
 	cd gnatcoll-bindings-build/gmp && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/iconv && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd gnatcoll-bindings-build/python && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd gnatcoll-bindings-build/python3 && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/readline && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/syslog && $(sudo) ./setup.py install --prefix=$(prefix)
 
@@ -439,7 +437,7 @@ langkit-build: langkit-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ \
-	    && python3 -mvenv env \
+	    && python -mvenv env \
 	    && . env/bin/activate \
 	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
@@ -478,7 +476,7 @@ libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ \
-	    && python3 -mvenv env \
+	    && python -mvenv env \
 	    && . env/bin/activate \
 	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
@@ -581,8 +579,6 @@ gps-prefix-patch1:
 	$(sudo) rm -rf $(prefix)/lib/libclang*
 	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
 	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
-	$(sudo) mkdir -p $(prefix)/lib/python2.7
-	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
 	$(sudo) mkdir -p $(prefix)/lib/python3.8
 	$(sudo) cp -a /usr/lib/python3.8/* $(prefix)/lib/python3.8
 
@@ -591,12 +587,9 @@ gps-prefix-patch2:
 	#
 	# patch
 	# libadalang install is leaving some bits in $(prefix)/python/
-	# put them in $(prefix)/lib/python2.7/ where they will be found
-	# by gps at run (or build?) time. Put them in python3.8/ too.
+	# put them in $(prefix)/lib/python3.8/ where they will be found
+	# by gps at run (or build?) time.
 	#
-	$(sudo) mkdir -p $(prefix)/lib/python2.7
-	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
-	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
 	$(sudo) mkdir -p $(prefix)/lib/python3.8
 	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python3.8
 	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python3.8/libadalang
