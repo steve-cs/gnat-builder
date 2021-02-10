@@ -3,7 +3,7 @@
 # C O N F I G
 #
 
-release ?= cs-20210208
+release ?= cs-20210210
 gcc-version ?= master
 adacore-repos ?= adacore
 adacore-version ?= master
