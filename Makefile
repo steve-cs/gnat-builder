@@ -171,6 +171,7 @@ xmlada-src:
 gprbuild-src:
 	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/gprbuild -b $(adacore-version) $@
+	cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 gprconfig_kb-src:
 	git clone --depth=1 \
@@ -257,18 +258,29 @@ gcc-install:
 
 ####
 
+bootstrap: gprbuild-bootstrap
 bootstrap: gprbuild-bootstrap-install
 
-.PHONY: gprbuild-bootstrap-install
-gprbuild-bootstrap-install: gprbuild-src xmlada-src gprconfig_kb-src
-	mkdir -p gprbuild-bootstrap-build
-	cp -a gprbuild-src/* gprbuild-bootstrap-build
-	cd gprbuild-bootstrap-build && $(sudo) bash bootstrap.sh \
-	    --with-xmlada=../xmlada-src \
-            --with-kb=../gprconfig_kb-src \
-            --prefix=$(prefix)
-	$(sudo) rm -rf gprbuild-bootstrap-build
+.PHONY: gprbuild-bootstrap-build
+gprbuild-bootstrap-build: gprbuild-src
+	mkdir -p $@
+	cp -a $</* $@
 
+.PHONY: gprbuild-bootstrap
+gprbuild-bootstrap: gprbuild-bootstrap-build xmlada-src gprconfig_kb-src
+	cd $< && bash bootstrap.sh \
+	    --build \
+	    --with-xmlada=../xmlada-src \
+	    --with-kb=../gprconfig_kb-src \
+	    --prefix=$(prefix)
+
+.PHONY: gprbuild-bootstrap-install
+gprbuild-bootstrap-install:
+	cd gprbuild-bootstrap-build && $(sudo) bash bootstrap.sh \
+	    --install \
+	    --with-kb=../gprconfig_kb-src \
+	    --prefix=$(prefix)
+	#$(sudo) rm -rf gprbuild-bootstrap-build/share/gprconfig
 ####
 
 all: xmlada
