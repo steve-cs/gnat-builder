@@ -552,8 +552,8 @@ install: gps-install
 bootstrap: gps gps-install
 
 gps-build: gps-src libadalang-tools-src \
-	ada_language_server-src vss-src spawn-src \
-	gps-prefix-patch1 gps-prefix-patch2
+	   ada_language_server-src vss-src spawn-src \
+	   gps-build-patch
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -577,42 +577,38 @@ gps: gps-build
 	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
-gps-install: gps-prefix-patch3
+gps-install: gps-runtime-patch
 	$(sudo) make -C gps-build install
 
-.PHONY: gps-prefix-patch1
-gps-prefix-patch1:
+.PHONY: gps-build-patch
+gps-build-patch:
 	#
-	# patch
-	# copy gps dependencies from /usr/lib to $(prefix)/lib
-	# so that gps can find them.
+	# copy libclang where gps configure can find it
 	#
 	$(sudo) mkdir -p $(prefix)/lib
 	$(sudo) rm -rf $(prefix)/lib/libclang*
 	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
 	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
+
+.PHONY: gps-runtime-patch
+gps-runtime-patch:
+	#
+	# copy python3 runtime to $(prefix)
+	#
 	$(sudo) mkdir -p $(prefix)/lib/python3.8
 	$(sudo) cp -a /usr/lib/python3.8/* $(prefix)/lib/python3.8
-
-.PHONY: gps-prefix-patch2
-gps-prefix-patch2:
+	$(sudo) mkdir -p $(prefix)/lib/python3
+	$(sudo) cp -a /usr/lib/python3/* $(prefix)/lib/python3
 	#
-	# patch
 	# libadalang install is leaving some bits in $(prefix)/python/
-	# put them in $(prefix)/lib/python3.8/ where they will be found
-	# by gps at run (or build?) time.
+	# copy them to $(prefix)/lib/python3.8/ where they will be found
+	# by gps at run time.
 	#
-	$(sudo) mkdir -p $(prefix)/lib/python3.8
 	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python3.8
 	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python3.8/libadalang
-
-.PHONY: gps-prefix-patch3
-gps-prefix-patch3:
 	#
-	# PATCH - copy shared libraries for ada_language_server and laltools
-	#         so that gnatstudio will startup.  This will eventually be
-	#         fixed when ada_language_server and laltools get built and
-	#         installed separately as libraries.
+	# install shared libraries for ada_language_server and laltools
+	# in $(prefix)/lib so that gps will find them at run time.
 	#
 	$(sudo) mkdir -p $(prefix)/lib/
 	cd gps-build/spawn/.libs/spawn_glib/relocatable \
