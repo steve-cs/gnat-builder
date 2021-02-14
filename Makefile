@@ -113,7 +113,7 @@ base-depends-debian:
 	fi
 	$(sudo) apt-get -qq -y install \
 	    make git wget build-essential \
-	    python-dev-is-python2 \
+	    python-is-python2 python2-dev python3-dev\
 	    python3-venv \
 	    libgmp-dev
 
