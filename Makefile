@@ -113,8 +113,8 @@ base-depends-debian:
 	fi
 	$(sudo) apt-get -qq -y install \
 	    make git wget build-essential \
-	    python-is-python3 \
-	    python3-dev python3-venv \
+	    python-dev-is-python2 \
+	    python3-venv \
 	    libgmp-dev
 
 .PHONY: gcc-depends-debian
@@ -137,9 +137,10 @@ gtkada-depends-debian:
 gps-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libglib2.0-dev libpango1.0-dev \
-	    libatk1.0-dev libgtk-3-dev \
-	    python-gi-dev python3-cairo-dev \
-	    libclang1
+	    libatk1.0-dev libgtk-3-dev libclang1
+	# python2 support
+	$(sudo) apt-get -qq -y install \
+	    python-gi python-gobject-2-dev python-cairo
 
 .PHONY: spark2014-depends-debian
 spark2014-depends-debian:
@@ -354,7 +355,7 @@ gnatcoll-bindings-build: gnatcoll-bindings-src
 gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</gmp && ./setup.py build $(gnatcoll-bindings-options)
 	cd $</iconv && ./setup.py build $(gnatcoll-bindings-options)
-	cd $</python3 && ./setup.py build $(gnatcoll-bindings-options)
+	cd $</python && ./setup.py build $(gnatcoll-bindings-options)
 	cd $</readline && ./setup.py build --accept-gpl $(gnatcoll-bindings-options)
 	cd $</syslog && ./setup.py build $(gnatcoll-bindings-options)
 
@@ -362,7 +363,7 @@ gnatcoll-bindings: gnatcoll-bindings-build
 gnatcoll-bindings-install:
 	cd gnatcoll-bindings-build/gmp && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/iconv && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd gnatcoll-bindings-build/python3 && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd gnatcoll-bindings-build/python && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/readline && $(sudo) ./setup.py install --prefix=$(prefix)
 	cd gnatcoll-bindings-build/syslog && $(sudo) ./setup.py install --prefix=$(prefix)
 
@@ -449,7 +450,7 @@ langkit-build: langkit-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ \
-	    && python -mvenv env \
+	    && python3 -mvenv env \
 	    && . env/bin/activate \
 	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
@@ -460,14 +461,14 @@ langkit-build: langkit-src
 langkit: langkit-build
 	cd $< \
 	    && . env/bin/activate \
-	    && python manage.py build-langkit-support $(langkit-options) \
+	    && python3 manage.py build-langkit-support $(langkit-options) \
 	    && deactivate
 
 .PHONY: langkit-install
 langkit-install: clean-langkit-prefix
 	cd langkit-build \
 	    && $(sudo) sh -c ". env/bin/activate \
-	    && python manage.py install-langkit-support $(prefix) \
+	    && python3 manage.py install-langkit-support $(prefix) \
 	    && deactivate"
 
 .PHONY: clean-langkit-prefix
@@ -488,7 +489,7 @@ libadalang-build: libadalang-src langkit-src
 	mkdir -p $@
 	cp -a $</* $@
 	cd $@ \
-	    && python -mvenv env \
+	    && python3 -mvenv env \
 	    && . env/bin/activate \
 	    && pip install wheel \
 	    && pip install -r REQUIREMENTS.dev \
@@ -500,14 +501,14 @@ libadalang-build: libadalang-src langkit-src
 libadalang: libadalang-build
 	cd $< \
 	    && . env/bin/activate \
-	    && python manage.py make $(libadalang-options) \
+	    && python3 manage.py make $(libadalang-options) \
 	    && deactivate
 
 .PHONY: libadalang-install
 libadalang-install: clean-libadalang-prefix
 	cd libadalang-build \
 	    && $(sudo) sh -c ". env/bin/activate \
-	    && python manage.py install $(prefix) \
+	    && python3 manage.py install $(prefix) \
 	    && deactivate"
 
 PHONY: clean-libadalang-prefix
@@ -593,19 +594,17 @@ gps-build-patch:
 .PHONY: gps-runtime-patch
 gps-runtime-patch:
 	#
-	# copy python3 runtime to $(prefix)
+	# copy python2 runtime to $(prefix)
 	#
-	$(sudo) mkdir -p $(prefix)/lib/python3.8
-	$(sudo) cp -a /usr/lib/python3.8/* $(prefix)/lib/python3.8
-	$(sudo) mkdir -p $(prefix)/lib/python3
-	$(sudo) cp -a /usr/lib/python3/* $(prefix)/lib/python3
+	$(sudo) mkdir -p $(prefix)/lib/python2.7
+	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
 	#
 	# libadalang install is leaving some bits in $(prefix)/python/
-	# copy them to $(prefix)/lib/python3.8/ where they will be found
+	# copy them to $(prefix)/lib/python2.7/ where they will be found
 	# by gps at run time.
 	#
-	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python3.8
-	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python3.8/libadalang
+	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
+	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
 	#
 	# install shared libraries for ada_language_server and laltools
 	# in $(prefix)/lib so that gps will find them at run time.
