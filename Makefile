@@ -122,6 +122,9 @@ gcc-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    gnat gawk flex bison libc6-dev libc6-dev-i386 libzstd-dev \
 	    libmpfr-dev libmpc-dev libisl-dev
+	# extra for binutils
+	$(sudo) apt-get -qq -y install \
+	    texinfo
 
 .PHONY: gnatcoll-bindings-depends-debian
 gnatcoll-bindings-depends-debian:
@@ -160,6 +163,10 @@ spark2014-depends-debian:
 #
 # * - S R C
 #
+
+binutils-src:
+	git clone --depth=1 \
+	https://github.com/bminor/binutils-gdb -b binutils-2_34-branch $@
 
 gcc-src:
 	git clone --depth=1 \
@@ -235,6 +242,26 @@ spark2014-src:
 #
 # * - B U I L D / I N S T A L L
 #
+
+all: binutils
+install: binutils-install
+bootstrap: binutils binutils-install
+
+binutils-build: binutils-src
+	mkdir -p $@
+	cd $@ && ../$</configure \
+	    --prefix=$(prefix) \
+	    --host=$(host) --build=$(build) --target=$(target)
+
+.PHONY: binutils
+binutils: binutils-build
+	make -C $<
+
+.PHONY: binutils-install
+binutils-install:
+	$(sudo) make -C binutils-build install
+
+####
 
 all: gcc
 install: gcc-install
