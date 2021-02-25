@@ -112,7 +112,8 @@ base-depends-debian:
 	   apt-get -qq -y install sudo; \
 	fi
 	$(sudo) apt-get -qq -y install \
-	    make git wget build-essential \
+	    make git wget \
+	    gcc g++ gnat \
 	    python-is-python2 python2-dev python3-dev\
 	    python3-venv \
 	    libgmp-dev
@@ -120,7 +121,7 @@ base-depends-debian:
 .PHONY: gcc-depends-debian
 gcc-depends-debian:
 	$(sudo) apt-get -qq -y install \
-	    gnat gawk flex bison libc6-dev libc6-dev-i386 libzstd-dev \
+	    gawk flex bison libc6-dev libc6-dev-i386 libzstd-dev \
 	    libmpfr-dev libmpc-dev libisl-dev
 	# extra for binutils
 	$(sudo) apt-get -qq -y install \
