@@ -270,7 +270,7 @@ gcc-build: gcc-src
 	    --prefix=$(prefix) \
 	    --host=$(host) --build=$(build) --target=$(target) \
 	    --enable-languages=c,c++,ada \
-	    --disable-bootstrap \
+	    --enable-bootstrap \
 	    $(gcc-options)
 
 .PHONY: gcc
