@@ -244,8 +244,6 @@ spark2014-src:
 # * - B U I L D / I N S T A L L
 #
 
-all: binutils
-install: binutils-install
 bootstrap: binutils binutils-install
 
 binutils-build: binutils-src
@@ -264,8 +262,6 @@ binutils-install:
 
 ####
 
-all: gcc
-install: gcc-install
 bootstrap: gcc gcc-install
 
 gcc-build: gcc-src
