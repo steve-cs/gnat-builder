@@ -113,7 +113,7 @@ base-depends-debian:
 	fi
 	$(sudo) apt-get -qq -y install \
 	    make git wget \
-	    gcc g++ gnat \
+	    gcc-multilib g++ gnat \
 	    python-is-python2 python2-dev python3-dev\
 	    python3-venv \
 	    libgmp-dev
