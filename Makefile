@@ -68,16 +68,6 @@ release: clean prefix-clean depends bootstrap release-cut
 
 .PHONY: clean
 
-.PHONY: bisect-test-clean
-bisect-test-clean: prefix-clean
-	rm -rf *-build
-
-.PHONY: bisect-test
-bisect-test: bisect-test-clean
-bisect-test: gcc gcc-install
-bisect-test: gprbuild-bootstrap-install
-bisect-test: xmlada
-
 #
 # E N D   T O P   L E V E L
 #
@@ -179,7 +169,6 @@ xmlada-src:
 gprbuild-src:
 	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/gprbuild -b $(adacore-version) $@
-	cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 gprconfig_kb-src:
 	git clone --depth=1 \
@@ -300,7 +289,7 @@ gprbuild-bootstrap-install:
 	    --install \
 	    --with-kb=../gprconfig_kb-src \
 	    --prefix=$(prefix)
-	#$(sudo) rm -rf gprbuild-bootstrap-build/share/gprconfig
+	$(sudo) rm -rf gprbuild-bootstrap-build/share/gprconfig
 ####
 
 all: xmlada

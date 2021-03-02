@@ -1,6 +1,0 @@
-#!/bin/bash
-#
-# intended to be called while in gcc-src directory
-#
-cd ..
-make bisect-test
