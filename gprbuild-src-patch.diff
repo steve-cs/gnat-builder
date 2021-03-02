@@ -1,0 +1,22 @@
+diff --git a/bootstrap.sh b/bootstrap.sh
+index e2a94a3..748cf0c 100755
+--- a/bootstrap.sh
++++ b/bootstrap.sh
+@@ -81,13 +81,13 @@ inc_flags="-I$srcdir/src -I$srcdir/gpr/src -I$xmlada_src/sax -I$xmlada_src/dom \
+ bin_progs="gprbuild gprconfig gprclean gprinstall gprname gprls"
+ lib_progs="gprlib gprbind"
+ 
+-# Install the gprconfig knowledge base
+-rm -rf "$srcdir"/share/gprconfig
+-cp -r "$kb_src"/db "$srcdir"/share/gprconfig
+-
+ # Build
+ if [ "x"${MODE} == "x" ] || [ ${MODE} == "build" ];
+ then
++	# Install the gprconfig knowledge base
++	rm -rf "$srcdir"/share/gprconfig
++	cp -r "$kb_src"/db "$srcdir"/share/gprconfig
++
+ 	command $CC -c $CFLAGS "$srcdir"/gpr/src/gpr_imports.c
+ 
+ 	for bin in $bin_progs; do
