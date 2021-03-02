@@ -170,7 +170,6 @@ xmlada-src:
 gprbuild-src:
 	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/gprbuild -b $(adacore-version) $@
-	cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 gprconfig_kb-src:
 	git clone --depth=1 \
@@ -295,7 +294,7 @@ gprbuild-bootstrap-install:
 	    --install \
 	    --with-kb=../gprconfig_kb-src \
 	    --prefix=$(prefix)
-	#$(sudo) rm -rf gprbuild-bootstrap-build/share/gprconfig
+	$(sudo) rm -rf gprbuild-bootstrap-build/share/gprconfig
 ####
 
 all: xmlada
