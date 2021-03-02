@@ -69,16 +69,6 @@ release: clean prefix-clean depends bootstrap release-cut
 
 .PHONY: clean
 
-.PHONY: bisect-test-clean
-bisect-test-clean: prefix-clean
-	rm -rf *-build
-
-.PHONY: bisect-test
-bisect-test: bisect-test-clean
-bisect-test: gcc gcc-install
-bisect-test: gprbuild-bootstrap-install
-bisect-test: xmlada
-
 #
 # E N D   T O P   L E V E L
 #
