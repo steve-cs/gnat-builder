@@ -289,12 +289,12 @@ gprbuild-bootstrap: gprbuild-bootstrap-build xmlada-src gprconfig_kb-src
 	    --prefix=$(prefix)
 
 .PHONY: gprbuild-bootstrap-install
-gprbuild-bootstrap-install:
-	cd gprbuild-bootstrap-build && $(sudo) bash bootstrap.sh \
+gprbuild-bootstrap-install: gprbuild-bootstrap-build
+	cd $< && $(sudo) bash bootstrap.sh \
 	    --install \
 	    --with-kb=../gprconfig_kb-src \
 	    --prefix=$(prefix)
-	$(sudo) rm -rf gprbuild-bootstrap-build/share/gprconfig
+	$(sudo) rm -rf cd $</share/gprconfig
 ####
 
 all: xmlada
@@ -311,8 +311,8 @@ xmlada: xmlada-build
 	make -C $< all
 
 .PHONY: xmlada-install
-xmlada-install:
-	$(sudo) make -C xmlada-build install
+xmlada-install: xmlada-build
+	$(sudo) make -C $< install
 
 ####
 
@@ -331,9 +331,9 @@ gprbuild: gprbuild-build
 	make -C $< libgpr.build
 
 .PHONY: gprbuild-install
-gprbuild-install:
-	$(sudo) make -C gprbuild-build install
-	$(sudo) make -C gprbuild-build libgpr.install
+gprbuild-install: gprbuild-build
+	$(sudo) make -C $< install
+	$(sudo) make -C $< libgpr.install
 
 #####
 
@@ -351,8 +351,8 @@ gnatcoll-core: gnatcoll-core-build
 	make -C $<
 
 .PHONY: gnatcoll-core-install
-gnatcoll-core-install:
-	$(sudo) make -C gnatcoll-core-build install
+gnatcoll-core-install: gnatcoll-core-build
+	$(sudo) make -C $< install
 
 #####
 
@@ -373,12 +373,12 @@ gnatcoll-bindings: gnatcoll-bindings-build
 	cd $</syslog && ./setup.py build $(gnatcoll-bindings-options)
 
 .PHONY: gnatcoll-bindings-install
-gnatcoll-bindings-install:
-	cd gnatcoll-bindings-build/gmp && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd gnatcoll-bindings-build/iconv && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd gnatcoll-bindings-build/python && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd gnatcoll-bindings-build/readline && $(sudo) ./setup.py install --prefix=$(prefix)
-	cd gnatcoll-bindings-build/syslog && $(sudo) ./setup.py install --prefix=$(prefix)
+gnatcoll-bindings-install: gnatcoll-bindings-build
+	cd $</gmp && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd $</iconv && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd $</python && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd $</readline && $(sudo) ./setup.py install --prefix=$(prefix)
+	cd $</syslog && $(sudo) ./setup.py install --prefix=$(prefix)
 
 #####
 
@@ -418,40 +418,40 @@ gnatcoll-sql: gnatcoll-db-build
 	make -C $</sql
 
 .PHONY: gnatcoll-sql-install
-gnatcoll-sql-install:
-	$(sudo) make -C gnatcoll-db-build/sql install
+gnatcoll-sql-install: gnatcoll-db-build
+	$(sudo) make -C $</sql install
 
 .PHONY: gnatcoll-gnatcoll_db2ada
 gnatcoll-gnatcoll_db2ada: gnatcoll-db-build
 	make -C $</gnatcoll_db2ada
 
 .PHONY: gnatcoll-gnatcoll_db2ada-install
-gnatcoll-gnatcoll_db2ada-install:
-	$(sudo) make -C gnatcoll-db-build/gnatcoll_db2ada install
+gnatcoll-gnatcoll_db2ada-install: gnatcoll-db-build
+	$(sudo) make -C $</gnatcoll_db2ada install
 
 .PHONY: gnatcoll-sqlite
 gnatcoll-sqlite: gnatcoll-db-build
 	make -C $</sqlite
 
 .PHONY: gnatcoll-sqlite-install
-gnatcoll-sqlite-install:
-	$(sudo) make -C gnatcoll-db-build/sqlite install
+gnatcoll-sqlite-install: gnatcoll-db-build
+	$(sudo) make -C $</sqlite install
 
 .PHONY: gnatcoll-xref
 gnatcoll-xref: gnatcoll-db-build
 	make -C $</xref
 
 .PHONY: gnatcoll-xref-install
-gnatcoll-xref-install:
-	$(sudo) make -C gnatcoll-db-build/xref install
+gnatcoll-xref-install: gnatcoll-db-build
+	$(sudo) make -C $</xref install
 
 .PHONY: gnatcoll-gnatinspect
 gnatcoll-gnatinspect: gnatcoll-db-build
 	make -C $</gnatinspect
 
 .PHONY: gnatcoll-gnatinspect-install
-gnatcoll-gnatinspect-install:
-	$(sudo) make -C gnatcoll-db-build/gnatinspect install
+gnatcoll-gnatinspect-install: gnatcoll-db-build
+	$(sudo) make -C $</gnatinspect install
 
 #####
 
@@ -478,8 +478,8 @@ langkit: langkit-build
 	    && deactivate
 
 .PHONY: langkit-install
-langkit-install: clean-langkit-prefix
-	cd langkit-build \
+langkit-install: langkit-build clean-langkit-prefix
+	cd $< \
 	    && $(sudo) sh -c ". env/bin/activate \
 	    && python3 manage.py install-langkit-support $(prefix) \
 	    && deactivate"
@@ -518,8 +518,8 @@ libadalang: libadalang-build
 	    && deactivate
 
 .PHONY: libadalang-install
-libadalang-install: clean-libadalang-prefix
-	cd libadalang-build \
+libadalang-install: libadalang-build clean-libadalang-prefix
+	cd $< \
 	    && $(sudo) sh -c ". env/bin/activate \
 	    && python3 manage.py install $(prefix) \
 	    && deactivate"
@@ -556,8 +556,8 @@ gtkada: gtkada-build
 	make -C $< PROCESSORS=0
 
 .PHONY: gtkada-install
-gtkada-install:
-	$(sudo) make -C gtkada-build install
+gtkada-install: gtkada-build
+	$(sudo) make -C $< install
 
 #####
 
@@ -591,8 +591,8 @@ gps: gps-build
 	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
-gps-install: gps-runtime-patch
-	$(sudo) make -C gps-build install
+gps-install: gps-build gps-runtime-patch
+	$(sudo) make -C $< install
 
 .PHONY: gps-build-patch
 gps-build-patch:
@@ -646,9 +646,9 @@ spark2014: spark2014-build
 	unset prefix && make -C $<
 
 .PHONY: spark2014-install
-spark2014-install:
-	make -C spark2014-build install-all
-	$(sudo) cp -a spark2014-build/install/* $(prefix)
+spark2014-install: spark2014-build
+	make -C $< install-all
+	$(sudo) cp -a $</install/* $(prefix)
 
 #####
 
@@ -685,11 +685,11 @@ alt-ergo-build: spark2014-src
 
 .PHONY: alt-ergo
 alt-ergo: alt-ergo-build
-	make -C alt-ergo-build alt-ergo
+	make -C $< alt-ergo
 
 .PHONY: alt-ergo-install
-alt-ergo-install:
-	make -C alt-ergo-build install-bin
+alt-ergo-install: alt-ergo-build
+	make -C $< install-bin
 
 #####
 
@@ -700,11 +700,11 @@ cvc4-build: spark2014-src
 
 .PHONY: cvc4
 cvc4: cvc4-build
-	make -C cvc4-build/_build
+	make -C $</_build
 
 .PHONY: cvc4-install
-cvc4-install:
-	make -C cvc4-build/_build install
+cvc4-install: cvc4-build
+	make -C $</_build install
 
 #####
 
@@ -715,11 +715,11 @@ z3-build: spark2014-src
 
 .PHONY: z3
 z3: z3-build
-	make -C z3-build/build
+	make -C $</build
 
 .PHONY: z3-install
-z3-install:
-	make -C z3-build/build install
+z3-install: z3-build
+	make -C $</build install
 
 #
 # * - B U I L D / I N S T A L L
