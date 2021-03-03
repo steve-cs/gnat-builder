@@ -5,6 +5,7 @@
 
 release ?= cs-20210302
 gcc-version ?= master
+gcc-bootstrap ?= disable
 adacore-repos ?= adacore
 adacore-version ?= master
 libadalang-version ?= stable
@@ -259,7 +260,7 @@ gcc-build: gcc-src
 	    --prefix=$(prefix) \
 	    --host=$(host) --build=$(build) --target=$(target) \
 	    --enable-languages=c,c++,ada \
-	    --enable-bootstrap \
+	    --$(gcc-bootstrap)-bootstrap \
 	    $(gcc-options)
 
 .PHONY: gcc
