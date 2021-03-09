@@ -1,0 +1,15 @@
+diff --git a/src/laltools-refactor_imports.adb b/src/laltools-refactor_imports.adb
+index 2fe3f52..8336a54 100644
+--- a/src/laltools-refactor_imports.adb
++++ b/src/laltools-refactor_imports.adb
+@@ -447,7 +447,9 @@ package body Laltools.Refactor_Imports is
+                     (Pkg_Decl.F_Public_Part.As_Public_Part.F_Decls);
+                end if;
+ 
+-               if Incl_Private and then not Pkg_Decl.F_Private_Part.Is_Null then
++               if Incl_Private
++                 and then not Pkg_Decl.F_Private_Part.Is_Null
++               then
+                   Add_Declarations
+                     (Pkg_Decl.F_Private_Part.As_Private_Part.F_Decls);
+                end if;
