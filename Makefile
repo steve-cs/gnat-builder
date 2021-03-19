@@ -9,6 +9,8 @@ gcc-bootstrap ?= disable
 adacore-repos ?= adacore
 adacore-version ?= master
 libadalang-version ?= stable
+gtkada-version ?= gtk-3.24
+gps-version ?= gtk-3.24
 spark2014-version ?= fsf
 
 os ?= debian
@@ -178,7 +180,7 @@ gprconfig_kb-src:
 
 gtkada-src:
 	git clone --depth=1 \
-	https://github.com/$(adacore-repos)/gtkada -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gtkada -b $(gtkada-version) $@
 
 gnatcoll-core-src:
 	git clone --depth=1 \
@@ -222,8 +224,9 @@ spawn-src:
 
 gps-src:
 	git clone --shallow-since=2021-02-28 \
-	https://github.com/$(adacore-repos)/gps -b $(adacore-version) $@
-	cd $@ && git checkout 7485ccd
+	https://github.com/$(adacore-repos)/gps -b $(gps-version) $@
+	#cd $@ && git checkout 7485ccd # for branch master
+	cd $@ && git checkout a0e8802 # for branch gtk-3.24
 
 spark2014-src:
 	git clone --depth=1 \
