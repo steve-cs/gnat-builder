@@ -575,8 +575,7 @@ install: gps-install
 bootstrap: gps gps-install
 
 gps-build: gps-src libadalang-tools-src \
-	   ada_language_server-src vss-src spawn-src \
-	   gps-build-patch
+	   ada_language_server-src vss-src spawn-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -596,22 +595,12 @@ sub4 = ../spawn/gnat
 
 .PHONY: gps
 gps: gps-build
-	export GPR_PROJECT_PATH=$(sub1):$(sub2):$(sub3):$(sub4) \
+	export GPR_PROJECT_PATH=$(GPR_PROJECT_PATH):$(sub1):$(sub2):$(sub3):$(sub4) \
 	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
 gps-install: gps-build gps-runtime-patch
 	$(sudo) make -C $< install
-
-.PHONY: gps-build-patch
-gps-build-patch:
-	#
-	# copy libclang where gps configure can find it
-	#
-	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) rm -rf $(prefix)/lib/libclang*
-	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
-	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
 
 .PHONY: gps-runtime-patch
 gps-runtime-patch:
