@@ -596,7 +596,7 @@ sub4 = ../spawn/gnat
 
 .PHONY: gps
 gps: gps-build
-	export GPR_PROJECT_PATH=$(sub1):$(sub2):$(sub3):$(sub4) \
+	export GPR_PROJECT_PATH=$(GPR_PROJECT_PATH):$(sub1):$(sub2):$(sub3):$(sub4) \
 	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
