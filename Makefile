@@ -8,6 +8,8 @@ gcc-version ?= master
 adacore-repos ?= adacore
 adacore-version ?= 21.2
 libadalang-version ?= 21.2
+gtkada-version ?= 21.2-gtk-3.22.30
+gps-version ?= 21.2-gtk-3.22
 spark2014-version ?= fsf
 
 os ?= debian
@@ -15,6 +17,7 @@ os ?= debian
 gnat-prefix ?= /usr/local
 prefix ?= $(gnat-prefix)
 sudo ?= sudo
+gps-with-clang ?= /usr/lib/llvm-10/lib
 
 # gcc configuration
 
@@ -176,7 +179,7 @@ gprconfig_kb-src:
 
 gtkada-src:
 	git clone --depth=1 \
-	https://github.com/$(adacore-repos)/gtkada -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gtkada -b $(gtkada-version) $@
 
 gnatcoll-core-src:
 	git clone --depth=1 \
@@ -212,7 +215,7 @@ vss-src:
 
 gps-src:
 	git clone --depth=1 \
-	https://github.com/$(adacore-repos)/gps -b $(adacore-version) $@
+	https://github.com/$(adacore-repos)/gps -b $(gps-version) $@
 
 spark2014-src:
 	git clone --depth=1 \
@@ -527,8 +530,7 @@ install: gps-install
 bootstrap: gps gps-install
 
 gps-build: gps-src libadalang-tools-src \
-	   ada_language_server-src vss-src \
-	   gps-build-patch
+	   ada_language_server-src vss-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -536,7 +538,8 @@ gps-build: gps-src libadalang-tools-src \
 	cp -a ada_language_server-src/* $@/ada_language_server
 	mkdir -p $@/vss
 	cp -a vss-src/* $@/vss
-	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
+	cd $@ && ./configure --prefix=$(prefix) \
+	   --with-clang=$(gps-with-clang) $(gps-options)
 
 # gps subprojects that need to be declared in GPR_PROJECT_PATH now
 sub1 = ../laltools/src
@@ -545,25 +548,15 @@ sub3 = ../vss/gnat
 
 .PHONY: gps
 gps: gps-build
-	export GPR_PROJECT_PATH=$(sub1):$(sub2):$(sub3) \
+	export GPR_PROJECT_PATH=$(GPR_PROJECT_PATH):$(sub1):$(sub2):$(sub3) \
 	&& make -C $< PROCESSORS=0
 
 .PHONY: gps-install
-gps-install: gps-runtime-patch
+gps-install:  gps-install-depends-$(os)
 	$(sudo) make -C gps-build install
 
-.PHONY: gps-build-patch
-gps-build-patch:
-	#
-	# copy libclang where gps configure can find it
-	#
-	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) rm -rf $(prefix)/lib/libclang*
-	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
-	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
-
-.PHONY: gps-runtime-patch
-gps-runtime-patch:
+.PHONY: gps-install-depends-debian
+gps-install-depends-debian:
 	#
 	# copy python2 runtime to $(prefix)
 	#
