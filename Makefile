@@ -18,6 +18,7 @@ os ?= debian
 gnat-prefix ?= /usr/local
 prefix ?= $(gnat-prefix)
 sudo ?= sudo
+gps-with-clang ?= /usr/lib/llvm-10/lib
 
 # gcc configuration
 
@@ -575,8 +576,7 @@ install: gps-install
 bootstrap: gps gps-install
 
 gps-build: gps-src libadalang-tools-src \
-	   ada_language_server-src vss-src spawn-src \
-	   gps-build-depends-$(os)
+	   ada_language_server-src vss-src spawn-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -586,7 +586,8 @@ gps-build: gps-src libadalang-tools-src \
 	cp -a vss-src/* $@/vss
 	mkdir -p $@/spawn
 	cp -a spawn-src/* $@/spawn
-	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
+	cd $@ && ./configure --prefix=$(prefix) \
+	   --with-clang=$(gps-with-clang) $(gps-options)
 
 # gps subprojects that need to be declared in GPR_PROJECT_PATH now
 sub1 = ../laltools/src
@@ -602,16 +603,6 @@ gps: gps-build
 .PHONY: gps-install
 gps-install: gps-build gps-install-depends-$(os)
 	$(sudo) make -C $< install
-
-.PHONY: gps-build-depends-debian
-gps-build-depends-debian:
-	#
-	# copy libclang where gps configure can find it
-	#
-	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) rm -rf $(prefix)/lib/libclang*
-	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
-	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
 
 .PHONY: gps-install-depends-debian
 gps-install-depends-debian:
