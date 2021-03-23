@@ -135,7 +135,7 @@ gtkada-depends-debian:
 gps-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libglib2.0-dev libpango1.0-dev \
-	    libatk1.0-dev libgtk-3-dev libclang1
+	    libatk1.0-dev libgtk-3-dev libclang-dev
 	# python2 support
 	$(sudo) apt-get -qq -y install \
 	    python-gi python-gobject-2-dev python-cairo
