@@ -576,8 +576,7 @@ install: gps-install
 bootstrap: gps gps-install
 
 gps-build: gps-src libadalang-tools-src \
-	   ada_language_server-src vss-src spawn-src \
-	   gps-build-depends-$(os)
+	   ada_language_server-src vss-src spawn-src
 	mkdir -p $@  $@/laltools
 	cp -a $</* $@
 	cp -a libadalang-tools-src/* $@/laltools
@@ -587,7 +586,8 @@ gps-build: gps-src libadalang-tools-src \
 	cp -a vss-src/* $@/vss
 	mkdir -p $@/spawn
 	cp -a spawn-src/* $@/spawn
-	cd $@ && ./configure --prefix=$(prefix) $(gps-options)
+	cd $@ && ./configure --prefix=$(prefix) \
+	   --with-clang=$(gps-with-clang) $(gps-options)
 
 # gps subprojects that need to be declared in GPR_PROJECT_PATH now
 sub1 = ../laltools/src
