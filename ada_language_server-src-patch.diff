@@ -1,0 +1,14 @@
+diff --git a/source/protocol/lsp-generic_sets.ads b/source/protocol/lsp-generic_sets.ads
+index 11a57cf..853ad8a 100644
+--- a/source/protocol/lsp-generic_sets.ads
++++ b/source/protocol/lsp-generic_sets.ads
+@@ -51,8 +51,7 @@ package LSP.Generic_Sets is
+ 
+ private
+ 
+-   type Set is array (Element) of Boolean
+-     with Default_Component_Value => False;
++   type Set is array (Element) of Boolean;
+ 
+    procedure Read_Set
+      (S : access Ada.Streams.Root_Stream_Type'Class;

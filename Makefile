@@ -204,30 +204,25 @@ libadalang-src:
 	https://github.com/$(adacore-repos)/libadalang -b $(libadalang-version) $@
 
 libadalang-tools-src:
-	git clone --shallow-since=2021-02-28 \
+	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/libadalang-tools -b $(adacore-version) $@
-	cd $@ && git checkout f114dbb
 
 ada_language_server-src:
-	git clone --shallow-since=2021-02-28 \
+	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/ada_language_server -b $(adacore-version) $@
-	cd $@ && git checkout bb8d349
+	cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 vss-src:
-	git clone --shallow-since=2021-02-28 \
+	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/vss -b $(adacore-version) $@
-	cd $@ && git checkout d6b5de8
 
 spawn-src:
-	git clone --shallow-since=2021-02-28 \
+	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/spawn -b $(adacore-version) $@
-	cd $@ && git checkout e57c59d
 
 gps-src:
-	git clone --shallow-since=2021-02-28 \
+	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/gps -b $(gps-version) $@
-	#cd $@ && git checkout 7485ccd # for branch master
-	cd $@ && git checkout a0e8802 # for branch gtk-3.24
 
 spark2014-src:
 	git clone --depth=1 \
