@@ -604,16 +604,6 @@ gps: gps-build
 gps-install: gps-build gps-install-depends-$(os)
 	$(sudo) make -C $< install
 
-.PHONY: gps-build-depends-debian
-gps-build-depends-debian:
-	#
-	# copy libclang where gps configure can find it
-	#
-	$(sudo) mkdir -p $(prefix)/lib
-	$(sudo) rm -rf $(prefix)/lib/libclang*
-	$(sudo) cp /usr/lib/*/libclang-*.so.1 $(prefix)/lib
-	cd $(prefix)/lib && $(sudo) ln -sf libclang-*.so.1 libclang.so
-
 .PHONY: gps-install-depends-debian
 gps-install-depends-debian:
 	#
