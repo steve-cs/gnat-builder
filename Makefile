@@ -3,7 +3,7 @@
 # C O N F I G
 #
 
-release ?= cs-20210324
+release ?= cs-20210325
 gcc-version ?= master
 gcc-bootstrap ?= disable
 adacore-repos ?= adacore
