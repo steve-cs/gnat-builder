@@ -9,8 +9,8 @@ gcc-bootstrap ?= disable
 adacore-repos ?= adacore
 adacore-version ?= master
 libadalang-version ?= stable
-gtkada-version ?= gtk-3.24
-gps-version ?= gtk-3.24
+gtkada-version ?= master
+gps-version ?= $(gtkada-version)
 spark2014-version ?= fsf
 
 os ?= debian
