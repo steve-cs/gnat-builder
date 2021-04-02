@@ -138,7 +138,7 @@ gps-depends-debian:
 	    libatk1.0-dev libgtk-3-dev libclang-dev
 	# python2 support
 	$(sudo) apt-get -qq -y install \
-	    python-gi python-gobject-2-dev python-cairo
+	    python-gi-dev python-gi-cairo
 
 .PHONY: spark2014-depends-debian
 spark2014-depends-debian:
