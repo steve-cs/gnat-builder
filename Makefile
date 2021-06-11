@@ -3,7 +3,7 @@
 # C O N F I G
 #
 
-release ?= cs-20210528
+release ?= cs-20210609
 gcc-version ?= master
 gcc-bootstrap ?= disable
 adacore-repos ?= adacore
@@ -210,7 +210,8 @@ libadalang-tools-src:
 ada_language_server-src:
 	git clone --depth=1 \
 	https://github.com/$(adacore-repos)/ada_language_server -b $(adacore-version) $@
-	cd $@ && patch -f -p1 -i ../$@-patch.diff
+	# don't patch, just let gps fail for now.
+	#cd $@ && patch -f -p1 -i ../$@-patch.diff
 
 vss-src:
 	git clone --depth=1 \
@@ -568,7 +569,7 @@ gtkada-install: gtkada-build
 
 all: gps
 install: gps-install
-bootstrap: gps gps-install
+#bootstrap: gps gps-install
 
 gps-build: gps-src libadalang-tools-src \
 	   ada_language_server-src vss-src spawn-src
@@ -627,7 +628,7 @@ gps-install-depends-debian:
 
 all: spark2014
 install: spark2014-install
-bootstrap: spark2014 spark2014-install
+#bootstrap: spark2014 spark2014-install
 
 spark2014-build: spark2014-src gcc-src
 	mkdir -p $@
