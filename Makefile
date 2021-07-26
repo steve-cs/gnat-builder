@@ -3,7 +3,7 @@
 # C O N F I G
 #
 
-release ?= cs-20210609
+release ?= cs-20210725
 gcc-version ?= master
 gcc-bootstrap ?= disable
 adacore-repos ?= adacore
@@ -18,7 +18,7 @@ os ?= debian
 gnat-prefix ?= /usr/local
 prefix ?= $(gnat-prefix)
 sudo ?= sudo
-gps-with-clang ?= /usr/lib/llvm-10/lib
+gps-with-clang ?= /usr/lib/llvm-12/lib
 
 # gcc configuration
 
@@ -108,7 +108,7 @@ base-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    make git wget \
 	    gcc-multilib g++ gnat \
-	    python-is-python2 python2-dev python3-dev\
+	    python-is-python3 python2-dev python3-dev\
 	    python3-venv \
 	    libgmp-dev
 
@@ -136,9 +136,9 @@ gps-depends-debian:
 	$(sudo) apt-get -qq -y install \
 	    pkg-config libglib2.0-dev libpango1.0-dev \
 	    libatk1.0-dev libgtk-3-dev libclang-dev
-	# python2 support
+	# python3 support
 	$(sudo) apt-get -qq -y install \
-	    python-gi-dev python-gi-cairo
+	    python-gi-dev python3-gi-cairo
 
 .PHONY: spark2014-depends-debian
 spark2014-depends-debian:
@@ -239,7 +239,7 @@ spark2014-src:
 # * - B U I L D / I N S T A L L
 #
 
-bootstrap: binutils binutils-install
+#bootstrap: binutils binutils-install
 
 binutils-build: binutils-src
 	mkdir -p $@
@@ -603,17 +603,17 @@ gps-install: gps-build gps-install-depends-$(os)
 .PHONY: gps-install-depends-debian
 gps-install-depends-debian:
 	#
-	# copy python2 runtime to $(prefix)
+	# copy python3 runtime to $(prefix)
 	#
-	$(sudo) mkdir -p $(prefix)/lib/python2.7
-	$(sudo) cp -a /usr/lib/python2.7/* $(prefix)/lib/python2.7
+	$(sudo) mkdir -p $(prefix)/lib/python3.9
+	$(sudo) cp -a /usr/lib/python3.9/* $(prefix)/lib/python3.9
 	#
 	# libadalang install is leaving some bits in $(prefix)/python/
-	# copy them to $(prefix)/lib/python2.7/ where they will be found
+	# copy them to $(prefix)/lib/python3.9/ where they will be found
 	# by gps at run time.
 	#
-	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python2.7
-	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python2.7/libadalang
+	$(sudo) cp -a $(prefix)/python/libadalang $(prefix)/lib/python3.9
+	$(sudo) cp -a $(prefix)/python/setup.py $(prefix)/lib/python3.9/libadalang
 	#
 	# install shared libraries for ada_language_server and laltools
 	# in $(prefix)/lib so that gps will find them at run time.
